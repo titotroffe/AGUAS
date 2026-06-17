@@ -54,7 +54,7 @@
             <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Encargado de Turno</h2>
             <div class="w-[140px] h-[140px] rounded-full bg-[#1c2bb5] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
                 <i class="fa-solid fa-droplet text-6xl text-white relative">
-                    <span class="absolute top-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[16px] font-black mt-2 font-sans">H₂O</span>
+    
                 </i>
             </div>
         </a>

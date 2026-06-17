@@ -46,7 +46,7 @@
 
             <div class="flex justify-center mb-12">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
-                    CONFIRMAR
+                    CONFIRMAR PRESIONES
                 </button>
             </div>
 
@@ -86,8 +86,8 @@
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 3</span>
                         </label>
                     </div>
-                    <button type="button" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-8 rounded border border-slate-500 transition text-xs font-bold tracking-wide">
-                        LAVADO
+                    <button type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                       CONFIRMAR LAVADO
                     </button>
                 </div>
 
@@ -180,11 +180,7 @@
 
         </div>
 
-        <div class="flex justify-center pb-12">
-            <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-16 rounded shadow-lg transition tracking-wider text-sm uppercase">
-                CERRAR TURNO
-            </button>
-        </div>
+       
 
     </div>
 
