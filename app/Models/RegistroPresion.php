@@ -9,6 +9,12 @@ class RegistroPresion extends Model
 {
     use HasFactory;
 
-    // Agrega esta línea:
-    protected $fillable = ['turno_id', 'presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna'];
+    protected $table = 'registro_presiones';
+
+    protected $fillable = ['user_id', 'presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

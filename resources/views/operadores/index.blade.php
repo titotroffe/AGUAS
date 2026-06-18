@@ -19,28 +19,63 @@
             </a> 
         </div>
 
-        <form action="/operadores/guardar" method="POST" class="mb-16">
+        @if($novedadesRecientes > 0)
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
+                <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
+                <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <details id="details-presiones" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">1. PRESIONES Y NIVELES DE CISTERNA</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <form action="/operadores/presion" method="POST" class="mb-16" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
             @csrf 
 
             <div class="grid grid-cols-4 gap-8 mb-8 text-center">
                 <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PRESION EN TANQUE</label>
-                    <input type="number" name="presion_tanque" step="0.01" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">BAJADA DE TANQUE</label>
+                    <input type="number" name="presion_tanque" step="0.01" value="{{ old('presion_tanque') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
                 </div>
                 
                 <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PRESION EN PLANTA</label>
-                    <input type="number" name="presion_planta" step="0.01" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PLANTA</label>
+                    <input type="number" name="presion_planta" step="0.01" value="{{ old('presion_planta') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
                 </div>
 
                 <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PRESION EN FALCON</label>
-                    <input type="number" name="presion_falcon" step="0.01" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">TANQUE DE FALCON</label>
+                    <input type="number" name="presion_falcon" step="0.01" value="{{ old('presion_falcon') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
                 </div>
 
                 <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">NIVEL DE CISTERNA</label>
-                    <input type="number" name="presion_cisterna" step="0.01" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">NIVEL DE CISTERNA (%)</label>
+                    <input type="number" name="nivel_cisterna" step="0.01" value="{{ old('nivel_cisterna') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00%">
                 </div>
             </div>
 
@@ -49,8 +84,94 @@
                     CONFIRMAR PRESIONES
                 </button>
             </div>
+        </form>
 
-            <div class="grid grid-cols-3 gap-8 border-b border-slate-700 pb-12">
+        <div class="mt-8 mb-16 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+            <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">
+                REGISTROS DE PRESIONES Y NIVEL DE CISTERNA
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                    <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Fecha y Hora</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Operador</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Bajada de Tanque</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Planta</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Tanque de Falcón</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Nivel Cisterna</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-medium" id="presiones-tbody">
+                        @forelse($ultimosRegistros as $index => $registro)
+                            <tr class="hover:bg-slate-800/40 transition presion-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
+                                <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">
+                                    {{ $registro->created_at->format('d/m/Y H:i') }}
+                                </td>
+                                <td class="py-4 px-4 text-white font-semibold border border-slate-700">
+                                    {{ $registro->user->name ?? 'N/A' }}
+                                </td>
+                                <td class="py-4 px-4 text-center font-mono text-blue-400 border border-slate-700">
+                                    {{ $registro->presion_tanque !== null ? number_format($registro->presion_tanque, 2) . ' MCA' : '-' }}
+                                </td>
+                                <td class="py-4 px-4 text-center font-mono text-blue-400 border border-slate-700">
+                                    {{ $registro->presion_planta !== null ? number_format($registro->presion_planta, 2) . ' MCA' : '-' }}
+                                </td>
+                                <td class="py-4 px-4 text-center font-mono text-blue-400 border border-slate-700">
+                                    {{ $registro->presion_falcon !== null ? number_format($registro->presion_falcon, 2) . ' MCA' : '-' }}
+                                </td>
+                                <td class="py-4 px-4 text-center font-mono text-emerald-400 font-bold border border-slate-700">
+                                    {{ $registro->nivel_cisterna !== null ? number_format($registro->nivel_cisterna, 2) . '% (' . number_format(($registro->nivel_cisterna / 100) * 7, 2) . ' m)' : '-' }}
+                                </td>
+                                <td class="py-4 px-4 text-center border border-slate-700">
+                                    @if(auth()->id() == $registro->user_id && $registro->created_at->gt(now()->subHours(2)))
+                                        <button type="button" 
+                                                onclick="if(confirm('¿Seguro que deseas borrar este registro de presión?')) { 
+                                                    const form = document.getElementById('delete-pressure-form'); 
+                                                    form.action = '/operadores/presion/{{ $registro->id }}'; 
+                                                    form.submit(); 
+                                                }"
+                                                class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm flex items-center gap-1 mx-auto">
+                                            <i class="fa-solid fa-trash text-[10px]"></i> Borrar
+                                        </button>
+                                    @else
+                                        <span class="text-slate-500 text-xs">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">
+                                    No hay registros de presiones cargados todavía.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            @if(count($ultimosRegistros) > 8)
+            <div class="flex justify-center items-center mt-6 space-x-2 text-sm font-bold text-slate-300" id="presiones-pagination">
+                <button type="button" onclick="changePage(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</button>
+                <span id="page-indicator" class="px-4 text-blue-400 font-mono">Página 1 / {{ ceil(count($ultimosRegistros) / 8) }}</span>
+                <button type="button" onclick="changePage(1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</button>
+            </div>
+            @endif
+        </div>
+        </div>
+        </details>
+
+        <details id="details-lavados" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">2. LAVADO DE FILTROS</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+            
+            <form action="/operadores/filtro" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                @csrf
+                <div class="grid grid-cols-2 gap-8 border-b border-slate-700 pb-12">
                 
                 <div class="flex flex-col items-center">
                     <h3 class="text-sm font-bold mb-6 tracking-wide text-white">LINEA NORTE</h3>
@@ -86,103 +207,322 @@
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 3</span>
                         </label>
                     </div>
-                    <button type="button" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
-                       CONFIRMAR LAVADO
-                    </button>
                 </div>
 
-                <div class="flex flex-col items-center justify-center">
-                    <div class="mb-6 w-full flex flex-col items-center">
-                        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">HORA INICIO</label>
-                        <input type="time" name="hora_inicio" class="w-40 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono">
+                <!-- Selector de Fechas de Lavado y Botón -->
+                <div class="col-span-2 flex flex-col items-center mt-8 space-y-6">
+                    <div class="flex gap-8">
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">INICIO DE LAVADO</label>
+                            <input type="datetime-local" name="inicio_lavado" required value="{{ old('inicio_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">FIN DE LAVADO</label>
+                            <input type="datetime-local" name="fin_lavado" required value="{{ old('fin_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+                        </div>
                     </div>
-                    <div class="w-full flex flex-col items-center">
-                        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">HORA FINAL</label>
-                        <input type="time" name="hora_final" class="w-40 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono">
-                    </div>
+                    
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                       CONFIRMAR LAVADO
+                    </button>
                 </div>
 
             </div>
         </form>
 
-
-        <div class="text-center mb-12">
-            <h2 class="text-xl font-bold text-white tracking-wider uppercase">NIVELES DE TANQUES QUÍMICOS</h2>
+        <div class="mt-8 mb-16 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+            <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">
+                REGISTROS DE LAVADO DE FILTROS
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                    <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                        <tr>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Operador</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Inicio de Lavado</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Fin de Lavado</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Filtros Lavados</th>
+                            <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-medium">
+                        @forelse($ultimosLavados as $lavado)
+                            <tr class="hover:bg-slate-800/40 transition">
+                                <td class="py-4 px-4 text-white font-semibold border border-slate-700">
+                                    {{ $lavado->user->name ?? 'N/A' }}
+                                </td>
+                                <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">
+                                    {{ $lavado->inicio_lavado ? $lavado->inicio_lavado->format('d/m/Y H:i') : '-' }}
+                                </td>
+                                <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">
+                                    {{ $lavado->fin_lavado ? $lavado->fin_lavado->format('d/m/Y H:i') : '-' }}
+                                </td>
+                                <td class="py-4 px-4 text-emerald-400 border border-slate-700">
+                                    @php
+                                        $filtros = [];
+                                        if($lavado->norte_1) $filtros[] = 'Norte 1';
+                                        if($lavado->norte_2) $filtros[] = 'Norte 2';
+                                        if($lavado->norte_3) $filtros[] = 'Norte 3';
+                                        if($lavado->sur_1) $filtros[] = 'Sur 1';
+                                        if($lavado->sur_2) $filtros[] = 'Sur 2';
+                                        if($lavado->sur_3) $filtros[] = 'Sur 3';
+                                    @endphp
+                                    {{ empty($filtros) ? 'Ninguno' : implode(', ', $filtros) }}
+                                </td>
+                                <td class="py-4 px-4 text-center border border-slate-700">
+                                    @if(auth()->id() == $lavado->user_id && $lavado->created_at->gt(now()->subHours(2)))
+                                        <button type="button" 
+                                                onclick="if(confirm('¿Seguro que deseas borrar este registro de lavado?')) { 
+                                                    const form = document.getElementById('delete-filtro-form'); 
+                                                    form.action = '/operadores/filtro/{{ $lavado->id }}'; 
+                                                    form.submit(); 
+                                                }"
+                                                class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm flex items-center gap-1 mx-auto">
+                                            <i class="fa-solid fa-trash text-[10px]"></i> Borrar
+                                        </button>
+                                    @else
+                                        <span class="text-slate-500 text-xs">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">
+                                    No hay registros de lavado de filtros todavía.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
+        </div>
+        </details>
 
-        <div class="grid grid-cols-3 gap-12 text-center mb-16">
+        <!-- Formulario oculto para eliminación de presiones (previene formularios anidados en HTML) -->
+        <form id="delete-pressure-form" action="" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        <form id="delete-filtro-form" action="" method="POST" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+
+        <details id="details-quimicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">3. NIVELES DE TANQUES QUÍMICOS</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <div class="grid grid-cols-3 gap-12 text-center mb-16">
             
-            <div class="flex flex-col items-center space-y-6">
+            <form action="/operadores/quimico" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                @csrf
+                <input type="hidden" name="quimico" value="cloro">
                 <h3 class="text-lg font-bold text-blue-400 tracking-widest">CLORO</h3>
                 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">4.00%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 mb-2 font-mono" placeholder="Ej: 85.5">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_principal !== null ? number_format($ultimoCloro->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_principal" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">56.00%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 mb-2 font-mono" placeholder="Ej: 72.3">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_auxiliar !== null ? number_format($ultimoCloro->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_auxiliar" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
-            </div>
+                
+                <button type="submit" class="w-full max-w-xs bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm">
+                    ACTUALIZAR CLORO
+                </button>
+            </form>
 
-            <div class="flex flex-col items-center space-y-6">
+            <form action="/operadores/quimico" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                @csrf
+                <input type="hidden" name="quimico" value="poliamina">
                 <h3 class="text-lg font-bold text-emerald-400 tracking-widest">POLIAMINA</h3>
                 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">78.40%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-emerald-500 mb-2 font-mono" placeholder="Ej: 68.7">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_principal !== null ? number_format($ultimaPoliamina->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_principal" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">65.20%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-emerald-500 mb-2 font-mono" placeholder="Ej: 45.2">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_auxiliar !== null ? number_format($ultimaPoliamina->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_auxiliar" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
-            </div>
+                
+                <button type="submit" class="w-full max-w-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm">
+                    ACTUALIZAR POLIAMINA
+                </button>
+            </form>
 
-            <div class="flex flex-col items-center space-y-6">
+            <form action="/operadores/quimico" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                @csrf
+                <input type="hidden" name="quimico" value="sulfato">
                 <h3 class="text-lg font-bold text-red-400 tracking-widest">SULFATO</h3>
                 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">91.20%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-red-500 mb-2 font-mono" placeholder="Ej: 92.1">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_principal !== null ? number_format($ultimoSulfato->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_principal" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">68.70%</span></p>
-                    <input type="number" step="0.1" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-red-500 mb-2 font-mono" placeholder="Ej: 78.9">
-                    <button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-2 rounded transition tracking-wide">
-                        ACTUALIZAR NIVEL
-                    </button>
+                    <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_auxiliar !== null ? number_format($ultimoSulfato->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                    <input type="number" name="tanque_auxiliar" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
-            </div>
+                
+                <button type="submit" class="w-full max-w-xs bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm">
+                    ACTUALIZAR SULFATO
+                </button>
+            </form>
 
         </div>
+        </div>
+        </details>
 
-       
+        <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                
+                <form action="/operadores/novedad" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                    @csrf
+                    <label class="block text-sm font-bold text-slate-300 mb-3 tracking-wide">REGISTRAR NUEVA NOVEDAD (Máx. 1000 caracteres)</label>
+                    <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-4 text-white focus:outline-none focus:border-blue-500 mb-4 resize-none" placeholder="Escribe aquí cualquier comentario importante o novedad del turno para que el próximo operador esté enterado..."></textarea>
+                    
+                    <div class="flex justify-center mb-12">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                            GUARDAR NOVEDAD
+                        </button>
+                    </div>
+                </form>
+
+                <div class="bg-slate-900/50 rounded border border-slate-700 p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-blue-400 tracking-widest text-center flex-grow">ÚLTIMAS NOVEDADES</h3>
+                        @if($novedadesRecientes > 0)
+                        <form action="/operadores/novedades/leidas" method="POST" onsubmit="const btn = this.querySelector('button'); btn.disabled = true; btn.innerHTML = 'MARCANDO...'; btn.classList.add('opacity-50', 'cursor-not-allowed');">
+                            @csrf
+                            <button type="submit" class="bg-blue-600/80 hover:bg-blue-500 text-white font-bold py-1 px-4 rounded shadow-sm transition text-xs tracking-wide flex items-center gap-2 border border-blue-500">
+                                <i class="fa-solid fa-check-double"></i> MARCAR LEÍDAS
+                            </button>
+                        </form>
+                        @endif
+                    </div>
+                    
+                    <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        @forelse($ultimasNovedades as $novedad)
+                            <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-white">{{ $novedad->user->name ?? 'N/A' }}</span>
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-xs text-slate-400 font-mono">{{ $novedad->created_at->format('d/m/Y H:i') }}</span>
+                                        @if(auth()->id() == $novedad->user_id && $novedad->created_at->gt(now()->subHours(2)))
+                                            <button type="button" 
+                                                    onclick="if(confirm('¿Seguro que deseas borrar esta novedad?')) { 
+                                                        const form = document.getElementById('delete-novedad-form'); 
+                                                        form.action = '/operadores/novedad/{{ $novedad->id }}'; 
+                                                        form.submit(); 
+                                                    }"
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm flex items-center gap-1">
+                                                <i class="fa-solid fa-trash text-[10px]"></i> Borrar
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                                <p class="text-slate-300 text-sm whitespace-pre-wrap">{{ $novedad->mensaje }}</p>
+                            </div>
+                        @empty
+                            <p class="text-center text-slate-500 font-semibold py-4">No hay novedades registradas.</p>
+                        @endforelse
+                    </div>
+                </div>
+
+            </div>
+        </details>
 
     </div>
 
+    <!-- Formularios ocultos para eliminar -->
+    <form id="delete-pressure-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+    <form id="delete-filter-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+    <form id="delete-novedad-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        // Restaurar estado de los bloques (abiertos o cerrados)
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailsElements = document.querySelectorAll('details');
+            detailsElements.forEach(detail => {
+                if (!detail.id) return;
+                // Si la alerta de novedades abrió el detalle, tiene prioridad
+                if (detail.open) {
+                    localStorage.setItem('block_state_' + detail.id, 'open');
+                } else {
+                    const state = localStorage.getItem('block_state_' + detail.id);
+                    if (state === 'open') {
+                        detail.open = true;
+                    }
+                }
+                
+                detail.addEventListener('toggle', () => {
+                    if (detail.open) {
+                        localStorage.setItem('block_state_' + detail.id, 'open');
+                    } else {
+                        localStorage.removeItem('block_state_' + detail.id);
+                    }
+                });
+            });
+        });
+
+        // Paginación en Frontend para Tabla de Presiones
+        let currentPage = 1;
+        const totalItems = {{ count($ultimosRegistros) }};
+        const itemsPerPage = 8;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        function changePage(direction) {
+            currentPage += direction;
+            
+            if (currentPage < 1) currentPage = 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            // Actualizar texto del indicador
+            const indicator = document.getElementById('page-indicator');
+            if(indicator) indicator.innerText = `Página ${currentPage} / ${totalPages}`;
+
+            // Ocultar todas las filas y mostrar solo las de la página actual
+            const rows = document.querySelectorAll('.presion-row');
+            rows.forEach(row => {
+                const index = parseInt(row.getAttribute('data-index'));
+                const start = (currentPage - 1) * itemsPerPage;
+                const end = start + itemsPerPage - 1;
+                
+                if (index >= start && index <= end) {
+                    row.style.display = ''; // Mostrar
+                } else {
+                    row.style.display = 'none'; // Ocultar
+                }
+            });
+        }
+    </script>
 </body>
 </html>

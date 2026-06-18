@@ -13,7 +13,7 @@ return new class extends Migration
 {
     Schema::create('nivel_quimicos', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('turno_id')->constrained('turnos')->onDelete('cascade');
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
         $table->string('quimico'); // Acá guardaremos si es 'Cloro', 'Poliamina' o 'Sulfato'
         $table->decimal('tanque_principal', 5, 2)->nullable(); // Ej: 85.50
         $table->decimal('tanque_auxiliar', 5, 2)->nullable();

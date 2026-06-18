@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NivelQuimico extends Model
+class Novedad extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quimico', 'tanque_principal', 'tanque_auxiliar'];
+    protected $table = 'novedades';
+
+    protected $fillable = ['user_id', 'mensaje'];
 
     public function user()
     {
