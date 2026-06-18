@@ -7,6 +7,26 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <style>
+        /* Ocultar las flechas de los input type number para centrar bien los placeholders */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Pintar de blanco el icono del calendario en los campos de fecha */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+        /* Para navegadores que soporten color-scheme */
+        input[type="datetime-local"] {
+            color-scheme: dark;
+        }
+    </style>
 </head>
 <body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
 
@@ -169,9 +189,9 @@
             </summary>
             <div class="p-8">
             
-            <form action="/operadores/filtro" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+            <form action="/operadores/filtro" method="POST" class="mb-16" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                 @csrf
-                <div class="grid grid-cols-2 gap-8 border-b border-slate-700 pb-12">
+                <div class="grid grid-cols-2 gap-8">
                 
                 <div class="flex flex-col items-center">
                     <h3 class="text-sm font-bold mb-6 tracking-wide text-white">LINEA NORTE</h3>
@@ -193,7 +213,7 @@
 
                 <div class="flex flex-col items-center">
                     <h3 class="text-sm font-bold mb-6 tracking-wide text-white">LINEA SUR</h3>
-                    <div class="space-y-4 flex flex-col items-start mb-6">
+                    <div class="space-y-4 flex flex-col items-start">
                         <label class="flex items-center cursor-pointer">
                             <input type="checkbox" name="sur_1" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 1</span>
@@ -214,11 +234,11 @@
                     <div class="flex gap-8">
                         <div class="flex flex-col items-center">
                             <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">INICIO DE LAVADO</label>
-                            <input type="datetime-local" name="inicio_lavado" required value="{{ old('inicio_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+                            <input type="datetime-local" name="inicio_lavado" required value="{{ old('inicio_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
                         </div>
                         <div class="flex flex-col items-center">
                             <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">FIN DE LAVADO</label>
-                            <input type="datetime-local" name="fin_lavado" required value="{{ old('fin_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+                            <input type="datetime-local" name="fin_lavado" required value="{{ old('fin_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
                         </div>
                     </div>
                     
@@ -226,9 +246,8 @@
                        CONFIRMAR LAVADO
                     </button>
                 </div>
-
-            </div>
-        </form>
+                </div>
+            </form>
 
         <div class="mt-8 mb-16 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
             <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">
