@@ -18,7 +18,6 @@
             -moz-appearance: textfield;
         }
         
-        /* Pintar de blanco el icono del calendario en los campos de fecha */
         input[type="datetime-local"]::-webkit-calendar-picker-indicator {
             cursor: pointer;
         }

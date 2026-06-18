@@ -72,11 +72,38 @@ class OperadoresController extends Controller
     }
 
     // Guardar los datos de lavado de filtros
+    // Guardar los datos de lavado de filtros
     public function storeFiltro(Request $request)
     {
         $request->validate([
-            'inicio_lavado' => 'required|date',
-            'fin_lavado' => 'required|date|after:inicio_lavado',
+            'inicio_lavado' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    // Límite de 2 horas hacia atrás desde el momento actual
+                    $limiteAtras = now()->subHours(2);
+                    
+                    if (\Carbon\Carbon::parse($value)->isBefore($limiteAtras)) {
+                        $fail('El inicio del lavado no puede tener más de 2 horas de antigüedad.');
+                    }
+                },
+            ],
+            'fin_lavado' => [
+                'required',
+                'date',
+                'after:inicio_lavado',
+                function ($attribute, $value, $fail) use ($request) {
+                    // Límite de 4 horas de duración
+                    if ($request->filled('inicio_lavado')) {
+                        $inicio = \Carbon\Carbon::parse($request->inicio_lavado);
+                        $fin = \Carbon\Carbon::parse($value);
+                        
+                        if ($inicio->diffInMinutes($fin) > 240) { 
+                            $fail('La duración del lavado no puede superar las 4 horas.');
+                        }
+                    }
+                },
+            ],
         ], [
             'inicio_lavado.required' => 'La fecha de inicio de lavado es obligatoria.',
             'fin_lavado.required' => 'La fecha de fin de lavado es obligatoria.',
@@ -99,44 +126,6 @@ class OperadoresController extends Controller
 
         return back()->with('success', 'Lavado de filtros registrado correctamente');
     }
-
-    // Guardar los niveles de químicos
-    public function storeQuimico(Request $request)
-    {
-        $request->validate([
-            'quimico' => 'required|in:cloro,poliamina,sulfato',
-            'tanque_principal' => 'nullable|numeric|min:0|max:100',
-            'tanque_auxiliar' => 'nullable|numeric|min:0|max:100',
-        ], [
-            'quimico.required' => 'Debe especificar el químico.',
-            'quimico.in' => 'El químico especificado no es válido.',
-            'tanque_principal.numeric' => 'El nivel del tanque principal debe ser un número.',
-            'tanque_principal.min' => 'El nivel del tanque principal no puede ser negativo.',
-            'tanque_principal.max' => 'El nivel del tanque principal no puede superar el 100%.',
-            'tanque_auxiliar.numeric' => 'El nivel del tanque auxiliar debe ser un número.',
-            'tanque_auxiliar.min' => 'El nivel del tanque auxiliar no puede ser negativo.',
-            'tanque_auxiliar.max' => 'El nivel del tanque auxiliar no puede superar el 100%.',
-        ]);
-
-        if (!$request->filled('tanque_principal') && !$request->filled('tanque_auxiliar')) {
-            return back()->with('error', 'Debe ingresar al menos un nivel para actualizar.');
-        }
-
-        $ultimoRegistro = NivelQuimico::where('quimico', $request->quimico)->latest()->first();
-
-        $principal = $request->filled('tanque_principal') ? $request->tanque_principal : ($ultimoRegistro ? $ultimoRegistro->tanque_principal : 0);
-        $auxiliar = $request->filled('tanque_auxiliar') ? $request->tanque_auxiliar : ($ultimoRegistro ? $ultimoRegistro->tanque_auxiliar : 0);
-
-        NivelQuimico::create([
-            'user_id' => Auth::id(),
-            'quimico' => $request->quimico,
-            'tanque_principal' => $principal,
-            'tanque_auxiliar' => $auxiliar,
-        ]);
-
-        return back()->with('success', 'Niveles de ' . ucfirst($request->quimico) . ' actualizados correctamente');
-    }
-
     // Guardar una novedad
     public function storeNovedad(Request $request)
     {
