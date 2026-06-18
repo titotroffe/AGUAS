@@ -32,12 +32,12 @@
 
     <div class="max-w-6xl mx-auto">
         
-        <div class="text-center mb-12">
-            <h1 class="text-2xl font-bold text-white tracking-wider mb-6">FORMULARIO DE OPERADOR DE TURNO</h1>
-            <a href="/dashboard" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
-                 ← VOLVER AL MENÚ
-            </a> 
-        </div>
+       <div class="relative mb-12">
+    <a href="/dashboard" class="absolute left-0 top-1 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+         ← VOLVER AL MENÚ
+    </a>
+    <h1 class="text-2xl font-bold text-white tracking-wider text-center">FORMULARIO DE OPERADOR DE TURNO</h1>
+</div>
 
         @if($novedadesRecientes > 0)
             <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
