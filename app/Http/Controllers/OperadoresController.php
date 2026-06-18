@@ -72,7 +72,6 @@ class OperadoresController extends Controller
     }
 
     // Guardar los datos de lavado de filtros
-    // Guardar los datos de lavado de filtros
     public function storeFiltro(Request $request)
     {
         $request->validate([

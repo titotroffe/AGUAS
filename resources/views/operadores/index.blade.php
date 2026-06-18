@@ -353,7 +353,7 @@
                     <input type="number" name="tanque_auxiliar" step="0.01" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
                 
-                <button type="submit" class="w-full max-w-xs text-white bg-yellow-500 hover:bg-yellow-400  font-bold py-3 rounded shadow-lg transition tracking-wide text-sm">
+                <button type="submit" class="w-full max-w-xs text-white bg-yellow-500 hover:bg-yellow-400  font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4x_rgba(0,0,0,1)]">
                     ACTUALIZAR CLORO
                 </button>
             </form>
