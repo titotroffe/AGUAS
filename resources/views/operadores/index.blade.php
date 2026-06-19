@@ -32,7 +32,7 @@
     <div class="max-w-6xl mx-auto">
         
        <div class="relative flex items-center justify-center mb-12">
-            <a href="/dashboard" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+            <a href="/menu" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
                  ← VOLVER AL MENÚ
             </a>
             <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">FORMULARIO DE OPERADOR DE TURNO</h1>

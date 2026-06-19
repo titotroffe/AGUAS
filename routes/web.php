@@ -5,12 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OperadoresController;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return view('/welcome');
 });
 
-Route::get('/dashboard', function () {
+Route::get('/menu', function () {
     return view('menu');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('menu');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

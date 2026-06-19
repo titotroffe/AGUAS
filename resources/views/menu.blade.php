@@ -62,7 +62,7 @@
         </div>
         
         <div class="flex gap-4">
-            <a href="#" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-6 rounded text-sm font-semibold transition shadow">
+            <a href="/profile" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-6 rounded text-sm font-semibold transition shadow">
                 Editar Perfil
             </a>
             
