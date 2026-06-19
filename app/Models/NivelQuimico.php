@@ -9,7 +9,7 @@ class NivelQuimico extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quimico', 'tanque_principal', 'tanque_auxiliar'];
+    protected $fillable = ['user_id', 'quimico', 'tipo_tanque', 'nivel'];
 
     public function user()
     {
