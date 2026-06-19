@@ -40,14 +40,14 @@
 
         <a href="/jefatura" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
             <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Jefatura</h2>
-            <div class="w-[140px] h-[140px] rounded-full bg-[#1c2bb5] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
+            <div class="w-[140px] h-[140px] rounded-full bg-[#525dbe] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
                 <i class="fa-solid fa-sitemap text-6xl text-white"></i>
             </div>
         </a>
 
         <a href="/operadores" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
             <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Encargado de Turno</h2>
-            <div class="w-[140px] h-[140px] rounded-full bg-[#1c2bb5] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
+            <div class="w-[140px] h-[140px] rounded-full bg-[#525dbe] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
                 <i class="fa-solid fa-droplet text-6xl text-white relative">
     
                 </i>
@@ -56,14 +56,14 @@
 
         <a href="/quimico" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
             <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Químico</h2>
-            <div class="w-[140px] h-[140px] rounded-full bg-[#1c2bb5] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
+            <div class="w-[140px] h-[140px] rounded-full bg-[#525dbe] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
                 <i class="fa-solid fa-atom text-7xl text-white"></i>
             </div>
         </a>
 
         <a href="/mantenimiento" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
             <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Mantenimiento</h2>
-            <div class="w-[140px] h-[140px] rounded-full bg-[#1c2bb5] flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
+            <div class="w-[140px] h-[140px] rounded-full bg-[#525dbe] bg-gradient-to-t flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
                 <i class="fa-solid fa-user-gear text-6xl text-white"></i>
             </div>
         </a>
