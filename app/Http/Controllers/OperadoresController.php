@@ -24,9 +24,20 @@ class OperadoresController extends Controller
             ->take(6)
             ->get();
 
-        $ultimoCloro = NivelQuimico::where('quimico', 'cloro')->latest()->first();
-        $ultimaPoliamina = NivelQuimico::where('quimico', 'poliamina')->latest()->first();
-        $ultimoSulfato = NivelQuimico::where('quimico', 'sulfato')->latest()->first();
+        $ultimoCloro = (object)[
+            'tanque_principal' => NivelQuimico::where('quimico', 'cloro')->where('tipo_tanque', 'principal')->latest()->value('nivel'),
+            'tanque_auxiliar' => NivelQuimico::where('quimico', 'cloro')->where('tipo_tanque', 'auxiliar')->latest()->value('nivel')
+        ];
+
+        $ultimaPoliamina = (object)[
+            'tanque_principal' => NivelQuimico::where('quimico', 'poliamina')->where('tipo_tanque', 'principal')->latest()->value('nivel'),
+            'tanque_auxiliar' => NivelQuimico::where('quimico', 'poliamina')->where('tipo_tanque', 'auxiliar')->latest()->value('nivel')
+        ];
+
+        $ultimoSulfato = (object)[
+            'tanque_principal' => NivelQuimico::where('quimico', 'sulfato')->where('tipo_tanque', 'principal')->latest()->value('nivel'),
+            'tanque_auxiliar' => NivelQuimico::where('quimico', 'sulfato')->where('tipo_tanque', 'auxiliar')->latest()->value('nivel')
+        ];
 
         $ultimasNovedades = Novedad::with('user')->latest()->take(10)->get();
 
@@ -72,7 +83,6 @@ class OperadoresController extends Controller
     }
 
     // Guardar los datos de lavado de filtros
-    // Guardar los datos de lavado de filtros
     public function storeFiltro(Request $request)
     {
         $request->validate([
@@ -82,9 +92,17 @@ class OperadoresController extends Controller
                 function ($attribute, $value, $fail) {
                     // Límite de 2 horas hacia atrás desde el momento actual
                     $limiteAtras = now()->subHours(2);
+                    // Límite de 1 hora hacia adelante desde el momento actual
+                    $limiteAdelante = now()->addHour(1);
                     
-                    if (\Carbon\Carbon::parse($value)->isBefore($limiteAtras)) {
+                    $fechaInicio = \Carbon\Carbon::parse($value);
+
+                    if ($fechaInicio->isBefore($limiteAtras)) {
                         $fail('El inicio del lavado no puede tener más de 2 horas de antigüedad.');
+                    }
+
+                    if ($fechaInicio->isAfter($limiteAdelante)) {
+                        $fail('El inicio del lavado no puede programarse para más de 1 hora en el futuro.');
                     }
                 },
             ],
@@ -112,6 +130,12 @@ class OperadoresController extends Controller
             'fin_lavado.after' => 'La fecha de fin de lavado debe ser posterior a la de inicio.',
         ]);
 
+        if (!$request->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3'])) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'filtros' => 'Debe seleccionar al menos un filtro para lavar.',
+            ]);
+        }
+
         RegistroFiltro::create([
             'user_id' => Auth::id(),
             'norte_1' => $request->has('norte_1'),
@@ -126,6 +150,51 @@ class OperadoresController extends Controller
 
         return back()->with('success', 'Lavado de filtros registrado correctamente');
     }
+
+    // Guardar los datos de niveles de químicos
+    public function storeQuimico(Request $request)
+    {
+        $request->validate([
+            'quimico' => 'required|in:cloro,poliamina,sulfato',
+            'tanque_principal' => 'nullable|numeric|min:0|max:100',
+            'tanque_auxiliar' => 'nullable|numeric|min:0|max:100',
+        ], [
+            'quimico.required' => 'Debe especificar el químico.',
+            'quimico.in' => 'El químico especificado no es válido.',
+            'tanque_principal.numeric' => 'El nivel del tanque principal debe ser un número.',
+            'tanque_principal.min' => 'El nivel no puede ser negativo.',
+            'tanque_principal.max' => 'El nivel no puede superar el 100%.',
+            'tanque_auxiliar.numeric' => 'El nivel del tanque auxiliar debe ser un número.',
+            'tanque_auxiliar.min' => 'El nivel no puede ser negativo.',
+            'tanque_auxiliar.max' => 'El nivel no puede superar el 100%.',
+        ]);
+
+        if (is_null($request->tanque_principal) && is_null($request->tanque_auxiliar)) {
+            return back()->with('error', 'Debe ingresar al menos el nivel de un tanque para actualizar.');
+        }
+
+        if ($request->filled('tanque_principal')) {
+            NivelQuimico::create([
+                'user_id' => Auth::id(),
+                'quimico' => $request->quimico,
+                'tipo_tanque' => 'principal',
+                'nivel' => $request->tanque_principal,
+            ]);
+        }
+
+        if ($request->filled('tanque_auxiliar')) {
+            NivelQuimico::create([
+                'user_id' => Auth::id(),
+                'quimico' => $request->quimico,
+                'tipo_tanque' => 'auxiliar',
+                'nivel' => $request->tanque_auxiliar,
+            ]);
+        }
+
+        $nombreQuimico = ucfirst($request->quimico);
+        return back()->with('success', "Niveles de $nombreQuimico actualizados correctamente.");
+    }
+
     // Guardar una novedad
     public function storeNovedad(Request $request)
     {

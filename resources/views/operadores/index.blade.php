@@ -31,12 +31,12 @@
 
     <div class="max-w-6xl mx-auto">
         
-       <div class="relative mb-12">
-    <a href="/dashboard" class="absolute left-0 top-1 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
-         ← VOLVER AL MENÚ
-    </a>
-    <h1 class="text-2xl font-bold text-white tracking-wider text-center">FORMULARIO DE OPERADOR DE TURNO</h1>
-</div>
+       <div class="relative flex items-center justify-center mb-12">
+            <a href="/dashboard" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+                 ← VOLVER AL MENÚ
+            </a>
+            <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">FORMULARIO DE OPERADOR DE TURNO</h1>
+        </div>
 
         @if($novedadesRecientes > 0)
             <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
@@ -486,16 +486,16 @@
     </form>
 
     <script>
-        // Restaurar estado de los bloques (abiertos o cerrados)
+        // Restaurar estado de los bloques (abiertos o cerrados) usando sessionStorage
         document.addEventListener('DOMContentLoaded', () => {
             const detailsElements = document.querySelectorAll('details');
             detailsElements.forEach(detail => {
                 if (!detail.id) return;
                 // Si la alerta de novedades abrió el detalle, tiene prioridad
                 if (detail.open) {
-                    localStorage.setItem('block_state_' + detail.id, 'open');
+                    sessionStorage.setItem('block_state_' + detail.id, 'open');
                 } else {
-                    const state = localStorage.getItem('block_state_' + detail.id);
+                    const state = sessionStorage.getItem('block_state_' + detail.id);
                     if (state === 'open') {
                         detail.open = true;
                     }
@@ -503,9 +503,9 @@
                 
                 detail.addEventListener('toggle', () => {
                     if (detail.open) {
-                        localStorage.setItem('block_state_' + detail.id, 'open');
+                        sessionStorage.setItem('block_state_' + detail.id, 'open');
                     } else {
-                        localStorage.removeItem('block_state_' + detail.id);
+                        sessionStorage.removeItem('block_state_' + detail.id);
                     }
                 });
             });
