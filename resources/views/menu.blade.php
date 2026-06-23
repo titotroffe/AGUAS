@@ -62,11 +62,11 @@
         </div>
         
         <div class="flex gap-4">
-            <a href="/profile" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-6 rounded text-sm font-semibold transition shadow">
+            <a href="{{ route('profile.edit') }}" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-6 rounded text-sm font-semibold transition shadow">
                 Editar Perfil
             </a>
             
-            <form method="POST" action="/logout" class="m-0">
+            <form method="POST" action="{{ route('logout') }}" class="m-0">
                 @csrf
                 <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-1.5 px-6 rounded text-sm font-semibold transition shadow">
                     Cerrar Sesión
