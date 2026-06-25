@@ -6,6 +6,7 @@
     <title>Formulario de Operadores</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         /* Ocultar las flechas de los input type number para centrar bien los placeholders */
