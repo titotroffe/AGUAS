@@ -10,13 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
         .chart-container {
             position: relative;
             height: 300px;
@@ -24,18 +17,18 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-200 font-sans min-h-screen p-4 md:p-8" style="background-image: radial-gradient(circle at top right, #1e293b, #0f172a);">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-center mb-12 relative gap-6">
-            <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center">
-                <a href="/menu" class="bg-slate-800/80 hover:bg-slate-700 text-white py-2 px-6 rounded-full border border-slate-600 transition shadow-lg text-sm font-bold flex items-center gap-2 group">
-                    <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> VOLVER AL MENÚ
+            <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center z-10">
+                <a href="/menu" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+                     ← VOLVER AL MENÚ
                 </a>
             </div>
-            <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 tracking-wider text-center m-0 w-full drop-shadow-sm uppercase">
-                Panel de Jefatura
+            <h1 class="text-xl md:text-2xl font-bold text-white tracking-wider text-center m-0 w-full uppercase">
+                PANEL DE JEFATURA
             </h1>
         </div>
 
@@ -46,19 +39,19 @@
         <!-- KPI Cards -->
         @if($ultimaPresion)
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="glass-panel rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Tanque</p>
                 <p class="text-3xl font-black text-sky-400">{{ number_format($ultimaPresion->presion_tanque, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
             </div>
-            <div class="glass-panel rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Planta</p>
                 <p class="text-3xl font-black text-indigo-400">{{ number_format($ultimaPresion->presion_planta, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
             </div>
-            <div class="glass-panel rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Falcón</p>
                 <p class="text-3xl font-black text-purple-400">{{ number_format($ultimaPresion->presion_falcon, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
             </div>
-            <div class="glass-panel rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Nivel Cisterna</p>
                 <p class="text-3xl font-black text-emerald-400">{{ number_format($ultimaPresion->nivel_cisterna, 2) }}%</p>
             </div>
@@ -69,7 +62,7 @@
         <h2 class="text-xl font-bold text-white tracking-wide mb-4 drop-shadow flex items-center gap-3"><i class="fa-solid fa-map-location-dot text-emerald-400"></i> Últimos Registros por Lugar (Calidad de Agua)</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
             @foreach($ultimosPorLugar as $lugar)
-            <div class="glass-panel rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
                 <p class="text-slate-300 text-[11px] font-black tracking-widest uppercase mb-1 line-clamp-1" title="{{ $lugar->lugar }} {{ $lugar->filtro_numero }}">{{ $lugar->lugar }} {{ $lugar->filtro_numero }}</p>
                 <p class="text-[9px] text-emerald-300 font-bold tracking-widest mb-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($lugar->user)->name ?? 'SISTEMA' }}</p>
                 <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
@@ -91,7 +84,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
             <!-- Panel Presiones -->
-            <div class="glass-panel rounded-2xl p-6 shadow-2xl transition hover:shadow-cyan-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-cyan-900/20">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
                     <div class="bg-blue-500/20 p-3 rounded-lg text-blue-400">
                         <i class="fa-solid fa-gauge-high text-xl"></i>
@@ -108,7 +101,7 @@
         <h2 class="text-2xl font-bold text-white tracking-wide mb-6 mt-8 drop-shadow flex items-center gap-3"><i class="fa-solid fa-microscope text-emerald-400"></i> Calidad de Agua (Por Sector)</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Turbiedad (Efecto Decantación) -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-amber-900/20 lg:col-span-2">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-amber-900/20 lg:col-span-2">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
                     <div class="bg-amber-500/20 p-2 rounded-lg text-amber-400">
                         <i class="fa-solid fa-water text-lg"></i>
@@ -121,7 +114,7 @@
             </div>
             
             <!-- pH -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
                     <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
                         <i class="fa-solid fa-vial-circle-check text-lg"></i>
@@ -134,7 +127,7 @@
             </div>
 
             <!-- Cloro -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-rose-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-rose-900/20">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
                     <div class="bg-rose-500/20 p-2 rounded-lg text-rose-400">
                         <i class="fa-solid fa-flask text-lg"></i>
@@ -151,7 +144,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             
             <!-- Historial Quimicos -->
-            <div class="glass-panel rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
                     <h2 class="text-xl font-bold text-white tracking-wide">Historial de Niveles (%)</h2>
                 </div>
@@ -161,7 +154,7 @@
             </div>
 
             <!-- Panel Químicos Último -->
-            <div class="glass-panel rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
                     <div class="bg-yellow-500/20 p-3 rounded-lg text-yellow-400">
                         <i class="fa-solid fa-vial text-xl"></i>
@@ -174,7 +167,7 @@
             </div>
 
             <!-- Panel Filtros -->
-            <div class="glass-panel rounded-2xl p-6 shadow-2xl transition hover:shadow-indigo-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-indigo-900/20">
                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
                     <div class="bg-indigo-500/20 p-3 rounded-lg text-indigo-400">
                         <i class="fa-solid fa-filter text-xl"></i>
