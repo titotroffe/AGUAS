@@ -5,11 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class NivelQuimico extends Model
+class CalidadAgua extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'quimico', 'tipo_tanque', 'nivel'];
+    protected $table = 'calidad_aguas';
+
+    protected $fillable = [
+        'user_id',
+        'lugar',
+        'filtro_numero',
+        'turbiedad',
+        'ph',
+        'cloro_residual',
+    ];
 
     public function user()
     {
