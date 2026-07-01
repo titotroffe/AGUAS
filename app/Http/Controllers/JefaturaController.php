@@ -7,11 +7,18 @@ use App\Models\RegistroPresion;
 use App\Models\CalidadAgua;
 use App\Models\RegistroFiltro;
 use App\Models\NivelQuimico;
+use Carbon\Carbon;
 
 class JefaturaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $calidadFechaInicio = $request->input('calidad_fecha_inicio', Carbon::today()->subDays(7)->format('Y-m-d'));
+        $calidadFechaFin = $request->input('calidad_fecha_fin', Carbon::today()->format('Y-m-d'));
+        
+        $presionesFechaInicio = $request->input('presiones_fecha_inicio', Carbon::today()->subDays(7)->format('Y-m-d'));
+        $presionesFechaFin = $request->input('presiones_fecha_fin', Carbon::today()->format('Y-m-d'));
+
         // 1. Datos de Presiones (últimos 30 registros, orden cronológico)
         $presiones = RegistroPresion::orderBy('created_at', 'desc')->take(30)->get()->reverse()->values();
 
@@ -50,13 +57,37 @@ class JefaturaController extends Controller
             'Sur 3' => $filtrosRaw->where('sur_3', true)->count(),
         ];
 
+        // 5. Históricos para Tablas
+        $queryCalidad = CalidadAgua::with('user')
+            ->whereDate('created_at', '>=', $calidadFechaInicio)
+            ->whereDate('created_at', '<=', $calidadFechaFin);
+            
+        if ($request->filled('lugar')) {
+            $queryCalidad->where('lugar', $request->lugar);
+        }
+        
+        $historialCalidad = $queryCalidad->orderBy('created_at', 'desc')
+            ->paginate(50, ['*'], 'calidad_page')->withQueryString();
+
+        $historialPresiones = RegistroPresion::with('user')
+            ->whereDate('created_at', '>=', $presionesFechaInicio)
+            ->whereDate('created_at', '<=', $presionesFechaFin)
+            ->orderBy('created_at', 'desc')
+            ->paginate(50, ['*'], 'presiones_page')->withQueryString();
+
         return view('jefatura.index', compact(
             'presiones', 
             'calidadAgua',
             'ultimosPorLugar',
             'nivelesQuimicos', 
             'historialQuimicos',
-            'conteoFiltros'
+            'conteoFiltros',
+            'historialCalidad',
+            'historialPresiones',
+            'calidadFechaInicio',
+            'calidadFechaFin',
+            'presionesFechaInicio',
+            'presionesFechaFin'
         ));
     }
 }

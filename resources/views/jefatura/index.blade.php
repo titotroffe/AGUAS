@@ -42,25 +42,33 @@
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Tanque</p>
                 <p class="text-3xl font-black text-sky-400">{{ number_format($ultimaPresion->presion_tanque, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                <p class="text-[9px] text-sky-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Planta</p>
                 <p class="text-3xl font-black text-indigo-400">{{ number_format($ultimaPresion->presion_planta, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                <p class="text-[9px] text-indigo-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Falcón</p>
                 <p class="text-3xl font-black text-purple-400">{{ number_format($ultimaPresion->presion_falcon, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                <p class="text-[9px] text-purple-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Nivel Cisterna</p>
                 <p class="text-3xl font-black text-emerald-400">{{ number_format($ultimaPresion->nivel_cisterna, 2) }}%</p>
+                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
         </div>
         @endif
 
         <!-- KPI Cards Ultima Calidad por Lugar -->
         <h2 class="text-xl font-bold text-white tracking-wide mb-4 drop-shadow flex items-center gap-3"><i class="fa-solid fa-map-location-dot text-emerald-400"></i> Últimos Registros por Lugar (Calidad de Agua)</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
             @foreach($ultimosPorLugar as $lugar)
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
                 <p class="text-slate-300 text-[11px] font-black tracking-widest uppercase mb-1 line-clamp-1" title="{{ $lugar->lugar }} {{ $lugar->filtro_numero }}">{{ $lugar->lugar }} {{ $lugar->filtro_numero }}</p>
@@ -82,24 +90,26 @@
             @endforeach
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-8">
-            <!-- Panel Presiones -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-cyan-900/20">
-                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
-                    <div class="bg-blue-500/20 p-3 rounded-lg text-blue-400">
-                        <i class="fa-solid fa-gauge-high text-xl"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white tracking-wide">Tendencia de Presiones y Cisterna</h2>
-                </div>
+        <!-- Panel Presiones -->
+        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400 uppercase"><i class="fa-solid fa-gauge-high mr-2"></i> Tendencia de Presiones y Cisterna</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
                 <div class="chart-container">
                     <canvas id="chartPresiones"></canvas>
                 </div>
             </div>
-        </div>
+        </details>
 
         <!-- Calidad Agua separada en 3 (Efecto Decantación) -->
-        <h2 class="text-2xl font-bold text-white tracking-wide mb-6 mt-8 drop-shadow flex items-center gap-3"><i class="fa-solid fa-microscope text-emerald-400"></i> Calidad de Agua (Por Sector)</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-emerald-400 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Calidad de Agua (Por Sector)</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             <!-- Turbiedad (Efecto Decantación) -->
             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-amber-900/20 lg:col-span-2">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
@@ -113,21 +123,8 @@
                 </div>
             </div>
             
-            <!-- pH -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
-                        <i class="fa-solid fa-vial-circle-check text-lg"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white tracking-wide">pH</h3>
-                </div>
-                <div class="chart-container" style="height: 300px;">
-                    <canvas id="chartPh"></canvas>
-                </div>
-            </div>
-
             <!-- Cloro -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-rose-900/20">
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-rose-900/20 lg:col-span-2">
                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
                     <div class="bg-rose-500/20 p-2 rounded-lg text-rose-400">
                         <i class="fa-solid fa-flask text-lg"></i>
@@ -138,10 +135,28 @@
                     <canvas id="chartCloro"></canvas>
                 </div>
             </div>
-        </div>
 
-        <h2 class="text-2xl font-bold text-white tracking-wide mb-6 mt-8 drop-shadow flex items-center gap-3"><i class="fa-solid fa-vial text-yellow-400"></i> Niveles de Químicos</h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- pH -->
+            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20 lg:col-span-2">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                    <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
+                        <i class="fa-solid fa-vial-circle-check text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white tracking-wide">pH</h3>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="chartPh"></canvas>
+                </div>
+            </div>
+            </div>
+        </details>
+
+        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-yellow-400 uppercase"><i class="fa-solid fa-vial mr-2"></i> Niveles de Químicos</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             
             <!-- Historial Quimicos -->
             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
@@ -159,29 +174,226 @@
                     <div class="bg-yellow-500/20 p-3 rounded-lg text-yellow-400">
                         <i class="fa-solid fa-vial text-xl"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-white tracking-wide">Últimos Niveles Químicos (%)</h2>
+                    <h2 class="text-xl font-bold text-white tracking-wide">Últimos Niveles (%)</h2>
                 </div>
                 <div class="chart-container">
                     <canvas id="chartQuimicos"></canvas>
                 </div>
             </div>
+            </div>
+        </details>
 
-            <!-- Panel Filtros -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-indigo-900/20">
-                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
-                    <div class="bg-indigo-500/20 p-3 rounded-lg text-indigo-400">
-                        <i class="fa-solid fa-filter text-xl"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white tracking-wide">Lavados Frecuentes de Filtros</h2>
-                </div>
+        <!-- Panel Filtros -->
+        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-indigo-400 uppercase"><i class="fa-solid fa-filter mr-2"></i> Lavados Frecuentes de Filtros</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
                 <div class="chart-container flex justify-center">
                     <div class="w-[80%] h-full">
                         <canvas id="chartFiltros"></canvas>
                     </div>
                 </div>
             </div>
+        </details>
+        <!-- SECCIÓN HISTÓRICOS Y TABLAS -->
+        <details id="historicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden" {{ request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio']) ? 'open' : '' }}>
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <div class="grid grid-cols-1 gap-8 mb-8">
+                    <!-- Historial Calidad de Agua -->
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') ? 'open' : '' }}>
+                        <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
+                            <span class="text-sky-300 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Historial: Calidad de Agua</span>
+                            <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+                        </summary>
+                        <div class="p-6 border-t border-slate-700">
+                            <!-- Filtro Calidad -->
+                            <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
+                                <div class="w-full md:w-auto flex-1">
+                                    <label for="calidad_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                    <input type="date" id="calidad_fecha_inicio" name="calidad_fecha_inicio" value="{{ $calidadFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
+                                </div>
+                                <div class="w-full md:w-auto flex-1">
+                                    <label for="calidad_fecha_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                    <input type="date" id="calidad_fecha_fin" name="calidad_fecha_fin" value="{{ $calidadFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
+                                </div>
+                                <div class="w-full md:w-auto flex-1">
+                                    <label for="lugar" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Lugar</label>
+                                    <select id="lugar" name="lugar" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
+                                        <option value="">Todos</option>
+                                        <option value="RIO" {{ request('lugar') == 'RIO' ? 'selected' : '' }}>Río</option>
+                                        <option value="DECANTADOR NORTE" {{ request('lugar') == 'DECANTADOR NORTE' ? 'selected' : '' }}>Decantador Norte</option>
+                                        <option value="DECANTADOR SUR" {{ request('lugar') == 'DECANTADOR SUR' ? 'selected' : '' }}>Decantador Sur</option>
+                                        <option value="CISTERNA" {{ request('lugar') == 'CISTERNA' ? 'selected' : '' }}>Cisterna</option>
+                                        <option value="FILTRO LINEA NORTE" {{ request('lugar') == 'FILTRO LINEA NORTE' ? 'selected' : '' }}>Filtros Norte</option>
+                                        <option value="FILTRO LINEA SUR" {{ request('lugar') == 'FILTRO LINEA SUR' ? 'selected' : '' }}>Filtros Sur</option>
+                                    </select>
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-6 rounded border border-sky-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
+                                        <i class="fa-solid fa-filter"></i> Filtrar
+                                    </button>
+                                    <a href="{{ route('jefatura.index') }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                        <i class="fa-solid fa-rotate-left"></i> Limpiar
+                                    </a>
+                                </div>
+                                @if(request()->has('presiones_fecha_inicio'))
+                                    <input type="hidden" name="presiones_fecha_inicio" value="{{ request('presiones_fecha_inicio') }}">
+                                @endif
+                                @if(request()->has('presiones_fecha_fin'))
+                                    <input type="hidden" name="presiones_fecha_fin" value="{{ request('presiones_fecha_fin') }}">
+                                @endif
+                                @if(request()->has('presiones_page'))
+                                    <input type="hidden" name="presiones_page" value="{{ request('presiones_page') }}">
+                                @endif
+                            </form>
+                            <div class="overflow-x-auto rounded-xl border border-slate-700">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-800 text-slate-300 text-xs uppercase tracking-wider">
+                                            <th class="p-3 border-b border-slate-700">Fecha/Hora</th>
+                                            <th class="p-3 border-b border-slate-700">Lugar</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Filtro Nº</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Turbiedad</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">pH</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Cloro</th>
+                                            <th class="p-3 border-b border-slate-700 text-right">Operador</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-sm">
+                                        @forelse($historialCalidad as $reg)
+                                        <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                                            <td class="p-3 text-slate-400 font-mono">{{ $reg->created_at->format('d/m/Y H:i') }}</td>
+                                            <td class="p-3 font-semibold text-slate-200">{{ $reg->lugar }}</td>
+                                            <td class="p-3 text-center text-slate-400">{{ $reg->filtro_numero ?? '-' }}</td>
+                                            <td class="p-3 text-center text-amber-300">{{ $reg->turbiedad ?? '-' }}</td>
+                                            <td class="p-3 text-center text-emerald-300">{{ $reg->ph ?? '-' }}</td>
+                                            <td class="p-3 text-center text-rose-300">{{ $reg->cloro_residual ?? '-' }}</td>
+                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="7" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-center items-center space-x-2 text-sm font-bold text-slate-300">
+                                    @if ($historialCalidad->onFirstPage())
+                                        <button disabled class="bg-slate-800 px-3 py-1 rounded border border-slate-600 transition opacity-50 cursor-not-allowed">&lt;</button>
+                                    @else
+                                        <a href="{{ $historialCalidad->previousPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</a>
+                                    @endif
+                                    
+                                    <span class="px-4 text-sky-400 font-mono">Página {{ $historialCalidad->currentPage() }} / {{ $historialCalidad->lastPage() }}</span>
+                                    
+                                    @if ($historialCalidad->hasMorePages())
+                                        <a href="{{ $historialCalidad->nextPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</a>
+                                    @else
+                                        <button disabled class="bg-slate-800 px-3 py-1 rounded border border-slate-600 transition opacity-50 cursor-not-allowed">&gt;</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </details>
 
-        </div>
+                    <!-- Historial Presiones -->
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') ? 'open' : '' }}>
+                        <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
+                            <span class="text-indigo-300 uppercase"><i class="fa-solid fa-gauge mr-2"></i> Historial: Presiones y Cisterna</span>
+                            <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+                        </summary>
+                        <div class="p-6 border-t border-slate-700">
+                            <!-- Filtro Presiones -->
+                            <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
+                                <div class="w-full md:w-auto flex-1">
+                                    <label for="presiones_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                    <input type="date" id="presiones_fecha_inicio" name="presiones_fecha_inicio" value="{{ $presionesFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                                </div>
+                                <div class="w-full md:w-auto flex-1">
+                                    <label for="presiones_fecha_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                    <input type="date" id="presiones_fecha_fin" name="presiones_fecha_fin" value="{{ $presionesFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                                </div>
+                                <div class="flex gap-3 w-full md:w-auto">
+                                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
+                                        <i class="fa-solid fa-filter"></i> Filtrar
+                                    </button>
+                                    <a href="{{ route('jefatura.index') }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                        <i class="fa-solid fa-rotate-left"></i> Limpiar
+                                    </a>
+                                </div>
+                                @if(request()->has('calidad_fecha_inicio'))
+                                    <input type="hidden" name="calidad_fecha_inicio" value="{{ request('calidad_fecha_inicio') }}">
+                                @endif
+                                @if(request()->has('calidad_fecha_fin'))
+                                    <input type="hidden" name="calidad_fecha_fin" value="{{ request('calidad_fecha_fin') }}">
+                                @endif
+                                @if(request()->has('lugar'))
+                                    <input type="hidden" name="lugar" value="{{ request('lugar') }}">
+                                @endif
+                                @if(request()->has('calidad_page'))
+                                    <input type="hidden" name="calidad_page" value="{{ request('calidad_page') }}">
+                                @endif
+                            </form>
+                            <div class="overflow-x-auto rounded-xl border border-slate-700">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-800 text-slate-300 text-xs uppercase tracking-wider">
+                                            <th class="p-3 border-b border-slate-700">Fecha/Hora</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Tanque</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Planta</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Falcón</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Nivel Cisterna</th>
+                                            <th class="p-3 border-b border-slate-700 text-right">Operador</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-sm">
+                                        @forelse($historialPresiones as $reg)
+                                        <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition">
+                                            <td class="p-3 text-slate-400 font-mono">{{ $reg->created_at->format('d/m/Y H:i') }}</td>
+                                            <td class="p-3 text-center text-sky-300">{{ $reg->presion_tanque ?? '-' }} MCA</td>
+                                            <td class="p-3 text-center text-indigo-300">{{ $reg->presion_planta ?? '-' }} MCA</td>
+                                            <td class="p-3 text-center text-purple-300">{{ $reg->presion_falcon ?? '-' }} MCA</td>
+                                            <td class="p-3 text-center text-emerald-300">{{ $reg->nivel_cisterna ?? '-' }}%</td>
+                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }}</td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="6" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4">
+                                <div class="flex justify-center items-center space-x-2 text-sm font-bold text-slate-300">
+                                    @if ($historialPresiones->onFirstPage())
+                                        <button disabled class="bg-slate-800 px-3 py-1 rounded border border-slate-600 transition opacity-50 cursor-not-allowed">&lt;</button>
+                                    @else
+                                        <a href="{{ $historialPresiones->previousPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</a>
+                                    @endif
+                                    
+                                    <span class="px-4 text-sky-400 font-mono">Página {{ $historialPresiones->currentPage() }} / {{ $historialPresiones->lastPage() }}</span>
+                                    
+                                    @if ($historialPresiones->hasMorePages())
+                                        <a href="{{ $historialPresiones->nextPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</a>
+                                    @else
+                                        <button disabled class="bg-slate-800 px-3 py-1 rounded border border-slate-600 transition opacity-50 cursor-not-allowed">&gt;</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </details>
     </div>
 
     <!-- Data Injection for Chart.js -->
@@ -283,7 +495,7 @@
         let labelsCalidad = calidadData.map(c => new Date(c.created_at).toLocaleTimeString([], {day:'2-digit', month:'2-digit', hour: '2-digit', minute:'2-digit'}));
         labelsCalidad = [...new Set(labelsCalidad)]; // Unique labels
 
-        const lugares = [...new Set(calidadData.map(c => c.lugar + (c.filtro_numero ? ' ' + c.filtro_numero : '')))];
+        const lugares = [...new Set(calidadData.filter(c => !c.lugar.includes('FILTRO')).map(c => c.lugar + (c.filtro_numero ? ' ' + c.filtro_numero : '')))];
         const colorsCalidad = ['#fcd34d', '#38bdf8', '#818cf8', '#10b981', '#f472b6', '#a78bfa', '#fb923c', '#4ade80', '#c084fc', '#f87171'];
 
         function buildDatasets(field) {
@@ -316,7 +528,7 @@
             data: { labels: labelsCalidad, datasets: buildDatasets('turbiedad') },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
                 scales: { y: { beginAtZero: true } }
             }
         });
@@ -328,19 +540,20 @@
             data: { labels: labelsCalidad, datasets: buildDatasets('ph') },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
                 scales: { y: { suggestedMin: 6, suggestedMax: 8 } }
             }
         });
 
         // Cloro Chart
         const ctxCloro = document.getElementById('chartCloro').getContext('2d');
+        const cloroDatasets = buildDatasets('cloro_residual').filter(ds => ds.label === 'CISTERNA');
         new Chart(ctxCloro, {
             type: 'line',
-            data: { labels: labelsCalidad, datasets: buildDatasets('cloro_residual') },
+            data: { labels: labelsCalidad, datasets: cloroDatasets },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
                 scales: { y: { beginAtZero: true } }
             }
         });
@@ -447,7 +660,15 @@
                 }
             }
         });
-
+        // Fix Chart.js size when opening details
+        document.querySelectorAll('details').forEach(details => {
+            details.addEventListener('toggle', function() {
+                if (this.open) {
+                    // Small timeout to allow DOM to update before chart resizes
+                    setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
+                }
+            });
+        });
     </script>
 </body>
 </html>
