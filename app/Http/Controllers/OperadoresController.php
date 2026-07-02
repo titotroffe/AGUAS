@@ -8,6 +8,8 @@ use App\Models\RegistroFiltro;
 use App\Models\NivelQuimico;
 use App\Models\Novedad;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class OperadoresController extends Controller
 {
@@ -95,7 +97,7 @@ class OperadoresController extends Controller
                     // Límite de 1 hora hacia adelante desde el momento actual
                     $limiteAdelante = now()->addHour(1);
                     
-                    $fechaInicio = \Carbon\Carbon::parse($value);
+                    $fechaInicio = Carbon::parse($value);
 
                     if ($fechaInicio->isBefore($limiteAtras)) {
                         $fail('El inicio del lavado no puede tener más de 2 horas de antigüedad.');
@@ -113,8 +115,8 @@ class OperadoresController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     // Límite de 4 horas de duración
                     if ($request->filled('inicio_lavado')) {
-                        $inicio = \Carbon\Carbon::parse($request->inicio_lavado);
-                        $fin = \Carbon\Carbon::parse($value);
+                        $inicio = Carbon::parse($request->inicio_lavado);
+                        $fin = Carbon::parse($value);
                         
                         if ($inicio->diffInMinutes($fin) > 240) { 
                             $fail('La duración del lavado no puede superar las 4 horas.');
@@ -131,7 +133,7 @@ class OperadoresController extends Controller
         ]);
 
         if (!$request->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3'])) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+            throw ValidationException::withMessages([
                 'filtros' => 'Debe seleccionar al menos un filtro para lavar.',
             ]);
         }
