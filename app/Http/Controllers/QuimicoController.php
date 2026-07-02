@@ -35,17 +35,17 @@ class QuimicoController extends Controller
     public function storeCalidad(Request $request)
     {
         $request->validate([
-            'decantador_norte_turbiedad' => 'nullable|numeric|min:0',
+            'decantador_norte_turbiedad' => 'nullable|numeric|min:0 max:100',
             'decantador_norte_ph' => 'nullable|numeric|min:0|max:14',
-            'decantador_sur_turbiedad' => 'nullable|numeric|min:0',
+            'decantador_sur_turbiedad' => 'nullable|numeric|min:0 max:100',
             'decantador_sur_ph' => 'nullable|numeric|min:0|max:14',
-            'cisterna_turbiedad' => 'nullable|numeric|min:0',
+            'cisterna_turbiedad' => 'nullable|numeric|min:0 max:10',
             'cisterna_ph' => 'nullable|numeric|min:0|max:14',
-            'cisterna_cloro' => 'nullable|numeric|min:0',
-            'rio_turbiedad' => 'nullable|numeric|min:0',
+            'cisterna_cloro' => 'nullable|numeric|min:0 max:3',
+            'rio_turbiedad' => 'nullable|numeric|min:0 max:300',
             'rio_ph' => 'nullable|numeric|min:0|max:14',
             'filtro_norte_select' => 'nullable|string|in:Filtro 1,Filtro 2,Filtro 3',
-            'filtro_norte_turbiedad' => 'nullable|numeric|min:0',
+            'filtro_norte_turbiedad' => 'nullable|numeric|min:0 max:50',
             'filtro_norte_ph' => 'nullable|numeric|min:0|max:14',
             'filtro_sur_select' => 'nullable|string|in:Filtro 1,Filtro 2,Filtro 3',
             'filtro_sur_turbiedad' => 'nullable|numeric|min:0',
