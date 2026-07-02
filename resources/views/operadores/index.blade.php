@@ -358,7 +358,7 @@
                     <input type="number" name="tanque_auxiliar" step="0.01" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
                 
-                <button type="submit" class="w-full max-w-xs text-white bg-yellow-500 hover:bg-yellow-400  font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
+               <button type="submit" class="w-full max-w-xs text-white bg-[#FACC15] hover:bg-yellow-400  font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
                     ACTUALIZAR CLORO
                 </button>
             </form>
@@ -380,7 +380,7 @@
                     <input type="number" name="tanque_auxiliar" step="0.01"  class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
                 
-<button type="submit" class="w-full max-w-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
+<button type="submit" class="w-full max-w-xs bg-stone-700 hover:bg-stone-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
     ACTUALIZAR POLIAMINA
 </button>
             </form>
@@ -388,7 +388,7 @@
             <form action="{{ route('operadores.storeQuimico') }}" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                 @csrf
                 <input type="hidden" name="quimico" value="sulfato">
-                <h3 class="text-lg font-bold text-red-500 tracking-widest">SULFATO</h3>
+                <h3 class="text-lg font-bold text-red-400 tracking-widest">SULFATO</h3>
                 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                     <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
@@ -402,7 +402,7 @@
                     <input type="number" name="tanque_auxiliar" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
                 </div>
                 
-                <button type="submit" class="w-full max-w-xs bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
+                <button type="submit" class="w-full max-w-xs bg-red-900 hover:bg-rose-900 text-white font-bold py-3 rounded shadow-lg transition tracking-wide text-sm hover:[text-shadow:0px_2px_4px_rgba(0,0,0,0.8)]">
                     ACTUALIZAR SULFATO
                 </button>
             </form>
