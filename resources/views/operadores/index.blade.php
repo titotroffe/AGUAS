@@ -48,19 +48,19 @@
             </div>
         @endif
 
-        @if(session('success'))
+        @if(session('success') && !session('success_presiones') && !session('success_lavados') && !session('success_quimicos') && !session('success_novedades'))
             <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
                 {{ session('success') }}
             </div>
         @endif
 
-        @if(session('error'))
+        @if(session('error') && !session('error_presiones') && !session('error_lavados') && !session('error_quimicos') && !session('error_novedades'))
             <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
                 {{ session('error') }}
             </div>
         @endif
 
-        @if($errors->any())
+        @if($errors->any() && !$errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna', 'norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros', 'quimico', 'tanque_principal', 'tanque_auxiliar', 'mensaje']))
             <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
                 <ul class="list-disc list-inside">
                     @foreach($errors->all() as $error)
@@ -70,36 +70,74 @@
             </div>
         @endif
 
-        <details id="details-presiones" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+        @php
+            $erroresPresiones = $errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna']) || session('success_presiones') || session('error_presiones');
+            $erroresLavados   = $errors->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros']) || session('success_lavados') || session('error_lavados');
+            $erroresQuimicos  = $errors->hasAny(['quimico', 'tanque_principal', 'tanque_auxiliar']) || session('success_quimicos') || session('error_quimicos');
+            $erroresNovedades = $errors->hasAny(['mensaje']) || session('success_novedades') || session('error_novedades');
+        @endphp 
+
+        <details id="details-presiones" @if($erroresPresiones) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-blue-400">1. PRESIONES Y NIVELES DE CISTERNA</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
-                <form action="{{ route('operadores.storePresion') }}" method="POST" class="mb-16" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
-            @csrf 
+                @if(session('success_presiones'))
+                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
+                        {{ session('success_presiones') }}
+                    </div>
+                @endif
+                @if(session('error_presiones') || $errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna']))
+                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                        <ul class="list-disc list-inside text-left">
+                            @if(session('error_presiones'))
+                                <li>{{ session('error_presiones') }}</li>
+                            @endif
+                            @foreach(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna'] as $field)
+                                @error($field)
+                                    <li>{{ $message }}</li>
+                                @enderror
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            
+            <form action="{{ route('operadores.storePresion') }}" method="POST" class="mb-16" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-center">
+    <div class="flex flex-col items-center">
+        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">BAJADA DE TANQUE</label>
+        <input type="number" name="presion_tanque" step="0.01" value="{{ old('presion_tanque') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        @error('presion_tanque')
+            <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+    
+    <div class="flex flex-col items-center">
+        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PLANTA</label>
+        <input type="number" name="presion_planta" step="0.01" value="{{ old('presion_planta') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        @error('presion_planta')
+            <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+        @enderror
+    </div>  
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-center">
-                <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">BAJADA DE TANQUE</label>
-                    <input type="number" name="presion_tanque" step="0.01" value="{{ old('presion_tanque') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
-                </div>
-                
-                <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PLANTA</label>
-                    <input type="number" name="presion_planta" step="0.01" value="{{ old('presion_planta') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
-                </div>
+    <div class="flex flex-col items-center">
+        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">TANQUE DE FALCON</label>
+        <input type="number" name="presion_falcon" step="0.01" value="{{ old('presion_falcon') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        @error('presion_falcon')
+            <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+        @enderror
+    </div>
 
-                <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">TANQUE DE FALCON</label>
-                    <input type="number" name="presion_falcon" step="0.01" value="{{ old('presion_falcon') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
-                </div>
-
-                <div class="flex flex-col items-center">
-                    <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">NIVEL DE CISTERNA (%)</label>
-                    <input type="number" name="nivel_cisterna" step="0.01" value="{{ old('nivel_cisterna') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00%">
-                </div>
-            </div>
+    <div class="flex flex-col items-center">
+        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">NIVEL DE CISTERNA (%)</label>
+        <input type="number" name="nivel_cisterna" step="0.01" value="{{ old('nivel_cisterna') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00%">
+        @error('nivel_cisterna')
+            <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
 
             <div class="flex justify-center mb-12">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
@@ -184,12 +222,31 @@
         </div>
         </details>
 
-        <details id="details-lavados" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+        <details id="details-lavados" @if($erroresLavados) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-blue-400">2. LAVADO DE FILTROS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
+                @if(session('success_lavados'))
+                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
+                        {{ session('success_lavados') }}
+                    </div>
+                @endif
+                @if(session('error_lavados') || $errors->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros']))
+                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                        <ul class="list-disc list-inside text-left">
+                            @if(session('error_lavados'))
+                                <li>{{ session('error_lavados') }}</li>
+                            @endif
+                            @foreach(['inicio_lavado', 'fin_lavado', 'filtros'] as $field)
+                                @error($field)
+                                    <li>{{ $message }}</li>
+                                @enderror
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             
             <form action="{{ route('operadores.storeFiltro') }}" method="POST" class="mb-16" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                 @csrf
@@ -232,22 +289,28 @@
                 </div>
 
                 <!-- Selector de Fechas de Lavado y Botón -->
-                <div class="col-span-1 md:col-span-2 flex flex-col items-center mt-8 space-y-6 w-full">
-                    <div class="flex flex-col sm:flex-row gap-8 w-full sm:w-auto items-center justify-center">
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">INICIO DE LAVADO</label>
-                            <input type="datetime-local" name="inicio_lavado" required value="{{ old('inicio_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">FIN DE LAVADO</label>
-                            <input type="datetime-local" name="fin_lavado" required value="{{ old('fin_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
-                       CONFIRMAR LAVADO
-                    </button>
-                </div>
+<div class="col-span-1 md:col-span-2 flex flex-col items-center mt-8 space-y-6 w-full">
+    <div class="flex flex-col sm:flex-row gap-8 w-full sm:w-auto items-center justify-center">
+        <div class="flex flex-col items-center">
+            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">INICIO DE LAVADO</label>
+            <input type="datetime-local" name="inicio_lavado" required value="{{ old('inicio_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+            @error('inicio_lavado')
+                <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+            @enderror
+        </div>
+        <div class="flex flex-col items-center">
+            <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">FIN DE LAVADO</label>
+            <input type="datetime-local" name="fin_lavado" required value="{{ old('fin_lavado') }}" class="w-56 bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono text-sm">
+            @error('fin_lavado')
+                <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
+            @enderror
+        </div>
+    </div>
+    
+    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+       CONFIRMAR LAVADO
+    </button>
+</div>
                 </div>
             </form>
 
@@ -333,12 +396,31 @@
             @method('DELETE')
         </form>
 
-        <details id="details-quimicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+        <details id="details-quimicos" @if($erroresQuimicos) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-blue-400">3. NIVELES DE TANQUES QUÍMICOS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
+                @if(session('success_quimicos'))
+                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
+                        {{ session('success_quimicos') }}
+                    </div>
+                @endif
+                @if(session('error_quimicos') || $errors->hasAny(['quimico', 'tanque_principal', 'tanque_auxiliar']))
+                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                        <ul class="list-disc list-inside text-left">
+                            @if(session('error_quimicos'))
+                                <li>{{ session('error_quimicos') }}</li>
+                            @endif
+                            @foreach(['quimico', 'tanque_principal', 'tanque_auxiliar'] as $field)
+                                @error($field)
+                                    <li>{{ $message }}</li>
+                                @enderror
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 text-center mb-16">
             
             <form action="{{ route('operadores.storeQuimico') }}" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
@@ -411,12 +493,31 @@
         </div>
         </details>
 
-        <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+        <details id="novedades-details" @if($erroresNovedades) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
+                @if(session('success_novedades'))
+                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
+                        {{ session('success_novedades') }}
+                    </div>
+                @endif
+                @if(session('error_novedades') || $errors->hasAny(['mensaje']))
+                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                        <ul class="list-disc list-inside text-left">
+                            @if(session('error_novedades'))
+                                <li>{{ session('error_novedades') }}</li>
+                            @endif
+                            @foreach(['mensaje'] as $field)
+                                @error($field)
+                                    <li>{{ $message }}</li>
+                                @enderror
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 
                 <form action="{{ route('operadores.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -491,61 +592,69 @@
     </form>
 
     <script>
-        // Restaurar estado de los bloques (abiertos o cerrados) usando sessionStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const detailsElements = document.querySelectorAll('details');
-            detailsElements.forEach(detail => {
-                if (!detail.id) return;
-                // Si la alerta de novedades abrió el detalle, tiene prioridad
+    // Restaurar estado de los bloques (abiertos o cerrados) usando sessionStorage
+    document.addEventListener('DOMContentLoaded', () => {
+        const detailsElements = document.querySelectorAll('details');
+        detailsElements.forEach(detail => {
+            if (!detail.id) return;
+            if (detail.open) {
+                sessionStorage.setItem('block_state_' + detail.id, 'open');
+            } else {
+                const state = sessionStorage.getItem('block_state_' + detail.id);
+                if (state === 'open') {
+                    detail.open = true;
+                }
+            }
+            
+            detail.addEventListener('toggle', () => {
                 if (detail.open) {
                     sessionStorage.setItem('block_state_' + detail.id, 'open');
                 } else {
-                    const state = sessionStorage.getItem('block_state_' + detail.id);
-                    if (state === 'open') {
-                        detail.open = true;
-                    }
+                    sessionStorage.removeItem('block_state_' + detail.id);
                 }
-                
-                detail.addEventListener('toggle', () => {
-                    if (detail.open) {
-                        sessionStorage.setItem('block_state_' + detail.id, 'open');
-                    } else {
-                        sessionStorage.removeItem('block_state_' + detail.id);
-                    }
-                });
             });
         });
 
-        // Paginación en Frontend para Tabla de Presiones
-        let currentPage = 1;
-        const totalItems = {{ count($ultimosRegistros) }};
-        const itemsPerPage = 8;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        // NUEVO: Scroll automático hasta la sección con error
+        @if($erroresPresiones)
+            document.getElementById('details-presiones')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        @elseif($erroresLavados)
+            document.getElementById('details-lavados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        @elseif($erroresQuimicos)
+            document.getElementById('details-quimicos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        @elseif($erroresNovedades)
+            document.getElementById('novedades-details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        @endif
+    });
 
-        function changePage(direction) {
-            currentPage += direction;
+    // Paginación en Frontend para Tabla de Presiones
+    let currentPage = 1;
+    const totalItems = {{ count($ultimosRegistros) }};
+    const itemsPerPage = 8;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    function changePage(direction) {
+        currentPage += direction;
+        
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const indicator = document.getElementById('page-indicator');
+        if(indicator) indicator.innerText = `Página ${currentPage} / ${totalPages}`;
+
+        const rows = document.querySelectorAll('.presion-row');
+        rows.forEach(row => {
+            const index = parseInt(row.getAttribute('data-index'));
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage - 1;
             
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-
-            // Actualizar texto del indicador
-            const indicator = document.getElementById('page-indicator');
-            if(indicator) indicator.innerText = `Página ${currentPage} / ${totalPages}`;
-
-            // Ocultar todas las filas y mostrar solo las de la página actual
-            const rows = document.querySelectorAll('.presion-row');
-            rows.forEach(row => {
-                const index = parseInt(row.getAttribute('data-index'));
-                const start = (currentPage - 1) * itemsPerPage;
-                const end = start + itemsPerPage - 1;
-                
-                if (index >= start && index <= end) {
-                    row.style.display = ''; // Mostrar
-                } else {
-                    row.style.display = 'none'; // Ocultar
-                }
-            });
-        }
-    </script>
+            if (index >= start && index <= end) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
 </body>
 </html>
