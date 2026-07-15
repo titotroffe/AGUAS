@@ -7,6 +7,8 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         /* Ocultar las flechas de los input type number para centrar bien los placeholders */
@@ -187,11 +189,7 @@
                                 <td data-label="ACCIONES" class="py-3 px-4 md:border border-slate-700 flex md:table-cell justify-between items-center text-right md:text-center before:content-[attr(data-label)] before:font-bold before:text-slate-500 before:text-xs md:before:content-none">
                                     @if(auth()->id() == $registro->user_id && $registro->created_at->gt(now()->subHours(2)))
                                         <button type="button" 
-                                                onclick="if(confirm('¿Seguro que deseas borrar este registro de presión?')) { 
-                                                    const form = document.getElementById('delete-pressure-form'); 
-                                                    form.action = '{{ route('operadores.destroy', $registro->id) }}'; 
-                                                    form.submit(); 
-                                                }"
+                                                onclick="confirmarEliminar('delete-pressure-form', '{{ route('operadores.destroy', $registro->id) }}', '¿Seguro que deseas borrar este registro de presión?')"
                                                 class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm inline-flex items-center gap-1">
                                             <i class="fa-solid fa-trash text-[10px]"></i> Borrar
                                         </button>
@@ -358,11 +356,7 @@
                                 <td data-label="ACCIONES" class="py-3 px-4 md:border border-slate-700 flex md:table-cell justify-between items-center text-right md:text-center before:content-[attr(data-label)] before:font-bold before:text-slate-500 before:text-xs md:before:content-none">
                                     @if(auth()->id() == $lavado->user_id && $lavado->created_at->gt(now()->subHours(2)))
                                         <button type="button" 
-                                                onclick="if(confirm('¿Seguro que deseas borrar este registro de lavado?')) { 
-                                                    const form = document.getElementById('delete-filtro-form'); 
-                                                    form.action = '{{ route('operadores.destroyFiltro', $lavado->id) }}'; 
-                                                    form.submit(); 
-                                                }"
+                                                onclick="confirmarEliminar('delete-filter-form', '{{ route('operadores.destroyFiltro', $lavado->id) }}', '¿Seguro que deseas borrar este registro de lavado?')"
                                                 class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm inline-flex items-center gap-1">
                                             <i class="fa-solid fa-trash text-[10px]"></i> Borrar
                                         </button>
@@ -391,7 +385,7 @@
             @method('DELETE')
         </form>
 
-        <form id="delete-filtro-form" action="" method="POST" class="hidden">
+        <form id="delete-filter-form" action="" method="POST" class="hidden">
             @csrf
             @method('DELETE')
         </form>
@@ -553,11 +547,7 @@
                                         <span class="text-xs text-slate-400 font-mono">{{ $novedad->created_at->format('d/m/Y H:i') }}</span>
                                         @if(auth()->id() == $novedad->user_id && $novedad->created_at->gt(now()->subHours(2)))
                                             <button type="button" 
-                                                    onclick="if(confirm('¿Seguro que deseas borrar esta novedad?')) { 
-                                                        const form = document.getElementById('delete-novedad-form'); 
-                                                        form.action = '{{ route('operadores.destroyNovedad', $novedad->id) }}'; 
-                                                        form.submit(); 
-                                                    }"
+                                                    onclick="confirmarEliminar('delete-novedad-form', '{{ route('operadores.destroyNovedad', $novedad->id) }}', '¿Seguro que deseas borrar esta novedad?')"
                                                     class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm flex items-center gap-1">
                                                 <i class="fa-solid fa-trash text-[10px]"></i> Borrar
                                             </button>
@@ -592,7 +582,44 @@
     </form>
 
     <script>
-    // Restaurar estado de los bloques (abiertos o cerrados) usando sessionStorage
+    // Configuración global de SweetAlert2 con tema Slate
+    const SwalCustom = Swal.mixin({
+        background: '#1e293b', // slate-800
+        color: '#f8fafc', // slate-50
+        confirmButtonColor: '#2563eb', // blue-600
+        denyButtonColor: '#475569', // slate-600
+        cancelButtonColor: '#dc2626', // red-600
+        customClass: {
+            popup: 'border border-slate-700 rounded-2xl shadow-2xl',
+            title: 'text-[18px] text-white font-bold tracking-wide',
+            htmlContainer: 'text-slate-300 font-medium text-sm',
+            confirmButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+            cancelButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+            denyButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition'
+        },
+        buttonsStyling: true
+    });
+
+    // Función para confirmación de eliminación con SweetAlert2
+    function confirmarEliminar(formId, actionUrl, mensaje = '¿Seguro que deseas borrar este registro?') {
+        SwalCustom.fire({
+            title: '¿Confirmar eliminación?',
+            text: mensaje,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, borrar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById(formId);
+                form.action = actionUrl;
+                form.submit();
+            }
+        });
+    }
+
+    // Restaurar estado de los bloques (abiertos o cerrados) usando sessionStorage y lanzar alertas
     document.addEventListener('DOMContentLoaded', () => {
         const detailsElements = document.querySelectorAll('details');
         detailsElements.forEach(detail => {
@@ -624,6 +651,37 @@
             document.getElementById('details-quimicos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         @elseif($erroresNovedades)
             document.getElementById('novedades-details')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        @endif
+
+        // Disparar alertas de SweetAlert2 basadas en estado de sesión o validación
+        @if($errors->any())
+            @php
+                $errorList = '<ul class="text-left list-disc list-inside space-y-1 font-mono text-xs text-red-300">';
+                foreach($errors->all() as $error) {
+                    $errorList .= '<li>' . e($error) . '</li>';
+                }
+                $errorList .= '</ul>';
+            @endphp
+            SwalCustom.fire({
+                title: 'Faltan completar o corregir datos',
+                html: '{!! $errorList !!}',
+                icon: 'error',
+                confirmButtonText: 'Entendido'
+            });
+        @elseif(session('success_presiones') || session('success_lavados') || session('success_quimicos') || session('success_novedades') || session('success'))
+            SwalCustom.fire({
+                title: '¡Guardado!',
+                text: "{{ session('success_presiones') ?? session('success_lavados') ?? session('success_quimicos') ?? session('success_novedades') ?? session('success') }}",
+                icon: 'success',
+                confirmButtonText: 'Entendido'
+            });
+        @elseif(session('error_presiones') || session('error_lavados') || session('error_quimicos') || session('error_novedades') || session('error'))
+            SwalCustom.fire({
+                title: '¡Error!',
+                text: "{{ session('error_presiones') ?? session('error_lavados') ?? session('error_quimicos') ?? session('error_novedades') ?? session('error') }}",
+                icon: 'error',
+                confirmButtonText: 'Cerrar'
+            });
         @endif
     });
 
