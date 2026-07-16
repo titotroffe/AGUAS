@@ -61,7 +61,7 @@ class OperadoresController extends Controller
         $request->validate([
             'presion_tanque' => 'required|numeric|min:0|max:26',
             'presion_planta' => 'required|numeric|min:0|max:22',
-            'presion_falcon' => 'required|numeric|min:0 |max:12',
+            'presion_falcon' => 'required|numeric|min:0|max:12',
             'nivel_cisterna' => 'required|numeric|min:0|max:100',
         ], [
             'presion_tanque.required' => 'La presión del tanque es obligatoria.',

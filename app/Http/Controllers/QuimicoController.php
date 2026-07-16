@@ -37,9 +37,9 @@ class QuimicoController extends Controller
         $request->validate([
             'decantador_norte_turbiedad' => 'nullable|numeric|min:0|max:300',
             'decantador_norte_ph' => 'nullable|numeric|min:0|max:14',
-            'decantador_sur_turbiedad' => 'nullable|numeric|min:0 max:300',
+            'decantador_sur_turbiedad' => 'nullable|numeric|min:0|max:300',
             'decantador_sur_ph' => 'nullable|numeric|min:0|max:14',
-            'cisterna_turbiedad' => 'nullable|numeric|min:0| max:10',
+            'cisterna_turbiedad' => 'nullable|numeric|min:0|max:10',
             'cisterna_ph' => 'nullable|numeric|min:0|max:14',
             'cisterna_cloro' => 'nullable|numeric|min:0|max:3',
             'rio_turbiedad' => 'nullable|numeric|min:0|max:300',
@@ -48,7 +48,7 @@ class QuimicoController extends Controller
             'filtro_norte_turbiedad' => 'nullable|numeric|min:0|max:50',
             'filtro_norte_ph' => 'nullable|numeric|min:0|max:14',
             'filtro_sur_select' => 'nullable|string|in:Filtro 1,Filtro 2,Filtro 3',
-            'filtro_sur_turbiedad' => 'nullable|numeric|min:0',
+            'filtro_sur_turbiedad' => 'nullable|numeric|min:0|max:50',
             'filtro_sur_ph' => 'nullable|numeric|min:0|max:14',
         ], [
             'numeric' => 'Las mediciones deben ser números válidos (sin letras).',
@@ -61,6 +61,17 @@ class QuimicoController extends Controller
             'filtro_sur_ph.max' => 'El pH de Filtro Línea Sur no puede superar 14.',
             'filtro_norte_select.in' => 'El filtro de la Línea Norte seleccionado no es válido.',
             'filtro_sur_select.in' => 'El filtro de la Línea Sur seleccionado no es válido.',
+            'decantador_norte_turbiedad.max' => 'La turbiedad de Decantador Norte no puede superar 300.',
+            'decantador_sur_turbiedad.max' => 'La turbiedad de Decantador Sur no puede superar 300.',
+            'rio_turbiedad.max' => 'La turbiedad de Río no puede superar 300.',
+            'cisterna_turbiedad.max' => 'La turbiedad de Cisterna no puede superar 10.',
+            'filtro_norte_turbiedad.max' => 'La turbiedad de Filtro Línea Norte no puede superar 50.',
+            'decantador_norte_turbiedad.min' => 'La turbiedad de Decantador Norte no puede ser 0, debe ser mayor a 0.',
+            'decantador_sur_turbiedad.min' => 'La turbiedad de Decantador Sur no puede ser 0, debe ser mayor a 0.',
+            'rio_turbiedad.min' => 'La turbiedad de Río no puede ser 0, debe ser mayor a 0.',
+            'cisterna_turbiedad.min' => 'La turbiedad de Cisterna no puede ser 0, debe ser mayor a 0.',
+            'filtro_norte_turbiedad.min' => 'La turbiedad de Filtro Línea Norte no puede ser 0, debe ser mayor a 0.',
+            'filtro_sur_turbiedad.min' => 'La turbiedad de Filtro Línea Sur no puede ser 0, debe ser mayor a 0.',
         ]);
 
         // Validaciones cruzadas para los filtros
