@@ -193,7 +193,7 @@ class QuimicoController extends Controller
 
         $registro->delete();
 
-        return back()->with('success', 'Registro de calidad eliminado correctamente.');
+        return back()->with('deleted', 'Registro de calidad eliminado correctamente.');
     }
 
     // Guardar una novedad
@@ -229,7 +229,7 @@ class QuimicoController extends Controller
 
         $novedad->delete();
 
-        return back()->with('success', 'Novedad eliminada correctamente.');
+        return back()->with('deleted', 'Novedad eliminada correctamente.');
     }
 
     // Marcar novedades como leídas

@@ -413,6 +413,13 @@
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
+            @elseif(session('deleted'))
+                SwalCustom.fire({
+                    title: '¡Eliminado!',
+                    text: "{{ session('deleted') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
             @elseif(session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
