@@ -72,6 +72,7 @@ class QuimicoController extends Controller
             'cisterna_turbiedad.min' => 'La turbiedad de Cisterna no puede ser 0, debe ser mayor a 0.',
             'filtro_norte_turbiedad.min' => 'La turbiedad de Filtro Línea Norte no puede ser 0, debe ser mayor a 0.',
             'filtro_sur_turbiedad.min' => 'La turbiedad de Filtro Línea Sur no puede ser 0, debe ser mayor a 0.',
+            'cisterna_cloro.max' => 'El cloro residual de Cisterna no puede superar 3.',
         ]);
 
         // Validaciones cruzadas para los filtros

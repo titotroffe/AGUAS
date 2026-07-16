@@ -404,21 +404,21 @@
                     title: 'Faltan completar o corregir datos',
                     html: '{!! $errorList !!}',
                     icon: 'error',
-                    confirmButtonText: 'Entendido'
+                    confirmButtonText: 'Aceptar'
                 });
             @elseif(session('success'))
                 SwalCustom.fire({
                     title: '¡Guardado!',
                     text: "{{ session('success') }}",
                     icon: 'success',
-                    confirmButtonText: 'Entendido'
+                    confirmButtonText: 'Aceptar'
                 });
             @elseif(session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
                     text: "{{ session('error') }}",
                     icon: 'error',
-                    confirmButtonText: 'Cerrar'
+                    confirmButtonText: 'Aceptar'
                 });
             @endif
         });
