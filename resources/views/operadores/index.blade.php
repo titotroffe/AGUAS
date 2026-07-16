@@ -110,7 +110,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 text-center">
     <div class="flex flex-col items-center">
         <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">BAJADA DE TANQUE</label>
-        <input type="number" name="presion_tanque" step="0.01" value="{{ old('presion_tanque') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        <input type="number" name="presion_tanque" step="0.01" value="{{ old('presion_tanque') }}" max="26" min="0" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
         @error('presion_tanque')
             <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
         @enderror
@@ -118,7 +118,7 @@
     
     <div class="flex flex-col items-center">
         <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">PLANTA</label>
-        <input type="number" name="presion_planta" step="0.01" value="{{ old('presion_planta') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        <input type="number" name="presion_planta" step="0.01" value="{{ old('presion_planta') }}" max="22" min="0" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
         @error('presion_planta')
             <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
         @enderror
@@ -126,7 +126,7 @@
 
     <div class="flex flex-col items-center">
         <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">TANQUE DE FALCON</label>
-        <input type="number" name="presion_falcon" step="0.01" value="{{ old('presion_falcon') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+        <input type="number" name="presion_falcon" step="0.01" value="{{ old('presion_falcon') }}" max="12" min="0" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
         @error('presion_falcon')
             <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
         @enderror
@@ -134,7 +134,7 @@
 
     <div class="flex flex-col items-center">
         <label class="text-xs font-bold mb-2 tracking-wide text-slate-400">NIVEL DE CISTERNA (%)</label>
-        <input type="number" name="nivel_cisterna" step="0.01" value="{{ old('nivel_cisterna') }}" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00%">
+        <input type="number" name="nivel_cisterna" step="0.01" value="{{ old('nivel_cisterna') }}" max="100" min="0" class="w-32 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00%">
         @error('nivel_cisterna')
             <span class="text-red-400 text-xs mt-1">{{ $message }}</span>
         @enderror
@@ -419,7 +419,7 @@
             
             <form action="{{ route('operadores.storeQuimico') }}" method="POST" class="flex flex-col items-center space-y-6" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                 @csrf
-                <input type="hidden" name="quimico" value="cloro">
+                <input type="hidden" name="quimico" value= "cloro" >
                 <h3 class="text-lg font-bold text-yellow-400 tracking-widest">CLORO</h3>
                 
                 <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">

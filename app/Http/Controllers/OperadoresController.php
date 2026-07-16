@@ -71,6 +71,13 @@ class OperadoresController extends Controller
             'numeric' => 'Las presiones y niveles deben ser números válidos (sin letras).',
             'min' => 'No se permiten números negativos.',
             'nivel_cisterna.max' => 'El nivel de cisterna no puede superar el 100%.',
+            'presion_falcon.max' => 'La presión de falcon no puede superar 12.',
+            'presion_tanque.max' => 'La presión del tanque no puede superar 26.',
+            'presion_planta.max' => 'La presión de la planta no puede superar 22.',
+            'presion_falcon.min' => 'La presión de falcon no puede ser menor a 0.',
+            'presion_tanque.min' => 'La presión del tanque no puede ser menor a 0.',
+            'presion_planta.min' => 'La presión de la planta no puede ser menor a 0.',
+            'nivel_cisterna.min' => 'El nivel de cisterna no puede ser menor a 0.',
         ]);
 
         RegistroPresion::create([
