@@ -7,7 +7,7 @@ use App\Http\Controllers\QuimicoController;
 use App\Http\Controllers\JefaturaController;
 
 Route::get('/', function () {
-    return view('/welcome');
+    return view('/auth/login');
 });
 
 Route::get('/menu', function () {
