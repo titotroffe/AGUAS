@@ -66,13 +66,14 @@ class QuimicoController extends Controller
             'rio_turbiedad.max' => 'La turbiedad de Río no puede superar 300.',
             'cisterna_turbiedad.max' => 'La turbiedad de Cisterna no puede superar 10.',
             'filtro_norte_turbiedad.max' => 'La turbiedad de Filtro Línea Norte no puede superar 50.',
-            'decantador_norte_turbiedad.min' => 'La turbiedad de Decantador Norte no puede ser 0, debe ser mayor a 0.',
-            'decantador_sur_turbiedad.min' => 'La turbiedad de Decantador Sur no puede ser 0, debe ser mayor a 0.',
-            'rio_turbiedad.min' => 'La turbiedad de Río no puede ser 0, debe ser mayor a 0.',
-            'cisterna_turbiedad.min' => 'La turbiedad de Cisterna no puede ser 0, debe ser mayor a 0.',
-            'filtro_norte_turbiedad.min' => 'La turbiedad de Filtro Línea Norte no puede ser 0, debe ser mayor a 0.',
-            'filtro_sur_turbiedad.min' => 'La turbiedad de Filtro Línea Sur no puede ser 0, debe ser mayor a 0.',
+            'decantador_norte_turbiedad.min' => 'La turbiedad de Decantador Norte no puede ser menor a 0.',
+            'decantador_sur_turbiedad.min' => 'La turbiedad de Decantador Sur no puede ser menor a 0.',
+            'rio_turbiedad.min' => 'La turbiedad de Río no puede ser menor a 0.',
+            'cisterna_turbiedad.min' => 'La turbiedad de Cisterna no puede ser menor a 0.',
+            'filtro_norte_turbiedad.min' => 'La turbiedad de Filtro Línea Norte no puede ser menor a 0.',
+            'filtro_sur_turbiedad.min' => 'La turbiedad de Filtro Línea Sur no puede ser menor a 0.',
             'cisterna_cloro.max' => 'El cloro residual de Cisterna no puede superar 3.',
+            'cisterna_cloro.min' => 'El cloro residual de Cisterna no puede ser menor a 0.',
         ]);
 
         // Validaciones cruzadas para los filtros
