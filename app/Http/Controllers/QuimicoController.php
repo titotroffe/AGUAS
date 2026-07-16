@@ -35,9 +35,9 @@ class QuimicoController extends Controller
     public function storeCalidad(Request $request)
     {
         $request->validate([
-            'decantador_norte_turbiedad' => 'nullable|numeric|min:0|max:100',
+            'decantador_norte_turbiedad' => 'nullable|numeric|min:0|max:300',
             'decantador_norte_ph' => 'nullable|numeric|min:0|max:14',
-            'decantador_sur_turbiedad' => 'nullable|numeric|min:0 max:100',
+            'decantador_sur_turbiedad' => 'nullable|numeric|min:0 max:300',
             'decantador_sur_ph' => 'nullable|numeric|min:0|max:14',
             'cisterna_turbiedad' => 'nullable|numeric|min:0| max:10',
             'cisterna_ph' => 'nullable|numeric|min:0|max:14',
