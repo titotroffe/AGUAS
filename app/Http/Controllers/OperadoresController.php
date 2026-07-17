@@ -164,44 +164,76 @@ class OperadoresController extends Controller
     public function storeQuimico(Request $request)
     {
         $request->validate([
-            'quimico' => 'required|in:cloro,poliamina,sulfato',
-            'tanque_principal' => 'nullable|numeric|min:0|max:100',
-            'tanque_auxiliar' => 'nullable|numeric|min:0|max:100',
+            'cloro_principal' => 'nullable|numeric|min:0|max:100',
+            'cloro_auxiliar' => 'nullable|numeric|min:0|max:100',
+            'poliamina_principal' => 'nullable|numeric|min:0|max:100',
+            'poliamina_auxiliar' => 'nullable|numeric|min:0|max:100',
+            'sulfato_principal' => 'nullable|numeric|min:0|max:100',
+            'sulfato_auxiliar' => 'nullable|numeric|min:0|max:100',
         ], [
-            'quimico.required' => 'Debe especificar el químico.',
-            'quimico.in' => 'El químico especificado no es válido.',
-            'tanque_principal.numeric' => 'El nivel del tanque principal debe ser un número.',
-            'tanque_principal.min' => 'El nivel no puede ser negativo.',
-            'tanque_principal.max' => 'El nivel no puede superar el 100%.',
-            'tanque_auxiliar.numeric' => 'El nivel del tanque auxiliar debe ser un número.',
-            'tanque_auxiliar.min' => 'El nivel no puede ser negativo.',
-            'tanque_auxiliar.max' => 'El nivel no puede superar el 100%.',
+            'numeric' => 'Los niveles deben ser números.',
+            'min' => 'El nivel no puede ser negativo.',
+            'max' => 'El nivel no puede superar el 100%.',
         ]);
 
-        if (is_null($request->tanque_principal) && is_null($request->tanque_auxiliar)) {
+        $quimicos = ['cloro', 'poliamina', 'sulfato'];
+        $errores = [];
+
+        // Primero verificamos que no haya valores idénticos a los actuales
+        foreach ($quimicos as $quimico) {
+            $principal = $request->input("{$quimico}_principal");
+            if (!is_null($principal)) {
+                $ultimoPrincipal = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'principal')->latest()->value('nivel');
+                if ((float)$principal === (float)$ultimoPrincipal) {
+                    $errores["{$quimico}_principal"] = 'No se puede ingresar el mismo porcentaje actual.';
+                }
+            }
+
+            $auxiliar = $request->input("{$quimico}_auxiliar");
+            if (!is_null($auxiliar)) {
+                $ultimoAuxiliar = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'auxiliar')->latest()->value('nivel');
+                if ((float)$auxiliar === (float)$ultimoAuxiliar) {
+                    $errores["{$quimico}_auxiliar"] = 'No se puede ingresar el mismo porcentaje actual.';
+                }
+            }
+        }
+
+        if (!empty($errores)) {
+            throw \Illuminate\Validation\ValidationException::withMessages($errores);
+        }
+
+        $actualizado = false;
+
+        foreach ($quimicos as $quimico) {
+            $principal = $request->input("{$quimico}_principal");
+            $auxiliar = $request->input("{$quimico}_auxiliar");
+
+            if (!is_null($principal)) {
+                NivelQuimico::create([
+                    'user_id' => Auth::id(),
+                    'quimico' => $quimico,
+                    'tipo_tanque' => 'principal',
+                    'nivel' => $principal,
+                ]);
+                $actualizado = true;
+            }
+
+            if (!is_null($auxiliar)) {
+                NivelQuimico::create([
+                    'user_id' => Auth::id(),
+                    'quimico' => $quimico,
+                    'tipo_tanque' => 'auxiliar',
+                    'nivel' => $auxiliar,
+                ]);
+                $actualizado = true;
+            }
+        }
+
+        if (!$actualizado) {
             return back()->with('error_quimicos', 'Debe ingresar al menos el nivel de un tanque para actualizar.');
         }
 
-        if ($request->filled('tanque_principal')) {
-            NivelQuimico::create([
-                'user_id' => Auth::id(),
-                'quimico' => $request->quimico,
-                'tipo_tanque' => 'principal',
-                'nivel' => $request->tanque_principal,
-            ]);
-        }
-
-        if ($request->filled('tanque_auxiliar')) {
-            NivelQuimico::create([
-                'user_id' => Auth::id(),
-                'quimico' => $request->quimico,
-                'tipo_tanque' => 'auxiliar',
-                'nivel' => $request->tanque_auxiliar,
-            ]);
-        }
-
-        $nombreQuimico = ucfirst($request->quimico);
-        return back()->with('success_quimicos', "Niveles de $nombreQuimico actualizados correctamente.");
+        return back()->with('success_quimicos', "Niveles químicos actualizados correctamente.");
     }
 
     // Guardar una novedad
