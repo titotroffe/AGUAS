@@ -415,8 +415,7 @@
                 });
             @elseif(session('deleted'))
                 SwalCustom.fire({
-                    title: '¡Eliminado!',
-                    text: "{{ session('deleted') }}",
+                    title: '¡Eliminado!',                    text: "{{ session('deleted') }}",
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });

@@ -43,14 +43,14 @@
             animation: sitemap-float 1.5s ease-in-out infinite;
         }
 
-        @keyframes gear-shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(15deg); }
-            75% { transform: rotate(-15deg); }
+        @keyframes flask-bubble {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1) translateY(-5px); filter: drop-shadow(0 0 10px rgba(103,232,249,0.8)); }
+            100% { transform: scale(1); }
         }
 
-        .group:hover .mantenimiento-animado {
-            animation: gear-shake 0.8s ease-in-out infinite;
+        .group:hover .laboratorio-animado {
+            animation: flask-bubble 1.5s ease-in-out infinite;
         }
     </style>
 </head>
@@ -98,10 +98,10 @@
             </div>
         </a>
 
-        <a href="/mantenimiento" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
-            <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Mantenimiento</h2>
-            <div class="w-[140px] h-[140px] rounded-full bg-blue-600 flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl">
-                <i class="fa-solid fa-user-gear text-6xl mantenimiento-animado bg-clip-text text-transparent bg-gradient-to-b from-white to-cyan-300"></i>
+        <a href="/laboratorio" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
+            <h2 class="text-white text-[28px] font-bold mb-4 texto-borde tracking-wide">Laboratorio Central</h2>
+            <div class="w-[140px] h-[140px] rounded-full bg-blue-600 flex items-center justify-center border-4 border-transparent group-hover:border-white transition shadow-2xl overflow-hidden">
+                <i class="fa-solid fa-flask text-6xl laboratorio-animado bg-clip-text text-transparent bg-gradient-to-b from-white to-cyan-300"></i>
             </div>
         </a>
 

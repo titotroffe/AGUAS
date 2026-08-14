@@ -52,3 +52,24 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/jefatura', [JefaturaController::class, 'index'])->name('jefatura.index');
 });
+
+// Rutas para el Módulo Laboratorio Central
+Route::middleware('auth')->group(function () {
+    Route::get('/laboratorio', [\App\Http\Controllers\LaboratorioController::class, 'index'])->name('laboratorio.index');
+    
+    Route::post('/laboratorio/insumo', [\App\Http\Controllers\LaboratorioController::class, 'storeInsumo'])->name('laboratorio.storeInsumo');
+    Route::delete('/laboratorio/insumo/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyInsumo'])->name('laboratorio.destroyInsumo');
+    
+    Route::post('/laboratorio/agua-cruda', [\App\Http\Controllers\LaboratorioController::class, 'storeAguaCruda'])->name('laboratorio.storeAguaCruda');
+    Route::delete('/laboratorio/agua-cruda/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyAguaCruda'])->name('laboratorio.destroyAguaCruda');
+    
+    Route::post('/laboratorio/producto-terminado', [\App\Http\Controllers\LaboratorioController::class, 'storeProductoTerminado'])->name('laboratorio.storeProductoTerminado');
+    Route::delete('/laboratorio/producto-terminado/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyProductoTerminado'])->name('laboratorio.destroyProductoTerminado');
+    
+    Route::post('/laboratorio/pozo', [\App\Http\Controllers\LaboratorioController::class, 'storePozo'])->name('laboratorio.storePozo');
+    Route::delete('/laboratorio/pozo/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyPozo'])->name('laboratorio.destroyPozo');
+    
+    Route::post('/laboratorio/novedad', [\App\Http\Controllers\LaboratorioController::class, 'storeNovedad'])->name('laboratorio.storeNovedad');
+    Route::post('/laboratorio/novedades/leidas', [\App\Http\Controllers\LaboratorioController::class, 'marcarLeidas'])->name('laboratorio.marcarLeidas');
+    Route::delete('/laboratorio/novedad/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyNovedad'])->name('laboratorio.destroyNovedad');
+});
