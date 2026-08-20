@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/laboratorio', [\App\Http\Controllers\LaboratorioController::class, 'index'])->name('laboratorio.index');
     
     Route::post('/laboratorio/insumo', [\App\Http\Controllers\LaboratorioController::class, 'storeInsumo'])->name('laboratorio.storeInsumo');
-    Route::delete('/laboratorio/insumo/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyInsumo'])->name('laboratorio.destroyInsumo');
+    Route::delete('/laboratorio/insumo/{tipo}/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyInsumo'])->name('laboratorio.destroyInsumo');
     
     Route::post('/laboratorio/agua-cruda', [\App\Http\Controllers\LaboratorioController::class, 'storeAguaCruda'])->name('laboratorio.storeAguaCruda');
     Route::delete('/laboratorio/agua-cruda/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyAguaCruda'])->name('laboratorio.destroyAguaCruda');

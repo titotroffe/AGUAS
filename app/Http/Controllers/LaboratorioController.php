@@ -14,7 +14,14 @@ class LaboratorioController extends Controller
 {
     public function index()
     {
-        $insumos = LaboratorioInsumo::orderBy('created_at', 'desc')->take(24)->get();
+        $sulfatos = \App\Models\InsumoSulfato::take(24)->get()->map(function($i) { $i->tipo_insumo = 'sulfato'; $i->nombre_insumo = 'Sulfato de Aluminio'; return $i; });
+        $hipocloritos = \App\Models\InsumoHipoclorito::take(24)->get()->map(function($i) { $i->tipo_insumo = 'hipoclorito'; $i->nombre_insumo = 'Hipoclorito de Sodio'; return $i; });
+        $poliaminas = \App\Models\InsumoPoliamina::take(24)->get()->map(function($i) { $i->tipo_insumo = 'poliamina'; $i->nombre_insumo = 'Poliamina'; return $i; });
+        $cales = \App\Models\InsumoCal::take(24)->get()->map(function($i) { $i->tipo_insumo = 'cal_hidraulica'; $i->nombre_insumo = 'Cal Hidráulica'; return $i; });
+
+        $insumos = $sulfatos->concat($hipocloritos)->concat($poliaminas)->concat($cales)
+            ->sortByDesc('created_at')->take(24)->values();
+
         $aguaCruda = LaboratorioAguaCruda::orderBy('created_at', 'desc')->take(24)->get();
         $productoTerminado = LaboratorioProductoTerminado::orderBy('created_at', 'desc')->take(24)->get();
         $pozos = LaboratorioPozo::orderBy('created_at', 'desc')->take(24)->get();
@@ -30,15 +37,42 @@ class LaboratorioController extends Controller
 
         $novedadesRecientes = $unreadQuery->count();
 
-        return view('laboratorio.index', compact('insumos', 'aguaCruda', 'productoTerminado', 'pozos', 'ultimasNovedades', 'novedadesRecientes'));
+        $insumoFields = [
+            ['name' => 'residuo_insoluble', 'label' => 'RESIDUO INSOLUBLE', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'oxido_ferroso', 'label' => 'ÓXIDO FERROSO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'oxido_ferrico', 'label' => 'ÓXIDO FÉRRICO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'oxido_aluminio', 'label' => 'ÓXIDO DE ALUMINIO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'oxidos_utiles', 'label' => 'ÓXIDOS ÚTILES', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'manganeso', 'label' => 'MANGANESO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
+            ['name' => 'densidad_20c', 'label' => 'DENSIDAD A 20°C', 'classes' => 'f-sulfato f-hipoclorito f-poliamina', 'show' => in_array(old('tipo_insumo'), ['sulfato', 'hipoclorito', 'poliamina'])],
+            ['name' => 'cloro_activo', 'label' => 'CLORO ACTIVO', 'classes' => 'f-hipoclorito', 'show' => old('tipo_insumo') == 'hipoclorito'],
+            ['name' => 'peso_litro', 'label' => 'PESO LITRO', 'classes' => 'f-cal', 'show' => old('tipo_insumo') == 'cal_hidraulica'],
+        ];
+
+        return view('laboratorio.index', compact('insumoFields', 'insumos', 'aguaCruda', 'productoTerminado', 'pozos', 'ultimasNovedades', 'novedadesRecientes'));
     }
 
     public function storeInsumo(Request $request)
     {
         $data = $request->all();
         $data['preparacion_archivo_contramuestra'] = $request->has('preparacion_archivo_contramuestra');
-        
-        LaboratorioInsumo::create($data);
+        $tipo = $request->input('tipo_insumo');
+
+        switch ($tipo) {
+            case 'sulfato':
+                \App\Models\InsumoSulfato::create($data);
+                break;
+            case 'hipoclorito':
+                \App\Models\InsumoHipoclorito::create($data);
+                break;
+            case 'poliamina':
+                \App\Models\InsumoPoliamina::create($data);
+                break;
+            case 'cal_hidraulica':
+                \App\Models\InsumoCal::create($data);
+                break;
+        }
+
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Insumo guardado correctamente.');
     }
 
@@ -60,9 +94,22 @@ class LaboratorioController extends Controller
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Pozo guardado correctamente.');
     }
     
-    public function destroyInsumo($id)
+    public function destroyInsumo($tipo, $id)
     {
-        LaboratorioInsumo::findOrFail($id)->delete();
+        switch ($tipo) {
+            case 'sulfato':
+                \App\Models\InsumoSulfato::findOrFail($id)->delete();
+                break;
+            case 'hipoclorito':
+                \App\Models\InsumoHipoclorito::findOrFail($id)->delete();
+                break;
+            case 'poliamina':
+                \App\Models\InsumoPoliamina::findOrFail($id)->delete();
+                break;
+            case 'cal_hidraulica':
+                \App\Models\InsumoCal::findOrFail($id)->delete();
+                break;
+        }
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }
     

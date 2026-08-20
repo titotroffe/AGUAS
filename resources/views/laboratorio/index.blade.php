@@ -111,44 +111,15 @@
                         </div>
                     </div>
 
+
                     <!-- Campos dinámicos -->
                     <div id="campos-insumo" class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start border-t border-slate-700 pt-8 {{ old('tipo_insumo') ? '' : 'hidden' }}">
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">RESIDUO INSOLUBLE</label>
-                            <input type="number" step="0.01" min="0" name="residuo_insoluble" value="{{ old('residuo_insoluble') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ÓXIDO FERROSO</label>
-                            <input type="number" step="0.01" min="0" name="oxido_ferroso" value="{{ old('oxido_ferroso') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ÓXIDO FÉRRICO</label>
-                            <input type="number" step="0.01" min="0" name="oxido_ferrico" value="{{ old('oxido_ferrico') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ÓXIDO DE ALUMINIO</label>
-                            <input type="number" step="0.01" min="0" name="oxido_aluminio" value="{{ old('oxido_aluminio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ÓXIDOS ÚTILES</label>
-                            <input type="number" step="0.01" min="0" name="oxidos_utiles" value="{{ old('oxidos_utiles') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato {{ old('tipo_insumo') == 'sulfato' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">MANGANESO</label>
-                            <input type="number" step="0.01" min="0" name="manganeso" value="{{ old('manganeso') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-sulfato f-hipoclorito f-poliamina {{ in_array(old('tipo_insumo'), ['sulfato', 'hipoclorito', 'poliamina']) ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">DENSIDAD A 20°C</label>
-                            <input type="number" step="0.01" min="0" name="densidad_20c" value="{{ old('densidad_20c') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-hipoclorito {{ old('tipo_insumo') == 'hipoclorito' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO ACTIVO</label>
-                            <input type="number" step="0.01" min="0" name="cloro_activo" value="{{ old('cloro_activo') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-                        <div class="f-cal {{ old('tipo_insumo') == 'cal_hidraulica' ? '' : 'hidden' }} flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">PESO LITRO</label>
-                            <input type="number" step="0.01" min="0" name="peso_litro" value="{{ old('peso_litro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
+                        @foreach($insumoFields as $field)
+                            <div class="{{ $field['classes'] }} {{ $field['show'] ? '' : 'hidden' }} flex flex-col items-center">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ $field['label'] }}</label>
+                                <input type="number" step="0.01" min="0" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center mb-4">
@@ -175,7 +146,7 @@
                                 @forelse($insumos as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition insumo-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-white font-semibold border border-slate-700 uppercase">{{ str_replace('_', ' ', $registro->tipo_insumo) }}</td>
+                                        <td class="py-4 px-4 text-white font-semibold border border-slate-700 uppercase">{{ $registro->nombre_insumo }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             @if($registro->preparacion_archivo_contramuestra)
                                                 <span class="text-emerald-400 font-bold">Sí</span>
@@ -185,7 +156,7 @@
                                         </td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" 
-                                                    onclick="confirmarEliminar('delete-insumo-form', '{{ route('laboratorio.destroyInsumo', $registro->id) }}', '¿Seguro que deseas borrar este insumo?')"
+                                                    onclick="confirmarEliminar('delete-insumo-form', '{{ route('laboratorio.destroyInsumo', ['tipo' => $registro->tipo_insumo, 'id' => $registro->id]) }}', '¿Seguro que deseas borrar este insumo?')"
                                                     class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
                                                 Borrar
                                             </button>
