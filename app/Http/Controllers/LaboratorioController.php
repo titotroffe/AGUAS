@@ -14,13 +14,30 @@ class LaboratorioController extends Controller
 {
     public function index()
     {
-        $sulfatos = \App\Models\InsumoSulfato::take(24)->get()->map(function($i) { $i->tipo_insumo = 'sulfato'; $i->nombre_insumo = 'Sulfato de Aluminio'; return $i; });
-        $hipocloritos = \App\Models\InsumoHipoclorito::take(24)->get()->map(function($i) { $i->tipo_insumo = 'hipoclorito'; $i->nombre_insumo = 'Hipoclorito de Sodio'; return $i; });
-        $poliaminas = \App\Models\InsumoPoliamina::take(24)->get()->map(function($i) { $i->tipo_insumo = 'poliamina'; $i->nombre_insumo = 'Poliamina'; return $i; });
-        $cales = \App\Models\InsumoCal::take(24)->get()->map(function($i) { $i->tipo_insumo = 'cal_hidraulica'; $i->nombre_insumo = 'Cal Hidráulica'; return $i; });
-
-        $insumos = $sulfatos->concat($hipocloritos)->concat($poliaminas)->concat($cales)
-            ->sortByDesc('created_at')->take(24)->values();
+        // EAV Records for Insumos (modulo_id = 1)
+        $valores = \App\Models\LabValor::with(['medicion.insumo', 'medicion.tipoMedicion'])
+            ->whereHas('medicion', function($q) {
+                $q->where('modulo_id', 1);
+            })
+            ->orderBy('fecha', 'desc')
+            ->get();
+            
+        $insumosAgrupados = $valores->groupBy(function($valor) {
+            return $valor->fecha . '_' . $valor->medicion->insumo_id;
+        })->map(function($grupo) {
+            $first = $grupo->first();
+            $contramuestra = $grupo->firstWhere('medicion.tipo_medicion_id', 10);
+            return (object) [
+                'id' => $first->fecha . '_' . $first->medicion->insumo_id,
+                'fecha' => $first->fecha,
+                'insumo_id' => $first->medicion->insumo_id,
+                'nombre_insumo' => $first->medicion->insumo->nombre,
+                'tipo_insumo' => $first->medicion->insumo_id,
+                'preparacion_archivo_contramuestra' => $contramuestra ? ($contramuestra->valor === '1') : false,
+            ];
+        })->take(24)->values();
+        
+        $insumos = $insumosAgrupados;
 
         $aguaCruda = LaboratorioAguaCruda::orderBy('created_at', 'desc')->take(24)->get();
         $productoTerminado = LaboratorioProductoTerminado::orderBy('created_at', 'desc')->take(24)->get();
@@ -37,40 +54,60 @@ class LaboratorioController extends Controller
 
         $novedadesRecientes = $unreadQuery->count();
 
-        $insumoFields = [
-            ['name' => 'residuo_insoluble', 'label' => 'RESIDUO INSOLUBLE', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'oxido_ferroso', 'label' => 'ÓXIDO FERROSO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'oxido_ferrico', 'label' => 'ÓXIDO FÉRRICO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'oxido_aluminio', 'label' => 'ÓXIDO DE ALUMINIO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'oxidos_utiles', 'label' => 'ÓXIDOS ÚTILES', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'manganeso', 'label' => 'MANGANESO', 'classes' => 'f-sulfato', 'show' => old('tipo_insumo') == 'sulfato'],
-            ['name' => 'densidad_20c', 'label' => 'DENSIDAD A 20°C', 'classes' => 'f-sulfato f-hipoclorito f-poliamina', 'show' => in_array(old('tipo_insumo'), ['sulfato', 'hipoclorito', 'poliamina'])],
-            ['name' => 'cloro_activo', 'label' => 'CLORO ACTIVO', 'classes' => 'f-hipoclorito', 'show' => old('tipo_insumo') == 'hipoclorito'],
-            ['name' => 'peso_litro', 'label' => 'PESO LITRO', 'classes' => 'f-cal', 'show' => old('tipo_insumo') == 'cal_hidraulica'],
-        ];
+        // Fetch dynamic fields from EAV setup
+        $medicionesConfig = \App\Models\LabMedicion::with('tipoMedicion', 'insumo')
+            ->where('modulo_id', 1)
+            ->where('activo', true)
+            ->get();
+            
+        $tiposInsumos = \App\Models\LabInsumo::all();
+        
+        $insumoFields = [];
+        foreach ($medicionesConfig as $config) {
+            if ($config->tipo_medicion_id == 10) continue; // Exclude contramuestra since it's a checkbox in UI
+            
+            $insumoFields[] = [
+                'name' => 'medicion_' . $config->id,
+                'label' => mb_strtoupper($config->tipoMedicion->nombre),
+                'classes' => 'f-insumo-' . $config->insumo_id,
+                'show' => old('tipo_insumo') == $config->insumo_id,
+            ];
+        }
 
-        return view('laboratorio.index', compact('insumoFields', 'insumos', 'aguaCruda', 'productoTerminado', 'pozos', 'ultimasNovedades', 'novedadesRecientes'));
+        return view('laboratorio.index', compact('tiposInsumos', 'insumoFields', 'insumos', 'aguaCruda', 'productoTerminado', 'pozos', 'ultimasNovedades', 'novedadesRecientes'));
     }
 
     public function storeInsumo(Request $request)
     {
-        $data = $request->all();
-        $data['preparacion_archivo_contramuestra'] = $request->has('preparacion_archivo_contramuestra');
-        $tipo = $request->input('tipo_insumo');
-
-        switch ($tipo) {
-            case 'sulfato':
-                \App\Models\InsumoSulfato::create($data);
-                break;
-            case 'hipoclorito':
-                \App\Models\InsumoHipoclorito::create($data);
-                break;
-            case 'poliamina':
-                \App\Models\InsumoPoliamina::create($data);
-                break;
-            case 'cal_hidraulica':
-                \App\Models\InsumoCal::create($data);
-                break;
+        $tipo = $request->input('tipo_insumo'); // Now it's the ID
+        $fecha = $request->input('fecha');
+        $observaciones = $request->input('observaciones');
+        
+        $configuraciones = \App\Models\LabMedicion::where('modulo_id', 1)
+            ->where('insumo_id', $tipo)
+            ->where('activo', true)
+            ->get();
+            
+        foreach ($configuraciones as $config) {
+            $valorStr = null;
+            
+            if ($config->tipo_medicion_id == 10) {
+                $valorStr = $request->has('preparacion_archivo_contramuestra') ? '1' : '0';
+            } else {
+                $inputName = 'medicion_' . $config->id;
+                if ($request->has($inputName) && $request->input($inputName) !== null) {
+                    $valorStr = $request->input($inputName);
+                }
+            }
+            
+            if ($valorStr !== null) {
+                \App\Models\LabValor::create([
+                    'fecha' => $fecha,
+                    'medicion_id' => $config->id,
+                    'valor' => (string) $valorStr,
+                    'observaciones' => $observaciones
+                ]);
+            }
         }
 
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Insumo guardado correctamente.');
@@ -96,20 +133,22 @@ class LaboratorioController extends Controller
     
     public function destroyInsumo($tipo, $id)
     {
-        switch ($tipo) {
-            case 'sulfato':
-                \App\Models\InsumoSulfato::findOrFail($id)->delete();
-                break;
-            case 'hipoclorito':
-                \App\Models\InsumoHipoclorito::findOrFail($id)->delete();
-                break;
-            case 'poliamina':
-                \App\Models\InsumoPoliamina::findOrFail($id)->delete();
-                break;
-            case 'cal_hidraulica':
-                \App\Models\InsumoCal::findOrFail($id)->delete();
-                break;
+        // Here $id is "fecha_insumoId", e.g., "2026-08-20_1"
+        $parts = explode('_', $id);
+        if (count($parts) == 2) {
+            $fecha = $parts[0];
+            $insumo_id = $parts[1];
+            
+            // Delete all values for this date and insumo
+            $medicionesIds = \App\Models\LabMedicion::where('modulo_id', 1)
+                ->where('insumo_id', $insumo_id)
+                ->pluck('id');
+                
+            \App\Models\LabValor::whereIn('medicion_id', $medicionesIds)
+                ->where('fecha', $fecha)
+                ->delete();
         }
+
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }
     

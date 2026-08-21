@@ -93,10 +93,9 @@
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN DE INSUMO</label>
                         <select name="tipo_insumo" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleInsumoFields(this.value)">
                             <option value="">Elegir Insumo</option>
-                            <option value="sulfato" {{ old('tipo_insumo') == 'sulfato' ? 'selected' : '' }}>Sulfato de Aluminio</option>
-                            <option value="hipoclorito" {{ old('tipo_insumo') == 'hipoclorito' ? 'selected' : '' }}>Hipoclorito de Sodio</option>
-                            <option value="poliamina" {{ old('tipo_insumo') == 'poliamina' ? 'selected' : '' }}>Poliamina</option>
-                            <option value="cal_hidraulica" {{ old('tipo_insumo') == 'cal_hidraulica' ? 'selected' : '' }}>Cal Hidráulica</option>
+                            @foreach($tiposInsumos as $tipo)
+                                <option value="{{ $tipo->id }}" {{ old('tipo_insumo') == $tipo->id ? 'selected' : '' }}>{{ $tipo->nombre }}</option>
+                            @endforeach
                         </select>
                         
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
@@ -565,25 +564,18 @@
         }
 
         function toggleInsumoFields(tipo) {
-            const campos = document.getElementById('campos-insumo');
-            if(tipo === '') {
-                campos.classList.add('hidden');
-                return;
-            }
-            campos.classList.remove('hidden');
-            
-            // Ocultar todos
-            document.querySelectorAll('.f-sulfato, .f-hipoclorito, .f-poliamina, .f-cal').forEach(el => el.classList.add('hidden'));
-            
-            // Mostrar los específicos
-            if(tipo === 'sulfato') {
-                document.querySelectorAll('.f-sulfato').forEach(el => el.classList.remove('hidden'));
-            } else if(tipo === 'hipoclorito') {
-                document.querySelectorAll('.f-hipoclorito').forEach(el => el.classList.remove('hidden'));
-            } else if(tipo === 'poliamina') {
-                document.querySelectorAll('.f-poliamina').forEach(el => el.classList.remove('hidden'));
-            } else if(tipo === 'cal_hidraulica') {
-                document.querySelectorAll('.f-cal').forEach(el => el.classList.remove('hidden'));
+            // Ocultar todos primero
+            document.querySelectorAll('#campos-insumo > div').forEach(div => {
+                div.classList.add('hidden');
+            });
+            document.getElementById('campos-insumo').classList.add('hidden');
+
+            if(tipo) {
+                document.getElementById('campos-insumo').classList.remove('hidden');
+                // Mostrar solo los campos configurados para este insumo_id (tipo)
+                document.querySelectorAll('.f-insumo-' + tipo).forEach(div => {
+                    div.classList.remove('hidden');
+                });
             }
         }
 
