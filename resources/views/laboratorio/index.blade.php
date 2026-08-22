@@ -154,11 +154,31 @@
                                             @endif
                                         </td>
                                         <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-insumo-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
                                                     onclick="confirmarEliminar('delete-insumo-form', '{{ route('laboratorio.destroyInsumo', ['tipo' => $registro->tipo_insumo, 'id' => $registro->id]) }}', '¿Seguro que deseas borrar este insumo?')"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
                                                 Borrar
                                             </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-insumo-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                <div class="text-xs">
+                                                    <span class="text-slate-400 font-bold block">OBSERVACIONES</span>
+                                                    <span class="text-white">{{ $registro->observaciones ?? '-' }}</span>
+                                                </div>
+                                                @foreach($medicionesConfigInsumos as $config)
+                                                    @if($config->insumo_id == $registro->tipo_insumo)
+                                                        @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $val }}</span>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -196,28 +216,27 @@
 
                     <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">FISICOQUÍMICO</label>
                     <div class="grid grid-cols-3 md:grid-cols-6 gap-8 mb-8 text-center items-start">
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLOR</label><input type="text" name="color" value="{{ old('color') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">OLOR</label><input type="text" name="olor" value="{{ old('olor') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SABOR</label><input type="text" name="sabor" value="{{ old('sabor') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD</label><input type="number" step="0.01" min="0" name="turbiedad" value="{{ old('turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ALUMINIO</label><input type="number" step="0.01" min="0" name="aluminio" value="{{ old('aluminio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORURO</label><input type="number" step="0.01" min="0" name="cloruro" value="{{ old('cloruro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">HIERRO</label><input type="number" step="0.01" min="0" name="hierro" value="{{ old('hierro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label><input type="number" step="0.01" min="0" max="14" name="ph" value="{{ old('ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SULFATO</label><input type="number" step="0.01" min="0" name="sulfato" value="{{ old('sulfato') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SÓLIDOS DIS.</label><input type="number" step="0.01" min="0" name="solidos_disueltos_totales" value="{{ old('solidos_disueltos_totales') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">MERCURIO</label><input type="number" step="0.01" min="0" name="mercurio" value="{{ old('mercurio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CADMIO</label><input type="number" step="0.01" min="0" name="cadmio" value="{{ old('cadmio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ARSÉNICO</label><input type="number" step="0.01" min="0" name="arsenico" value="{{ old('arsenico') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CROMO</label><input type="number" step="0.01" min="0" name="cromo" value="{{ old('cromo') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
+                        @foreach($medicionesConfigAguaCruda->where('tipo_medicion_id', '<=', 24) as $config)
+                            @php $isText = in_array($config->tipo_medicion_id, [11, 12, 13]); @endphp
+                            <div class="flex flex-col items-center">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                @if($isText)
+                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                @else
+                                    <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
 
                     <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">BACTERIOLOGÍA Y BIOLOGÍA</label>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">BAC. AEROB. HETERÓTROFAS</label><input type="text" name="bacterias_aerobicas_heterotrofas" value="{{ old('bacterias_aerobicas_heterotrofas') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">PSEUDOMONA</label><input type="text" name="pseudomona_aeruginosa" value="{{ old('pseudomona_aeruginosa') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">GIARDIA LAMBLIA</label><input type="text" name="giardia_lamblia" value="{{ old('giardia_lamblia') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FITOPLANCTON / ZOOPLANCTON</label><input type="text" name="fitoplancton_zooplancton" value="{{ old('fitoplancton_zooplancton') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
+                        @foreach($medicionesConfigAguaCruda->where('tipo_medicion_id', '>=', 25) as $config)
+                            <div class="flex flex-col items-center">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center mb-4">
@@ -242,16 +261,34 @@
                             </thead>
                             <tbody class="font-medium">
                                 @forelse($aguaCruda as $index => $registro)
+                                    @php
+                                        $cTurbiedad = $medicionesConfigAguaCruda->firstWhere('tipo_medicion_id', 14);
+                                        $cpH = $medicionesConfigAguaCruda->firstWhere('tipo_medicion_id', 18);
+                                    @endphp
                                     <tr class="hover:bg-slate-800/40 transition cruda-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->turbiedad ?? '-' }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->ph ?? '-' }}</td>
+                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cTurbiedad ? ($registro->{'medicion_'.$cTurbiedad->id} ?? '-') : '-' }}</td>
+                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cpH ? ($registro->{'medicion_'.$cpH->id} ?? '-') : '-' }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-cruda-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
                                                     onclick="confirmarEliminar('delete-cruda-form', '{{ route('laboratorio.destroyAguaCruda', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
                                                 Borrar
                                             </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-cruda-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigAguaCruda as $config)
+                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    <div class="text-xs">
+                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                        <span class="text-white">{{ $val }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -289,28 +326,27 @@
 
                     <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">FISICOQUÍMICO</label>
                     <div class="grid grid-cols-3 md:grid-cols-6 gap-8 mb-8 text-center items-start">
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLOR</label><input type="text" name="color" value="{{ old('color') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">OLOR</label><input type="text" name="olor" value="{{ old('olor') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SABOR</label><input type="text" name="sabor" value="{{ old('sabor') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD</label><input type="number" step="0.01" min="0" name="turbiedad" value="{{ old('turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ALUMINIO</label><input type="number" step="0.01" min="0" name="aluminio" value="{{ old('aluminio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORURO</label><input type="number" step="0.01" min="0" name="cloruro" value="{{ old('cloruro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">HIERRO</label><input type="number" step="0.01" min="0" name="hierro" value="{{ old('hierro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label><input type="number" step="0.01" min="0" max="14" name="ph" value="{{ old('ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SULFATO</label><input type="number" step="0.01" min="0" name="sulfato" value="{{ old('sulfato') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SÓLIDOS DIS.</label><input type="number" step="0.01" min="0" name="solidos_disueltos_totales" value="{{ old('solidos_disueltos_totales') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">MERCURIO</label><input type="number" step="0.01" min="0" name="mercurio" value="{{ old('mercurio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CADMIO</label><input type="number" step="0.01" min="0" name="cadmio" value="{{ old('cadmio') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">ARSÉNICO</label><input type="number" step="0.01" min="0" name="arsenico" value="{{ old('arsenico') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CROMO</label><input type="number" step="0.01" min="0" name="cromo" value="{{ old('cromo') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00"></div>
+                        @foreach($medicionesConfigProducto->where('tipo_medicion_id', '<=', 24) as $config)
+                            @php $isText = in_array($config->tipo_medicion_id, [11, 12, 13]); @endphp
+                            <div class="flex flex-col items-center">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                @if($isText)
+                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                @else
+                                    <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
 
                     <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">BACTERIOLOGÍA Y BIOLOGÍA</label>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">BAC. AEROB. HETERÓTROFAS</label><input type="text" name="bacterias_aerobias_heterotrofas" value="{{ old('bacterias_aerobias_heterotrofas') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">PSEUDOMONA</label><input type="text" name="pseudomona" value="{{ old('pseudomona') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">GIARDIA LAMBLIA</label><input type="text" name="giardia_lamblia" value="{{ old('giardia_lamblia') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
-                        <div class="flex flex-col items-center"><label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FITOPLANCTON / ZOOPLANCTON</label><input type="text" name="fitoplancton_zooplancton" value="{{ old('fitoplancton_zooplancton') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-"></div>
+                        @foreach($medicionesConfigProducto->where('tipo_medicion_id', '>=', 25) as $config)
+                            <div class="flex flex-col items-center">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center mb-4">
@@ -335,16 +371,34 @@
                             </thead>
                             <tbody class="font-medium">
                                 @forelse($productoTerminado as $index => $registro)
+                                    @php
+                                        $cTurbiedad = $medicionesConfigProducto->firstWhere('tipo_medicion_id', 14);
+                                        $cpH = $medicionesConfigProducto->firstWhere('tipo_medicion_id', 18);
+                                    @endphp
                                     <tr class="hover:bg-slate-800/40 transition producto-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->turbiedad ?? '-' }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->ph ?? '-' }}</td>
+                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cTurbiedad ? ($registro->{'medicion_'.$cTurbiedad->id} ?? '-') : '-' }}</td>
+                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cpH ? ($registro->{'medicion_'.$cpH->id} ?? '-') : '-' }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-producto-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
                                                     onclick="confirmarEliminar('delete-producto-form', '{{ route('laboratorio.destroyProductoTerminado', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
                                                 Borrar
                                             </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-producto-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigProducto as $config)
+                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    <div class="text-xs">
+                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                        <span class="text-white">{{ $val }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -377,11 +431,11 @@
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN DE POZO</label>
-                        <select name="pozo_numero" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required>
+                        <select name="pozo_numero" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="togglePozoFields(this.value)">
                             <option value="">Elegir Pozo</option>
-                            @for($i = 1; $i <= 75; $i++)
-                                <option value="{{ $i }}" {{ old('pozo_numero') == $i ? 'selected' : '' }}>Pozo {{ $i }}</option>
-                            @endfor
+                            @foreach($tiposPozos as $pozo)
+                                <option value="{{ $pozo->id }}" {{ old('pozo_numero') == $pozo->id ? 'selected' : '' }}>{{ $pozo->nombre }}</option>
+                            @endforeach
                         </select>
                         
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
@@ -389,14 +443,12 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-8 mb-8 text-center items-start justify-center max-w-lg mx-auto">
-                        <div class="flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLIFORMES TOTALES</label>
-                            <input type="text" name="coliformes_totales" value="{{ old('coliformes_totales') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">E. COLI O COLIFORMES</label>
-                            <input type="text" name="e_coli_coliformes" value="{{ old('e_coli_coliformes') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                        </div>
+                        @foreach($medicionesConfigPozos as $config)
+                            <div class="flex flex-col items-center f-pozo-{{ $config->pozo_id }} {{ old('pozo_numero') == $config->pozo_id ? '' : 'hidden' }}">
+                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center mb-4">
@@ -424,11 +476,27 @@
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
                                         <td class="py-4 px-4 text-white font-bold border border-slate-700">Pozo {{ $registro->pozo_numero }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-pozo-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
                                                     onclick="confirmarEliminar('delete-pozo-form', '{{ route('laboratorio.destroyPozo', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
                                                 Borrar
                                             </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-pozo-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigPozos as $config)
+                                                    @if($config->pozo_id == $registro->pozo_id)
+                                                        @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $val }}</span>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
@@ -563,19 +631,20 @@
             });
         }
 
-        function toggleInsumoFields(tipo) {
-            // Ocultar todos primero
-            document.querySelectorAll('#campos-insumo > div').forEach(div => {
-                div.classList.add('hidden');
-            });
-            document.getElementById('campos-insumo').classList.add('hidden');
-
-            if(tipo) {
+        function toggleInsumoFields(insumoId) {
+            document.querySelectorAll('[class*="f-insumo-"]').forEach(el => el.classList.add('hidden'));
+            if (insumoId) {
+                document.querySelectorAll('.f-insumo-' + insumoId).forEach(el => el.classList.remove('hidden'));
                 document.getElementById('campos-insumo').classList.remove('hidden');
-                // Mostrar solo los campos configurados para este insumo_id (tipo)
-                document.querySelectorAll('.f-insumo-' + tipo).forEach(div => {
-                    div.classList.remove('hidden');
-                });
+            } else {
+                document.getElementById('campos-insumo').classList.add('hidden');
+            }
+        }
+
+        function togglePozoFields(pozoId) {
+            document.querySelectorAll('[class*="f-pozo-"]').forEach(el => el.classList.add('hidden'));
+            if (pozoId) {
+                document.querySelectorAll('.f-pozo-' + pozoId).forEach(el => el.classList.remove('hidden'));
             }
         }
 
@@ -583,6 +652,8 @@
         window.onload = function() {
             const tipo = document.querySelector('select[name="tipo_insumo"]').value;
             if(tipo) toggleInsumoFields(tipo);
+            const pozo = document.querySelector('select[name="pozo_numero"]').value;
+            if(pozo) togglePozoFields(pozo);
         };
 
         // Restaurar estado de bloques
@@ -655,6 +726,17 @@
         };
         const itemsPerPage = 8;
 
+        function toggleDetalle(id) {
+            const el = document.getElementById(id);
+            if(el) {
+                if(el.style.display === 'none') {
+                    el.style.display = 'table-row';
+                } else {
+                    el.style.display = 'none';
+                }
+            }
+        }
+
         function changePage(tableId, direction, totalItems) {
             const totalPages = Math.ceil(totalItems / itemsPerPage);
             pages[tableId] += direction;
@@ -676,6 +758,10 @@
                 } else {
                     row.style.display = 'none';
                 }
+                
+                // Hide any detail row when paginating
+                const detail = document.getElementById(`detail-${tableId}-${index}`);
+                if(detail) detail.style.display = 'none';
             });
         }
     </script>

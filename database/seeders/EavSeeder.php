@@ -27,8 +27,9 @@ class EavSeeder extends Seeder
         ];
         DB::table('lab_insumos')->insert($insumos);
 
-        // Tipos de Medición (Para Insumos inicialmente)
+        // Tipos de Medición
         $tiposMedicion = [
+            // Insumos (1-10)
             ['id' => 1, 'nombre' => 'Residuo Insoluble'],
             ['id' => 2, 'nombre' => 'Óxido Ferroso'],
             ['id' => 3, 'nombre' => 'Óxido Férrico'],
@@ -39,8 +40,38 @@ class EavSeeder extends Seeder
             ['id' => 8, 'nombre' => 'Cloro Activo'],
             ['id' => 9, 'nombre' => 'Peso Litro'],
             ['id' => 10, 'nombre' => 'Preparación Archivo Contramuestra'],
+            // Agua Cruda / Producto Terminado (11-28)
+            ['id' => 11, 'nombre' => 'Color'],
+            ['id' => 12, 'nombre' => 'Olor'],
+            ['id' => 13, 'nombre' => 'Sabor'],
+            ['id' => 14, 'nombre' => 'Turbiedad'],
+            ['id' => 15, 'nombre' => 'Aluminio'],
+            ['id' => 16, 'nombre' => 'Cloruro'],
+            ['id' => 17, 'nombre' => 'Hierro'],
+            ['id' => 18, 'nombre' => 'pH'],
+            ['id' => 19, 'nombre' => 'Sulfato'],
+            ['id' => 20, 'nombre' => 'Sólidos Disueltos Totales'],
+            ['id' => 21, 'nombre' => 'Mercurio'],
+            ['id' => 22, 'nombre' => 'Cadmio'],
+            ['id' => 23, 'nombre' => 'Arsénico'],
+            ['id' => 24, 'nombre' => 'Cromo'],
+            ['id' => 25, 'nombre' => 'Bacterias Aerobias Heterótrofas'],
+            ['id' => 26, 'nombre' => 'Pseudomona Aeruginosa'],
+            ['id' => 27, 'nombre' => 'Giardia Lamblia'],
+            ['id' => 28, 'nombre' => 'Fitoplancton / Zooplancton'],
+            // Pozos (29-30)
+            ['id' => 29, 'nombre' => 'Coliformes Totales'],
+            ['id' => 30, 'nombre' => 'E. Coli / Coliformes Fecales'],
         ];
         DB::table('lab_tipos_medicion')->insert($tiposMedicion);
+        
+        // Pozos Catálogo
+        $pozos = [
+            ['id' => 1, 'nombre' => 'Pozo 1', 'activo' => true],
+            ['id' => 2, 'nombre' => 'Pozo 2', 'activo' => true],
+            ['id' => 3, 'nombre' => 'Pozo 3', 'activo' => true],
+        ];
+        DB::table('lab_pozos')->insert($pozos);
 
         // Configuracion Mediciones (Solo modulo 1 Insumos por ahora para reemplazar lo anterior)
         $configuraciones = [
@@ -67,6 +98,23 @@ class EavSeeder extends Seeder
             ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true], // Contramuestra
             ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'tipo_medicion_id' => 9, 'activo' => true], // Peso litro
         ];
+        
+        // Agregar configuración para Agua Cruda (Modulo 2)
+        $camposAguaCruda = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+        foreach ($camposAguaCruda as $tipoId) {
+            $configuraciones[] = ['modulo_id' => 2, 'insumo_id' => null, 'pozo_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true];
+        }
+
+        // Agregar configuración para Producto Terminado (Modulo 3)
+        foreach ($camposAguaCruda as $tipoId) {
+            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true];
+        }
+
+        // Agregar configuración para Pozos (Modulo 4)
+        foreach ($pozos as $pozo) {
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'tipo_medicion_id' => 29, 'activo' => true];
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'tipo_medicion_id' => 30, 'activo' => true];
+        }
 
         DB::table('lab_mediciones')->insert($configuraciones);
     }
