@@ -73,7 +73,7 @@ class EavSeeder extends Seeder
         ];
         DB::table('lab_pozos')->insert($pozos);
 
-        // Configuracion Mediciones (Solo modulo 1 Insumos por ahora para reemplazar lo anterior)
+        
         $configuraciones = [
             // Sulfato
             ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true], // Contramuestra
