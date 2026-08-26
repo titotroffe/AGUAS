@@ -45,6 +45,7 @@ class LaboratorioController extends Controller
                 'label' => mb_strtoupper($config->tipoMedicion->nombre),
                 'classes' => 'f-insumo-' . $config->insumo_id,
                 'show' => old('tipo_insumo') == $config->insumo_id,
+                'isText' => in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])
             ];
         }
 
@@ -67,6 +68,20 @@ class LaboratorioController extends Controller
         
         $medicionesConfigAguaCruda = \App\Models\LabMedicion::with('tipoMedicion')
             ->where('modulo_id', 2)->where('activo', true)->get();
+        $medicionesConfigAguaCruda->each(function($config) {
+            $config->isText = in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30]);
+        });
+        
+        $categoriasAguaCruda = [
+            'FISICOQUÍMICO' => [
+                'clases_grid' => 'grid-cols-3 md:grid-cols-6',
+                'mediciones' => $medicionesConfigAguaCruda->filter(fn($c) => $c->tipo_medicion_id <= 24)
+            ],
+            'BACTERIOLOGÍA Y BIOLOGÍA' => [
+                'clases_grid' => 'grid-cols-2 md:grid-cols-4',
+                'mediciones' => $medicionesConfigAguaCruda->filter(fn($c) => $c->tipo_medicion_id >= 25)
+            ]
+        ];
 
         // ---------------------------------------------------------
         // 3. PRODUCTO TERMINADO (modulo_id = 3)
@@ -87,6 +102,20 @@ class LaboratorioController extends Controller
         
         $medicionesConfigProducto = \App\Models\LabMedicion::with('tipoMedicion')
             ->where('modulo_id', 3)->where('activo', true)->get();
+        $medicionesConfigProducto->each(function($config) {
+            $config->isText = in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30]);
+        });
+        
+        $categoriasProducto = [
+            'FISICOQUÍMICO' => [
+                'clases_grid' => 'grid-cols-3 md:grid-cols-6',
+                'mediciones' => $medicionesConfigProducto->filter(fn($c) => $c->tipo_medicion_id <= 24)
+            ],
+            'BACTERIOLOGÍA Y BIOLOGÍA' => [
+                'clases_grid' => 'grid-cols-2 md:grid-cols-4',
+                'mediciones' => $medicionesConfigProducto->filter(fn($c) => $c->tipo_medicion_id >= 25)
+            ]
+        ];
 
         // ---------------------------------------------------------
         // 4. POZOS (modulo_id = 4)
@@ -127,8 +156,8 @@ class LaboratorioController extends Controller
 
         return view('laboratorio.index', compact(
             'tiposInsumos', 'insumoFields', 'insumos', 'medicionesConfigInsumos',
-            'aguaCruda', 'medicionesConfigAguaCruda', 
-            'productoTerminado', 'medicionesConfigProducto', 
+            'aguaCruda', 'medicionesConfigAguaCruda', 'categoriasAguaCruda',
+            'productoTerminado', 'medicionesConfigProducto', 'categoriasProducto',
             'pozos', 'tiposPozos', 'medicionesConfigPozos',
             'ultimasNovedades', 'novedadesRecientes'
         ));

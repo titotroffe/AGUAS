@@ -116,7 +116,11 @@
                         @foreach($insumoFields as $field)
                             <div class="{{ $field['classes'] }} {{ $field['show'] ? '' : 'hidden' }} flex flex-col items-center">
                                 <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ $field['label'] }}</label>
-                                <input type="number" step="0.01" min="0" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                @if($field['isText'] ?? false)
+                                    <input type="text" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                @else
+                                    <input type="number" step="0.01" min="0" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -214,30 +218,23 @@
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
-                    <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">FISICOQUÍMICO</label>
-                    <div class="grid grid-cols-3 md:grid-cols-6 gap-8 mb-8 text-center items-start">
-                        @foreach($medicionesConfigAguaCruda->where('tipo_medicion_id', '<=', 24) as $config)
-                            @php $isText = in_array($config->tipo_medicion_id, [11, 12, 13]); @endphp
-                            <div class="flex flex-col items-center">
-                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                @if($isText)
-                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                @else
-                                    <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                                @endif
+                    @foreach($categoriasAguaCruda as $nombre => $categoria)
+                        @if($categoria['mediciones']->count() > 0)
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">{{ $nombre }}</label>
+                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                @foreach($categoria['mediciones'] as $config)
+                                    <div class="flex flex-col items-center">
+                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                        @if($config->isText)
+                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                        @else
+                                            <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-
-                    <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">BACTERIOLOGÍA Y BIOLOGÍA</label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
-                        @foreach($medicionesConfigAguaCruda->where('tipo_medicion_id', '>=', 25) as $config)
-                            <div class="flex flex-col items-center">
-                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                            </div>
-                        @endforeach
-                    </div>
+                        @endif
+                    @endforeach
 
                     <div class="flex justify-center mb-4">
                         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
@@ -254,21 +251,19 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
-                                    <th scope="col" class="py-3 px-4 border border-slate-700">Turbiedad</th>
-                                    <th scope="col" class="py-3 px-4 border border-slate-700">pH</th>
+                                    @foreach($medicionesConfigAguaCruda->take(2) as $col)
+                                        <th scope="col" class="py-3 px-4 border border-slate-700">{{ $col->tipoMedicion->nombre }}</th>
+                                    @endforeach
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="font-medium">
                                 @forelse($aguaCruda as $index => $registro)
-                                    @php
-                                        $cTurbiedad = $medicionesConfigAguaCruda->firstWhere('tipo_medicion_id', 14);
-                                        $cpH = $medicionesConfigAguaCruda->firstWhere('tipo_medicion_id', 18);
-                                    @endphp
                                     <tr class="hover:bg-slate-800/40 transition cruda-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cTurbiedad ? ($registro->{'medicion_'.$cTurbiedad->id} ?? '-') : '-' }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cpH ? ($registro->{'medicion_'.$cpH->id} ?? '-') : '-' }}</td>
+                                        @foreach($medicionesConfigAguaCruda->take(2) as $col)
+                                            <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->{'medicion_'.$col->id} ?? '-' }}</td>
+                                        @endforeach
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-cruda-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -324,30 +319,23 @@
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
-                    <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">FISICOQUÍMICO</label>
-                    <div class="grid grid-cols-3 md:grid-cols-6 gap-8 mb-8 text-center items-start">
-                        @foreach($medicionesConfigProducto->where('tipo_medicion_id', '<=', 24) as $config)
-                            @php $isText = in_array($config->tipo_medicion_id, [11, 12, 13]); @endphp
-                            <div class="flex flex-col items-center">
-                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                @if($isText)
-                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                @else
-                                    <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                                @endif
+                    @foreach($categoriasProducto as $nombre => $categoria)
+                        @if($categoria['mediciones']->count() > 0)
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">{{ $nombre }}</label>
+                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                @foreach($categoria['mediciones'] as $config)
+                                    <div class="flex flex-col items-center">
+                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                        @if($config->isText)
+                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                        @else
+                                            <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-
-                    <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">BACTERIOLOGÍA Y BIOLOGÍA</label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
-                        @foreach($medicionesConfigProducto->where('tipo_medicion_id', '>=', 25) as $config)
-                            <div class="flex flex-col items-center">
-                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                            </div>
-                        @endforeach
-                    </div>
+                        @endif
+                    @endforeach
 
                     <div class="flex justify-center mb-4">
                         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
@@ -364,21 +352,19 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
-                                    <th scope="col" class="py-3 px-4 border border-slate-700">Turbiedad</th>
-                                    <th scope="col" class="py-3 px-4 border border-slate-700">pH</th>
+                                    @foreach($medicionesConfigProducto->take(2) as $col)
+                                        <th scope="col" class="py-3 px-4 border border-slate-700">{{ $col->tipoMedicion->nombre }}</th>
+                                    @endforeach
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="font-medium">
                                 @forelse($productoTerminado as $index => $registro)
-                                    @php
-                                        $cTurbiedad = $medicionesConfigProducto->firstWhere('tipo_medicion_id', 14);
-                                        $cpH = $medicionesConfigProducto->firstWhere('tipo_medicion_id', 18);
-                                    @endphp
                                     <tr class="hover:bg-slate-800/40 transition producto-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cTurbiedad ? ($registro->{'medicion_'.$cTurbiedad->id} ?? '-') : '-' }}</td>
-                                        <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $cpH ? ($registro->{'medicion_'.$cpH->id} ?? '-') : '-' }}</td>
+                                        @foreach($medicionesConfigProducto->take(2) as $col)
+                                            <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->{'medicion_'.$col->id} ?? '-' }}</td>
+                                        @endforeach
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-producto-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
