@@ -129,7 +129,7 @@
                         </select>
                         
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
-                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                         
                         <div class="flex items-center mt-2 mb-4">
                             <label class="text-[10px] font-bold tracking-wide text-slate-400 mr-4">PREPARACIÓN ARCHIVO CONTRAMUESTRA</label>
@@ -242,7 +242,7 @@
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
-                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
                     @foreach($categoriasAguaCruda as $nombre => $categoria)
@@ -344,7 +344,7 @@
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
-                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
                     @foreach($categoriasProducto as $nombre => $categoria)
@@ -454,7 +454,7 @@
                         </select>
                         
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
-                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
                     <div class="grid grid-cols-2 gap-8 mb-8 text-center items-start justify-center max-w-lg mx-auto">
@@ -493,7 +493,7 @@
                                 @forelse($pozos as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition pozo-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        <td class="py-4 px-4 text-white font-bold border border-slate-700">Pozo {{ $registro->pozo_numero }}</td>
+                                        <td class="py-4 px-4 text-white font-bold border border-slate-700">{{ $registro->pozo_numero }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-pozo-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
