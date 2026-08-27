@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Novedad;
+use App\Models\LabValor;
+use App\Models\LabMedicion;
+use App\Models\LabInsumo;
+use App\Models\LabPozo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class LaboratorioController extends Controller
 {
@@ -13,7 +18,7 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 1. INSUMOS (modulo_id = 1)
         // ---------------------------------------------------------
-        $valoresInsumos = \App\Models\LabValor::with(['medicion.insumo', 'medicion.tipoMedicion'])
+        $valoresInsumos = LabValor::with(['medicion.insumo', 'medicion.tipoMedicion'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 1); })
             ->orderBy('fecha', 'desc')
             ->get();
@@ -22,37 +27,45 @@ class LaboratorioController extends Controller
             return $valor->fecha . '_' . $valor->medicion->insumo_id;
         })->map(function($grupo) {
             $first = $grupo->first();
-            $contramuestra = $grupo->firstWhere('medicion.tipo_medicion_id', 10);
-            return (object) [
+            $contramuestra = $grupo->firstWhere('medicion.tipoMedicion.es_booleano', true);
+            $obj = (object) [
                 'id' => $first->fecha . '_' . $first->medicion->insumo_id,
                 'fecha' => $first->fecha,
                 'insumo_id' => $first->medicion->insumo_id,
                 'nombre_insumo' => $first->medicion->insumo->nombre,
                 'tipo_insumo' => $first->medicion->insumo_id,
                 'preparacion_archivo_contramuestra' => $contramuestra ? ($contramuestra->valor === '1') : false,
+                'observaciones' => $grupo->firstWhere('observaciones', '!=', null)?->observaciones ?? $first->observaciones,
             ];
+            foreach ($grupo as $v) {
+                $prop = 'medicion_' . $v->medicion_id;
+                $obj->$prop = $v->valor;
+            }
+            return $obj;
         })->take(24)->values();
         $insumos = $insumosAgrupados;
 
-        $medicionesConfigInsumos = \App\Models\LabMedicion::with('tipoMedicion', 'insumo')
+        $medicionesConfigInsumos = LabMedicion::with('tipoMedicion', 'insumo')
             ->where('modulo_id', 1)->where('activo', true)->get();
-        $tiposInsumos = \App\Models\LabInsumo::all();
+        $tiposInsumos = LabInsumo::all();
         $insumoFields = [];
         foreach ($medicionesConfigInsumos as $config) {
-            if ($config->tipo_medicion_id == 10) continue; 
+            if ($config->tipoMedicion?->es_booleano) continue; 
             $insumoFields[] = [
                 'name' => 'medicion_' . $config->id,
                 'label' => mb_strtoupper($config->tipoMedicion->nombre),
                 'classes' => 'f-insumo-' . $config->insumo_id,
                 'show' => old('tipo_insumo') == $config->insumo_id,
-                'isText' => in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])
+                'isText' => $config->tipoMedicion?->es_texto ?? false,
+                'min' => $config->min,
+                'max' => $config->max,
             ];
         }
 
         // ---------------------------------------------------------
         // 2. AGUA CRUDA (modulo_id = 2)
         // ---------------------------------------------------------
-        $valoresAguaCruda = \App\Models\LabValor::with(['medicion.tipoMedicion'])
+        $valoresAguaCruda = LabValor::with(['medicion.tipoMedicion'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 2); })
             ->orderBy('fecha', 'desc')->get();
             
@@ -66,27 +79,20 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $medicionesConfigAguaCruda = \App\Models\LabMedicion::with('tipoMedicion')
+        $medicionesConfigAguaCruda = LabMedicion::with('tipoMedicion')
             ->where('modulo_id', 2)->where('activo', true)->get();
-        $medicionesConfigAguaCruda->each(function($config) {
-            $config->isText = in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30]);
-        });
         
-        $categoriasAguaCruda = [
-            'FISICOQUÍMICO' => [
-                'clases_grid' => 'grid-cols-3 md:grid-cols-6',
-                'mediciones' => $medicionesConfigAguaCruda->filter(fn($c) => $c->tipo_medicion_id <= 24)
-            ],
-            'BACTERIOLOGÍA Y BIOLOGÍA' => [
+        $categoriasAguaCruda = $medicionesConfigAguaCruda
+            ->groupBy(fn($c) => $c->tipoMedicion->categoria ?? 'FISICOQUÍMICO')
+            ->map(fn($mediciones) => [
                 'clases_grid' => 'grid-cols-2 md:grid-cols-4',
-                'mediciones' => $medicionesConfigAguaCruda->filter(fn($c) => $c->tipo_medicion_id >= 25)
-            ]
-        ];
+                'mediciones' => $mediciones
+            ]);
 
         // ---------------------------------------------------------
         // 3. PRODUCTO TERMINADO (modulo_id = 3)
         // ---------------------------------------------------------
-        $valoresProducto = \App\Models\LabValor::with(['medicion.tipoMedicion'])
+        $valoresProducto = LabValor::with(['medicion.tipoMedicion'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 3); })
             ->orderBy('fecha', 'desc')->get();
             
@@ -100,27 +106,20 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $medicionesConfigProducto = \App\Models\LabMedicion::with('tipoMedicion')
+        $medicionesConfigProducto = LabMedicion::with('tipoMedicion')
             ->where('modulo_id', 3)->where('activo', true)->get();
-        $medicionesConfigProducto->each(function($config) {
-            $config->isText = in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30]);
-        });
         
-        $categoriasProducto = [
-            'FISICOQUÍMICO' => [
-                'clases_grid' => 'grid-cols-3 md:grid-cols-6',
-                'mediciones' => $medicionesConfigProducto->filter(fn($c) => $c->tipo_medicion_id <= 24)
-            ],
-            'BACTERIOLOGÍA Y BIOLOGÍA' => [
+        $categoriasProducto = $medicionesConfigProducto
+            ->groupBy(fn($c) => $c->tipoMedicion->categoria ?? 'FISICOQUÍMICO')
+            ->map(fn($mediciones) => [
                 'clases_grid' => 'grid-cols-2 md:grid-cols-4',
-                'mediciones' => $medicionesConfigProducto->filter(fn($c) => $c->tipo_medicion_id >= 25)
-            ]
-        ];
+                'mediciones' => $mediciones
+            ]);
 
         // ---------------------------------------------------------
         // 4. POZOS (modulo_id = 4)
         // ---------------------------------------------------------
-        $valoresPozos = \App\Models\LabValor::with(['medicion.tipoMedicion', 'medicion.pozo'])
+        $valoresPozos = LabValor::with(['medicion.tipoMedicion', 'medicion.pozo'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 4); })
             ->orderBy('fecha', 'desc')->get();
             
@@ -139,8 +138,8 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $tiposPozos = \App\Models\LabPozo::where('activo', true)->get();
-        $medicionesConfigPozos = \App\Models\LabMedicion::with('tipoMedicion', 'pozo')
+        $tiposPozos = LabPozo::where('activo', true)->get();
+        $medicionesConfigPozos = LabMedicion::with('tipoMedicion', 'pozo')
             ->where('modulo_id', 4)->where('activo', true)->get();
 
         // ---------------------------------------------------------
@@ -163,6 +162,36 @@ class LaboratorioController extends Controller
         ));
     }
 
+    private function buildValidationRulesAndAttributes($configuraciones, Request $request, array $initialRules = [])
+    {
+        $rules = $initialRules;
+        $customAttributes = [];
+        $filledCount = 0;
+
+        foreach ($configuraciones as $config) {
+            $inputName = 'medicion_' . $config->id;
+            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
+
+            if ($config->tipoMedicion?->es_booleano) {
+                $rules[$inputName] = 'nullable';
+            } elseif ($config->tipoMedicion?->es_texto) {
+                $rules[$inputName] = 'nullable|string|max:100';
+                if ($request->filled($inputName)) {
+                    $filledCount++;
+                }
+            } else {
+                $min = $config->min ?? 0;
+                $max = $config->max ?? 1000;
+                $rules[$inputName] = "nullable|numeric|between:$min,$max";
+                if ($request->filled($inputName)) {
+                    $filledCount++;
+                }
+            }
+        }
+
+        return [$rules, $customAttributes, $filledCount];
+    }
+
     // ---------------------------------------------------------
     // STORE METHODS
     // ---------------------------------------------------------
@@ -172,44 +201,26 @@ class LaboratorioController extends Controller
         $tipo = $request->input('tipo_insumo'); 
         $fecha = $request->input('fecha');
         
-        $rules = [
-            'tipo_insumo' => 'required|exists:lab_insumos,id',
-            'fecha' => 'required|date',
-            'observaciones' => 'nullable|string|max:1000',
-        ];
+        $configuraciones = LabMedicion::with('tipoMedicion')
+            ->where('modulo_id', 1)
+            ->where('insumo_id', $tipo)
+            ->where('activo', true)
+            ->get();
 
-        $configuraciones = \App\Models\LabMedicion::where('modulo_id', 1)
-            ->where('insumo_id', $tipo)->where('activo', true)->get();
+        [$rules, $customAttributes, $filledCount] = $this->buildValidationRulesAndAttributes(
+            $configuraciones,
+            $request,
+            [
+                'tipo_insumo' => 'required|exists:lab_insumos,id',
+                'fecha' => 'required|date',
+                'observaciones' => 'nullable|string|max:1000',
+            ]
+        );
+        $customAttributes['tipo_insumo'] = 'Insumo';
+        $customAttributes['fecha'] = 'Fecha';
+        $customAttributes['observaciones'] = 'Observaciones';
 
-        $filledCount = 0;
-        $customAttributes = [
-            'tipo_insumo' => 'Insumo',
-            'fecha' => 'Fecha',
-            'observaciones' => 'Observaciones',
-        ];
-
-        foreach ($configuraciones as $config) {
-            $inputName = 'medicion_' . $config->id;
-            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
-
-            if ($config->tipo_medicion_id == 10) {
-                $rules[$inputName] = 'nullable';
-            } else {
-                if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
-                    $rules[$inputName] = 'nullable|string|max:50';
-                } elseif ($config->tipo_medicion_id == 18) {
-                    $rules[$inputName] = 'nullable|numeric|between:0,14';
-                } else {
-                    $rules[$inputName] = 'nullable|numeric|between:0,1000';
-                }
-
-                if ($request->filled($inputName)) {
-                    $filledCount++;
-                }
-            }
-        }
-
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+        $validator = Validator::make($request->all(), $rules, [], $customAttributes);
 
         $validator->after(function ($validator) use ($filledCount, $tipo) {
             if ($tipo && $filledCount === 0) {
@@ -225,7 +236,7 @@ class LaboratorioController extends Controller
         
         foreach ($configuraciones as $config) {
             $valorStr = null;
-            if ($config->tipo_medicion_id == 10) {
+            if ($config->tipoMedicion?->es_booleano) {
                 $valorStr = $request->has('preparacion_archivo_contramuestra') ? '1' : '0';
             } else {
                 $inputName = 'medicion_' . $config->id;
@@ -234,7 +245,7 @@ class LaboratorioController extends Controller
                 }
             }
             if ($valorStr !== null) {
-                \App\Models\LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $valorStr, 'observaciones' => $observaciones]);
+                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $valorStr, 'observaciones' => $observaciones]);
             }
         }
 
@@ -245,35 +256,16 @@ class LaboratorioController extends Controller
     {
         $fecha = $request->input('fecha');
         
-        $rules = [
-            'fecha' => 'required|date',
-        ];
+        $configuraciones = LabMedicion::with('tipoMedicion')->where('modulo_id', 2)->where('activo', true)->get();
 
-        $configuraciones = \App\Models\LabMedicion::where('modulo_id', 2)->where('activo', true)->get();
+        [$rules, $customAttributes, $filledCount] = $this->buildValidationRulesAndAttributes(
+            $configuraciones,
+            $request,
+            ['fecha' => 'required|date']
+        );
+        $customAttributes['fecha'] = 'Fecha';
 
-        $filledCount = 0;
-        $customAttributes = [
-            'fecha' => 'Fecha',
-        ];
-
-        foreach ($configuraciones as $config) {
-            $inputName = 'medicion_' . $config->id;
-            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
-
-            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
-                $rules[$inputName] = 'nullable|string|max:50';
-            } elseif ($config->tipo_medicion_id == 18) {
-                $rules[$inputName] = 'nullable|numeric|between:0,14';
-            } else {
-                $rules[$inputName] = 'nullable|numeric|between:0,1000';
-            }
-
-            if ($request->filled($inputName)) {
-                $filledCount++;
-            }
-        }
-
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+        $validator = Validator::make($request->all(), $rules, [], $customAttributes);
 
         $validator->after(function ($validator) use ($filledCount) {
             if ($filledCount === 0) {
@@ -288,7 +280,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                \App\Models\LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua Cruda guardado correctamente.');
@@ -298,35 +290,16 @@ class LaboratorioController extends Controller
     {
         $fecha = $request->input('fecha');
         
-        $rules = [
-            'fecha' => 'required|date',
-        ];
+        $configuraciones = LabMedicion::with('tipoMedicion')->where('modulo_id', 3)->where('activo', true)->get();
 
-        $configuraciones = \App\Models\LabMedicion::where('modulo_id', 3)->where('activo', true)->get();
+        [$rules, $customAttributes, $filledCount] = $this->buildValidationRulesAndAttributes(
+            $configuraciones,
+            $request,
+            ['fecha' => 'required|date']
+        );
+        $customAttributes['fecha'] = 'Fecha';
 
-        $filledCount = 0;
-        $customAttributes = [
-            'fecha' => 'Fecha',
-        ];
-
-        foreach ($configuraciones as $config) {
-            $inputName = 'medicion_' . $config->id;
-            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
-
-            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
-                $rules[$inputName] = 'nullable|string|max:50';
-            } elseif ($config->tipo_medicion_id == 18) {
-                $rules[$inputName] = 'nullable|numeric|between:0,14';
-            } else {
-                $rules[$inputName] = 'nullable|numeric|between:0,1000';
-            }
-
-            if ($request->filled($inputName)) {
-                $filledCount++;
-            }
-        }
-
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+        $validator = Validator::make($request->all(), $rules, [], $customAttributes);
 
         $validator->after(function ($validator) use ($filledCount) {
             if ($filledCount === 0) {
@@ -341,7 +314,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                \App\Models\LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Producto Terminado guardado correctamente.');
@@ -350,39 +323,22 @@ class LaboratorioController extends Controller
     public function storePozo(Request $request)
     {
         $fecha = $request->input('fecha');
-        $pozo_id = $request->input('pozo_numero'); // Now sending ID
+        $pozo_id = $request->input('pozo_numero');
         
-        $rules = [
-            'fecha' => 'required|date',
-            'pozo_numero' => 'required|exists:lab_pozos,id',
-        ];
+        $configuraciones = LabMedicion::with('tipoMedicion')->where('modulo_id', 4)->where('pozo_id', $pozo_id)->where('activo', true)->get();
 
-        $configuraciones = \App\Models\LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->where('activo', true)->get();
+        [$rules, $customAttributes, $filledCount] = $this->buildValidationRulesAndAttributes(
+            $configuraciones,
+            $request,
+            [
+                'fecha' => 'required|date',
+                'pozo_numero' => 'required|exists:lab_pozos,id',
+            ]
+        );
+        $customAttributes['fecha'] = 'Fecha';
+        $customAttributes['pozo_numero'] = 'Pozo';
 
-        $filledCount = 0;
-        $customAttributes = [
-            'fecha' => 'Fecha',
-            'pozo_numero' => 'Pozo',
-        ];
-
-        foreach ($configuraciones as $config) {
-            $inputName = 'medicion_' . $config->id;
-            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
-
-            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
-                $rules[$inputName] = 'nullable|string|max:50';
-            } elseif ($config->tipo_medicion_id == 18) {
-                $rules[$inputName] = 'nullable|numeric|between:0,14';
-            } else {
-                $rules[$inputName] = 'nullable|numeric|between:0,1000';
-            }
-
-            if ($request->filled($inputName)) {
-                $filledCount++;
-            }
-        }
-
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+        $validator = Validator::make($request->all(), $rules, [], $customAttributes);
 
         $validator->after(function ($validator) use ($filledCount, $pozo_id) {
             if ($pozo_id && $filledCount === 0) {
@@ -397,7 +353,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                \App\Models\LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Pozo guardado correctamente.');
@@ -413,36 +369,34 @@ class LaboratorioController extends Controller
         if (count($parts) == 2) {
             $fecha = $parts[0];
             $insumo_id = $parts[1];
-            $medicionesIds = \App\Models\LabMedicion::where('modulo_id', 1)->where('insumo_id', $insumo_id)->pluck('id');
-            \App\Models\LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
+            $medicionesIds = LabMedicion::where('modulo_id', 1)->where('insumo_id', $insumo_id)->pluck('id');
+            LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }
     
     public function destroyAguaCruda($id)
     {
-        // $id is just the date, e.g. "2026-08-20"
-        $medicionesIds = \App\Models\LabMedicion::where('modulo_id', 2)->pluck('id');
-        \App\Models\LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
+        $medicionesIds = LabMedicion::where('modulo_id', 2)->pluck('id');
+        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }
     
     public function destroyProductoTerminado($id)
     {
-        $medicionesIds = \App\Models\LabMedicion::where('modulo_id', 3)->pluck('id');
-        \App\Models\LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
+        $medicionesIds = LabMedicion::where('modulo_id', 3)->pluck('id');
+        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }
     
     public function destroyPozo($id)
     {
-        // $id is "fecha_pozoId"
         $parts = explode('_', $id);
         if (count($parts) == 2) {
             $fecha = $parts[0];
             $pozo_id = $parts[1];
-            $medicionesIds = \App\Models\LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->pluck('id');
-            \App\Models\LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
+            $medicionesIds = LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->pluck('id');
+            LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro eliminado correctamente.');
     }

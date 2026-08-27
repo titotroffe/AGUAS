@@ -119,7 +119,7 @@
                                 @if($field['isText'] ?? false)
                                     <input type="text" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
                                 @else
-                                    <input type="number" step="0.01" min="0" name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                    <input type="number" step="0.01" min="{{ $field['min'] ?? 0 }}" @if(isset($field['max'])) max="{{ $field['max'] }}" @endif name="{{ $field['name'] }}" value="{{ old($field['name']) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                                 @endif
                             </div>
                         @endforeach
@@ -169,12 +169,8 @@
                                     <tr id="detail-insumo-{{ $index }}" class="bg-slate-800/60" style="display:none;">
                                         <td colspan="4" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                                <div class="text-xs">
-                                                    <span class="text-slate-400 font-bold block">OBSERVACIONES</span>
-                                                    <span class="text-white">{{ $registro->observaciones ?? '-' }}</span>
-                                                </div>
                                                 @foreach($medicionesConfigInsumos as $config)
-                                                    @if($config->insumo_id == $registro->tipo_insumo)
+                                                    @if($config->insumo_id == $registro->tipo_insumo && !$config->tipoMedicion?->es_booleano)
                                                         @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
                                                         <div class="text-xs">
                                                             <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
@@ -228,7 +224,7 @@
                                         @if($config->isText)
                                             <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
                                         @else
-                                            <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                                         @endif
                                     </div>
                                 @endforeach
@@ -329,7 +325,7 @@
                                         @if($config->isText)
                                             <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
                                         @else
-                                            <input type="number" step="0.01" min="0" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                                         @endif
                                     </div>
                                 @endforeach
@@ -432,7 +428,11 @@
                         @foreach($medicionesConfigPozos as $config)
                             <div class="flex flex-col items-center f-pozo-{{ $config->pozo_id }} {{ old('pozo_numero') == $config->pozo_id ? '' : 'hidden' }}">
                                 <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                @if($config->isText)
+                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                @else
+                                    <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                @endif
                             </div>
                         @endforeach
                     </div>
