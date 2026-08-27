@@ -171,11 +171,58 @@ class LaboratorioController extends Controller
     {
         $tipo = $request->input('tipo_insumo'); 
         $fecha = $request->input('fecha');
-        $observaciones = $request->input('observaciones');
         
+        $rules = [
+            'tipo_insumo' => 'required|exists:lab_insumos,id',
+            'fecha' => 'required|date',
+            'observaciones' => 'nullable|string|max:1000',
+        ];
+
         $configuraciones = \App\Models\LabMedicion::where('modulo_id', 1)
             ->where('insumo_id', $tipo)->where('activo', true)->get();
-            
+
+        $filledCount = 0;
+        $customAttributes = [
+            'tipo_insumo' => 'Insumo',
+            'fecha' => 'Fecha',
+            'observaciones' => 'Observaciones',
+        ];
+
+        foreach ($configuraciones as $config) {
+            $inputName = 'medicion_' . $config->id;
+            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
+
+            if ($config->tipo_medicion_id == 10) {
+                $rules[$inputName] = 'nullable';
+            } else {
+                if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
+                    $rules[$inputName] = 'nullable|string|max:50';
+                } elseif ($config->tipo_medicion_id == 18) {
+                    $rules[$inputName] = 'nullable|numeric|between:0,14';
+                } else {
+                    $rules[$inputName] = 'nullable|numeric|between:0,1000';
+                }
+
+                if ($request->filled($inputName)) {
+                    $filledCount++;
+                }
+            }
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+
+        $validator->after(function ($validator) use ($filledCount, $tipo) {
+            if ($tipo && $filledCount === 0) {
+                $validator->errors()->add('mediciones', 'Debe cargar al menos una medición para el insumo.');
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $observaciones = $request->input('observaciones');
+        
         foreach ($configuraciones as $config) {
             $valorStr = null;
             if ($config->tipo_medicion_id == 10) {
@@ -197,7 +244,47 @@ class LaboratorioController extends Controller
     public function storeAguaCruda(Request $request)
     {
         $fecha = $request->input('fecha');
+        
+        $rules = [
+            'fecha' => 'required|date',
+        ];
+
         $configuraciones = \App\Models\LabMedicion::where('modulo_id', 2)->where('activo', true)->get();
+
+        $filledCount = 0;
+        $customAttributes = [
+            'fecha' => 'Fecha',
+        ];
+
+        foreach ($configuraciones as $config) {
+            $inputName = 'medicion_' . $config->id;
+            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
+
+            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
+                $rules[$inputName] = 'nullable|string|max:50';
+            } elseif ($config->tipo_medicion_id == 18) {
+                $rules[$inputName] = 'nullable|numeric|between:0,14';
+            } else {
+                $rules[$inputName] = 'nullable|numeric|between:0,1000';
+            }
+
+            if ($request->filled($inputName)) {
+                $filledCount++;
+            }
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+
+        $validator->after(function ($validator) use ($filledCount) {
+            if ($filledCount === 0) {
+                $validator->errors()->add('mediciones', 'Debe cargar al menos una medición para agua cruda.');
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
@@ -210,7 +297,47 @@ class LaboratorioController extends Controller
     public function storeProductoTerminado(Request $request)
     {
         $fecha = $request->input('fecha');
+        
+        $rules = [
+            'fecha' => 'required|date',
+        ];
+
         $configuraciones = \App\Models\LabMedicion::where('modulo_id', 3)->where('activo', true)->get();
+
+        $filledCount = 0;
+        $customAttributes = [
+            'fecha' => 'Fecha',
+        ];
+
+        foreach ($configuraciones as $config) {
+            $inputName = 'medicion_' . $config->id;
+            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
+
+            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
+                $rules[$inputName] = 'nullable|string|max:50';
+            } elseif ($config->tipo_medicion_id == 18) {
+                $rules[$inputName] = 'nullable|numeric|between:0,14';
+            } else {
+                $rules[$inputName] = 'nullable|numeric|between:0,1000';
+            }
+
+            if ($request->filled($inputName)) {
+                $filledCount++;
+            }
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+
+        $validator->after(function ($validator) use ($filledCount) {
+            if ($filledCount === 0) {
+                $validator->errors()->add('mediciones', 'Debe cargar al menos una medición para producto terminado.');
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
@@ -224,7 +351,49 @@ class LaboratorioController extends Controller
     {
         $fecha = $request->input('fecha');
         $pozo_id = $request->input('pozo_numero'); // Now sending ID
+        
+        $rules = [
+            'fecha' => 'required|date',
+            'pozo_numero' => 'required|exists:lab_pozos,id',
+        ];
+
         $configuraciones = \App\Models\LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->where('activo', true)->get();
+
+        $filledCount = 0;
+        $customAttributes = [
+            'fecha' => 'Fecha',
+            'pozo_numero' => 'Pozo',
+        ];
+
+        foreach ($configuraciones as $config) {
+            $inputName = 'medicion_' . $config->id;
+            $customAttributes[$inputName] = $config->tipoMedicion->nombre;
+
+            if (in_array($config->tipo_medicion_id, [11, 12, 13, 25, 26, 27, 28, 29, 30])) {
+                $rules[$inputName] = 'nullable|string|max:50';
+            } elseif ($config->tipo_medicion_id == 18) {
+                $rules[$inputName] = 'nullable|numeric|between:0,14';
+            } else {
+                $rules[$inputName] = 'nullable|numeric|between:0,1000';
+            }
+
+            if ($request->filled($inputName)) {
+                $filledCount++;
+            }
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, [], $customAttributes);
+
+        $validator->after(function ($validator) use ($filledCount, $pozo_id) {
+            if ($pozo_id && $filledCount === 0) {
+                $validator->errors()->add('mediciones', 'Debe cargar al menos una medición para el pozo.');
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
