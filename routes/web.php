@@ -12,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('/menu', function () {
     return view('menu');
-})->middleware(['auth', 'verified'])->name('menu');
+})->middleware(['auth'])->name('menu');
 
 
 Route::middleware('auth')->group(function () {
