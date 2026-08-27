@@ -35,6 +35,35 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #06b6d4;
         }
+        /* Botón scroll-to-top */
+        #btn-scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #334155;
+            border: 1px solid #64748b;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.2s, opacity 0.3s;
+            opacity: 0.85;
+        }
+        #btn-scroll-top:hover {
+            background: #475569;
+            transform: translateY(-3px);
+            opacity: 1;
+        }
+        #btn-scroll-top.visible {
+            display: flex;
+        }
     </style>
 </head>
 <body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
@@ -88,6 +117,7 @@
             <div class="p-8">
                 <form action="{{ route('laboratorio.storeInsumo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
+                    <input type="hidden" name="_section" value="insumos">
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN DE INSUMO</label>
@@ -208,6 +238,7 @@
             <div class="p-8">
                 <form action="{{ route('laboratorio.storeAguaCruda') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
+                    <input type="hidden" name="_section" value="cruda">
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
@@ -309,6 +340,7 @@
             <div class="p-8">
                 <form action="{{ route('laboratorio.storeProductoTerminado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
+                    <input type="hidden" name="_section" value="producto">
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
@@ -410,6 +442,7 @@
             <div class="p-8">
                 <form action="{{ route('laboratorio.storePozo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
+                    <input type="hidden" name="_section" value="pozos">
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN DE POZO</label>
@@ -512,6 +545,7 @@
             <div class="p-8">
                 <form action="{{ route('laboratorio.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
+                    <input type="hidden" name="_section" value="novedades">
                     <label class="block text-sm font-bold text-slate-300 mb-3 tracking-wide">REGISTRAR NUEVA NOVEDAD (Máx. 1000 caracteres)</label>
                     <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-4 text-white focus:outline-none focus:border-blue-500 mb-4 resize-none" placeholder="Escribe aquí cualquier comentario importante o novedad del turno para que el próximo personal esté enterado..." required></textarea>
                     
@@ -563,6 +597,11 @@
         </details>
 
     </div>
+
+    <!-- Botón Volver Arriba -->
+    <button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fa-solid fa-chevron-up"></i>
+    </button>
 
     <!-- Formularios ocultos para eliminar -->
     <form id="delete-insumo-form" method="POST" style="display: none;">
@@ -672,12 +711,31 @@
                         $errorList .= '<li>' . e($error) . '</li>';
                     }
                     $errorList .= '</ul>';
+                    // Detectar qué sección generó el error via campo hidden _section
+                    $sectionMap = [
+                        'insumos'   => 'details-insumos',
+                        'cruda'     => 'details-cruda',
+                        'producto'  => 'details-producto',
+                        'pozos'     => 'details-pozos',
+                        'novedades' => 'novedades-details',
+                    ];
+                    $errorSection = $sectionMap[old('_section')] ?? null;
                 @endphp
                 SwalCustom.fire({
                     title: 'Faltan completar o corregir datos',
                     html: '{!! $errorList !!}',
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
+                }).then(function() {
+                    @if($errorSection)
+                        var seccion = document.getElementById('{{ $errorSection }}');
+                        if (seccion) {
+                            seccion.open = true;
+                            setTimeout(function() {
+                                seccion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                        }
+                    @endif
                 });
             @elseif(session('success'))
                 SwalCustom.fire({
@@ -750,6 +808,18 @@
                 if(detail) detail.style.display = 'none';
             });
         }
+
+        // Botón scroll-to-top: mostrar cuando se baja más de 300px
+        (function() {
+            var btn = document.getElementById('btn-scroll-top');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            }, { passive: true });
+        })();
     </script>
 </body>
 </html>

@@ -27,6 +27,35 @@
             background-size: 1.5em 1.5em;
             padding-right: 2.5rem;
         }
+        /* Botón scroll-to-top */
+        #btn-scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #334155;
+            border: 1px solid #64748b;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.2s, opacity 0.3s;
+            opacity: 0.85;
+        }
+        #btn-scroll-top:hover {
+            background: #475569;
+            transform: translateY(-3px);
+            opacity: 1;
+        }
+        #btn-scroll-top.visible {
+            display: flex;
+        }
     </style>
 </head>
 <body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
@@ -460,5 +489,23 @@
             });
         }
     </script>
+
+<!-- Botón Volver Arriba -->
+<button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<script>
+    (function() {
+        var btn = document.getElementById('btn-scroll-top');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        }, { passive: true });
+    })();
+</script>
 </body>
 </html>
