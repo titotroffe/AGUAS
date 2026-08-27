@@ -31,4 +31,20 @@ class LabTipoMedicion extends Model
     {
         return $this->es_booleano || $this->tipo_campo === 'boolean';
     }
+
+    public function mediciones()
+    {
+        return $this->hasMany(LabMedicion::class, 'tipo_medicion_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            if ($model->mediciones()->exists()) {
+                throw new \Exception('No se puede eliminar este tipo de medición porque está siendo utilizado en las configuraciones de mediciones.');
+            }
+        });
+    }
 }
