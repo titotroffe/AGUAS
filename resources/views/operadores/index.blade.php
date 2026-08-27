@@ -283,15 +283,15 @@
                     <h3 class="text-sm font-bold mb-6 tracking-wide text-white">LINEA NORTE</h3>
                     <div class="space-y-4 flex flex-col items-start">
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="norte_1" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="norte_1" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('norte_1') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 1</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="norte_2" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="norte_2" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('norte_2') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 2</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="norte_3" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="norte_3" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('norte_3') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 3</span>
                         </label>
                     </div>
@@ -301,15 +301,15 @@
                     <h3 class="text-sm font-bold mb-6 tracking-wide text-white">LINEA SUR</h3>
                     <div class="space-y-4 flex flex-col items-start">
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="sur_1" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="sur_1" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('sur_1') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 1</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="sur_2" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="sur_2" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('sur_2') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 2</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" name="sur_3" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500">
+                            <input type="checkbox" name="sur_3" class="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500" {{ old('sur_3') ? 'checked' : '' }}>
                             <span class="ml-3 text-sm font-bold text-slate-300">FILTRO 3</span>
                         </label>
                     </div>
