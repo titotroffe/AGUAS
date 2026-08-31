@@ -25,8 +25,8 @@ class CheckRole
             return redirect('menu')->with('error_acceso', 'Tu cuenta está pendiente de aprobación por Jefatura.');
         }
 
-        // Si el usuario es admin, siempre tiene acceso
-        if ($user->role === 'admin') {
+        // Si el usuario es admin o jefatura, siempre tiene acceso a todo
+        if (in_array($user->role, ['admin', 'jefatura'])) {
             return $next($request);
         }
 
