@@ -10,6 +10,7 @@ use App\Models\Novedad;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\BombasController;
 
 class OperadoresController extends Controller
 {
@@ -52,7 +53,9 @@ class OperadoresController extends Controller
 
         $novedadesRecientes = $unreadQuery->count();
 
-        return view('operadores.index', compact('ultimosRegistros', 'ultimosLavados', 'ultimoCloro', 'ultimaPoliamina', 'ultimoSulfato', 'ultimasNovedades', 'novedadesRecientes'));
+        $estadosBombas = BombasController::cargarEstados();
+
+        return view('operadores.index', compact('ultimosRegistros', 'ultimosLavados', 'ultimoCloro', 'ultimaPoliamina', 'ultimoSulfato', 'ultimasNovedades', 'novedadesRecientes', 'estadosBombas'));
     }
 
     // Guardar los datos de presiones

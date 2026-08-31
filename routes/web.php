@@ -5,9 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OperadoresController;
 use App\Http\Controllers\QuimicoController;
 use App\Http\Controllers\JefaturaController;
+use App\Http\Controllers\BombasController;
 
 Route::get('/', function () {
-    return view('/auth/login');
+    if (auth()->check()) {
+        return redirect()->route('menu');
+    }
+    return view('auth.login');
 });
 
 Route::get('/menu', function () {
@@ -51,6 +55,12 @@ Route::middleware('auth')->group(function () {
 // Rutas para el Módulo Jefatura
 Route::middleware('auth')->group(function () {
     Route::get('/jefatura', [JefaturaController::class, 'index'])->name('jefatura.index');
+});
+
+// Rutas para Bombas y Pozos
+Route::middleware('auth')->group(function () {
+    Route::get('/bombas/estado', [BombasController::class, 'estado'])->name('bombas.estado');
+    Route::post('/bombas/toggle', [BombasController::class, 'toggle'])->name('bombas.toggle');
 });
 
 // Rutas para el Módulo Laboratorio Central

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\CalidadAgua;
 use App\Models\Novedad;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\BombasController;
 
 class QuimicoController extends Controller
 {
@@ -28,7 +29,9 @@ class QuimicoController extends Controller
 
         $novedadesRecientes = $unreadQuery->count();
 
-        return view('quimico.index', compact('ultimosRegistros', 'ultimasNovedades', 'novedadesRecientes'));
+        $estadosBombas = BombasController::cargarEstados();
+
+        return view('quimico.index', compact('ultimosRegistros', 'ultimasNovedades', 'novedadesRecientes', 'estadosBombas'));
     }
 
     // Guardar los datos de calidad de agua en filas separadas por lugar

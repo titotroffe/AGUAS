@@ -100,6 +100,9 @@
             </div>
         @endif
 
+        {{-- ══ PANEL BOMBAS Y POZOS (solo lectura) ══ --}}
+        <x-panel-bombas :readonly="true" :estados="$estadosBombas" />
+
         <details id="details-calidad" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-blue-400">1. MONITOREO DE CALIDAD</span>
