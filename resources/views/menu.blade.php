@@ -75,6 +75,14 @@
         </div>
     </div>
 
+    @if(session('error_acceso'))
+        <div class="relative z-10 w-full flex justify-center mt-4">
+            <div class="bg-red-600/90 border border-red-500 text-white px-6 py-3 rounded-xl shadow-lg font-semibold text-center w-auto max-w-2xl text-sm tracking-wide">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> {{ session('error_acceso') }}
+            </div>
+        </div>
+    @endif
+
     <div class="relative z-10 flex-1 flex items-center justify-center gap-16 px-4">
 
         <a href="/jefatura" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">

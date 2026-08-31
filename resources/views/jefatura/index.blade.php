@@ -65,6 +65,62 @@
             $ultimaPresion = $presiones->last();
         @endphp
 
+        <!-- Panel de Usuarios Pendientes -->
+        @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
+        <div class="bg-amber-900/40 border border-amber-600 rounded-xl p-6 shadow-2xl mb-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-20">
+                <i class="fa-solid fa-users-gear text-6xl text-amber-500"></i>
+            </div>
+            <h2 class="text-xl font-bold text-amber-400 tracking-wide mb-4 relative z-10 flex items-center gap-2">
+                <i class="fa-solid fa-user-clock"></i> Usuarios Pendientes de Aprobación
+            </h2>
+            <div class="overflow-x-auto relative z-10">
+                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-amber-700/50">
+                    <thead class="text-xs uppercase bg-amber-900/60 text-amber-200 tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4 border border-amber-700/50">Nombre</th>
+                            <th class="py-3 px-4 border border-amber-700/50">Email</th>
+                            <th class="py-3 px-4 border border-amber-700/50">Rol Solicitado</th>
+                            <th class="py-3 px-4 border border-amber-700/50">Fecha de Registro</th>
+                            <th class="py-3 px-4 border border-amber-700/50">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody class="font-medium bg-slate-900/50">
+                        @foreach($usuariosPendientes as $user)
+                        <tr class="hover:bg-amber-900/30 transition">
+                            <td class="py-3 px-4 border border-amber-700/50 font-bold text-white">{{ $user->name }}</td>
+                            <td class="py-3 px-4 border border-amber-700/50">{{ $user->email }}</td>
+                            <td class="py-3 px-4 border border-amber-700/50">
+                                <span class="bg-amber-600/50 text-amber-100 text-xs px-2 py-1 rounded uppercase font-bold tracking-wider">
+                                    {{ $user->role }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 border border-amber-700/50 text-xs font-mono text-slate-400">
+                                {{ $user->created_at->format('d/m/Y H:i') }}
+                            </td>
+                            <td class="py-3 px-4 border border-amber-700/50">
+                                <form method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" onsubmit="return confirm('¿Aprobar acceso al sistema para este usuario?');">
+                                    @csrf
+                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
+                                        <i class="fa-solid fa-check"></i> Aprobar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @endif
+
+        <!-- Mensaje de Éxito Genérico -->
+        @if(session('success'))
+            <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-8 text-center font-semibold shadow-md">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <!-- KPI Cards -->
         @if($ultimaPresion)
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

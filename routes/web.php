@@ -29,7 +29,7 @@ require __DIR__.'/auth.php';
 
 
 // Rutas para el Módulo de Operadores
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:operador'])->group(function () {
     Route::get('/operadores', [OperadoresController::class, 'index'])->name('operadores.index');
     Route::post('/operadores/presion', [OperadoresController::class, 'storePresion'])->name('operadores.storePresion');
     Route::post('/operadores/filtro', [OperadoresController::class, 'storeFiltro'])->name('operadores.storeFiltro');
@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rutas para el Módulo Químico
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:quimico'])->group(function () {
     Route::get('/quimico', [QuimicoController::class, 'index'])->name('quimico.index');
     Route::post('/quimico/calidad', [QuimicoController::class, 'storeCalidad'])->name('quimico.storeCalidad');
     Route::delete('/quimico/calidad/{id}', [QuimicoController::class, 'destroyCalidad'])->name('quimico.destroyCalidad');
@@ -55,18 +55,19 @@ Route::middleware('auth')->group(function () {
 
 
 // Rutas para el Módulo Jefatura
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:jefatura,admin'])->group(function () {
     Route::get('/jefatura', [JefaturaController::class, 'index'])->name('jefatura.index');
+    Route::post('/jefatura/aprobar-usuario/{id}', [JefaturaController::class, 'aprobarUsuario'])->name('jefatura.aprobarUsuario');
 });
 
 // Rutas para Bombas y Pozos
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role'])->group(function () {
     Route::get('/bombas/estado', [BombasController::class, 'estado'])->name('bombas.estado');
     Route::post('/bombas/toggle', [BombasController::class, 'toggle'])->name('bombas.toggle');
 });
 
 // Rutas para el Módulo Laboratorio Central
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:laboratorio'])->group(function () {
     Route::get('/laboratorio', [\App\Http\Controllers\LaboratorioController::class, 'index'])->name('laboratorio.index');
     
     Route::post('/laboratorio/insumo', [\App\Http\Controllers\LaboratorioController::class, 'storeInsumo'])->name('laboratorio.storeInsumo');

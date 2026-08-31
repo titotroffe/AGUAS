@@ -75,6 +75,9 @@ class JefaturaController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(50, ['*'], 'presiones_page')->withQueryString();
 
+        // 6. Usuarios pendientes de aprobación
+        $usuariosPendientes = \App\Models\User::where('is_approved', false)->orderBy('created_at', 'desc')->get();
+
         return view('jefatura.index', compact(
             'presiones', 
             'calidadAgua',
@@ -87,7 +90,17 @@ class JefaturaController extends Controller
             'calidadFechaInicio',
             'calidadFechaFin',
             'presionesFechaInicio',
-            'presionesFechaFin'
+            'presionesFechaFin',
+            'usuariosPendientes'
         ));
+    }
+
+    public function aprobarUsuario($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $user->is_approved = true;
+        $user->save();
+
+        return redirect()->route('jefatura.index')->with('success', "El usuario {$user->name} ha sido aprobado exitosamente.");
     }
 }
