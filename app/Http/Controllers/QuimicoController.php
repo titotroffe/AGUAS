@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CalidadAgua;
 use App\Models\Novedad;
+use App\Models\Caudalimetro;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BombasController;
 
@@ -31,7 +32,15 @@ class QuimicoController extends Controller
 
         $estadosBombas = BombasController::cargarEstados();
 
-        return view('quimico.index', compact('ultimosRegistros', 'ultimasNovedades', 'novedadesRecientes', 'estadosBombas'));
+        // Últimas lecturas de caudalímetro por bomba
+        $ultimoCaudalSulfato = Caudalimetro::with('user')->where('bomba', 'sulfato')->latest()->first();
+        $ultimoCaudalCloro   = Caudalimetro::with('user')->where('bomba', 'cloro')->latest()->first();
+        $ultimosCaudales     = Caudalimetro::with('user')->latest()->take(20)->get();
+
+        return view('quimico.index', compact(
+            'ultimosRegistros', 'ultimasNovedades', 'novedadesRecientes',
+            'estadosBombas', 'ultimoCaudalSulfato', 'ultimoCaudalCloro', 'ultimosCaudales'
+        ));
     }
 
     // Guardar los datos de calidad de agua en filas separadas por lugar
@@ -244,5 +253,47 @@ class QuimicoController extends Controller
         $user->save();
 
         return back()->with('success', 'Novedades marcadas como leídas.');
+    }
+
+    // Guardar lectura de caudalímetro
+    public function storeCaudalimetro(Request $request)
+    {
+        $request->validate([
+            'bomba'      => 'required|in:sulfato,cloro',
+            'caudal_m3h' => 'required|numeric|min:0|max:99999',
+        ], [
+            'bomba.required'      => 'Debe seleccionar la bomba.',
+            'bomba.in'            => 'Bomba no válida.',
+            'caudal_m3h.required' => 'Debe ingresar el caudal.',
+            'caudal_m3h.numeric'  => 'El caudal debe ser un número.',
+            'caudal_m3h.min'      => 'El caudal no puede ser negativo.',
+            'caudal_m3h.max'      => 'El caudal ingresado supera el máximo permitido.',
+        ]);
+
+        Caudalimetro::create([
+            'user_id'    => Auth::id(),
+            'bomba'      => $request->bomba,
+            'caudal_m3h' => $request->caudal_m3h,
+        ]);
+
+        return back()->with('success_caudal', 'Lectura de caudalímetro registrada.');
+    }
+
+    // Eliminar lectura de caudalímetro
+    public function destroyCaudalimetro($id)
+    {
+        $registro = Caudalimetro::findOrFail($id);
+
+        if ($registro->user_id !== Auth::id()) {
+            return back()->with('error_caudal', 'No tienes permisos para borrar este registro.');
+        }
+
+        if ($registro->created_at->lt(now()->subHours(2))) {
+            return back()->with('error_caudal', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+        }
+
+        $registro->delete();
+
+        return back()->with('success_caudal', 'Registro eliminado correctamente.');
     }
 }

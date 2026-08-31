@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/quimico/novedad', [QuimicoController::class, 'storeNovedad'])->name('quimico.storeNovedad');
     Route::post('/quimico/novedades/leidas', [QuimicoController::class, 'marcarLeidas'])->name('quimico.marcarLeidas');
     Route::delete('/quimico/novedad/{id}', [QuimicoController::class, 'destroyNovedad'])->name('quimico.destroyNovedad');
+    Route::post('/quimico/caudalimetro', [QuimicoController::class, 'storeCaudalimetro'])->name('quimico.storeCaudalimetro');
+    Route::delete('/quimico/caudalimetro/{id}', [QuimicoController::class, 'destroyCaudalimetro'])->name('quimico.destroyCaudalimetro');
 });
 
 
