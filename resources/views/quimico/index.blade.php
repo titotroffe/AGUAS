@@ -103,152 +103,9 @@
         {{-- ══ PANEL BOMBAS Y POZOS (solo lectura) ══ --}}
         <x-panel-bombas :readonly="true" :estados="$estadosBombas" />
 
-        {{-- ══ CAUDALÍMETROS ══ --}}
-        <details id="details-caudal" @if(session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h'])) open @endif
-                 class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">CAUDALÍMETROS DE BOMBAS DOSIFICADORAS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-
-            <div class="p-6 md:p-8">
-
-                @if(session('success_caudal'))
-                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
-                        {{ session('success_caudal') }}
-                    </div>
-                @endif
-                @if(session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h']))
-                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
-                        <ul class="list-disc list-inside text-left">
-                            @if(session('error_caudal'))<li>{{ session('error_caudal') }}</li>@endif
-                            @error('bomba')<li>{{ $message }}</li>@enderror
-                            @error('caudal_m3h')<li>{{ $message }}</li>@enderror
-                        </ul>
-                    </div>
-                @endif
-
-                {{-- Lecturas actuales --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    {{-- Sulfato --}}
-                    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col items-center gap-2">
-                        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Bomba de Sulfato</span>
-                        <span class="text-3xl font-mono font-bold {{ $ultimoCaudalSulfato ? 'text-amber-400' : 'text-slate-600' }}">
-                            {{ $ultimoCaudalSulfato ? number_format($ultimoCaudalSulfato->caudal_m3h, 1) : '—' }}
-                        </span>
-                        <span class="text-xs text-slate-500">m³/h</span>
-                        @if($ultimoCaudalSulfato)
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-slate-500 font-mono">{{ $ultimoCaudalSulfato->created_at->format('d/m/Y H:i') }}</span>
-                                <span class="text-[10px] bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
-                                    <i class="fa-solid fa-user mr-1"></i>{{ $ultimoCaudalSulfato->user->name ?? 'N/A' }}
-                                </span>
-                            </div>
-                        @endif
-                    </div>
-                    {{-- Cloro --}}
-                    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col items-center gap-2">
-                        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Bomba de Cloro</span>
-                        <span class="text-3xl font-mono font-bold {{ $ultimoCaudalCloro ? 'text-green-400' : 'text-slate-600' }}">
-                            {{ $ultimoCaudalCloro ? number_format($ultimoCaudalCloro->caudal_m3h, 1) : '—' }}
-                        </span>
-                        <span class="text-xs text-slate-500">m³/h</span>
-                        @if($ultimoCaudalCloro)
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-slate-500 font-mono">{{ $ultimoCaudalCloro->created_at->format('d/m/Y H:i') }}</span>
-                                <span class="text-[10px] bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
-                                    <i class="fa-solid fa-user mr-1"></i>{{ $ultimoCaudalCloro->user->name ?? 'N/A' }}
-                                </span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Formulario de registro --}}
-                <form action="{{ route('quimico.storeCaudalimetro') }}" method="POST"
-                      class="mb-8"
-                      onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50','cursor-not-allowed'); });">
-                    @csrf
-                    <div class="flex flex-wrap items-end gap-4 justify-center">
-                        <div class="flex flex-col items-center gap-1">
-                            <label class="text-xs font-bold tracking-wide text-slate-400 uppercase">Bomba</label>
-                            <select name="bomba" class="w-40 bg-slate-900 border border-slate-600 rounded px-2 py-2 text-white focus:outline-none focus:border-blue-500 text-sm font-semibold text-center">
-                                <option value="">Seleccionar</option>
-                                <option value="sulfato" {{ old('bomba') == 'sulfato' ? 'selected' : '' }}>Sulfato</option>
-                                <option value="cloro"   {{ old('bomba') == 'cloro'   ? 'selected' : '' }}>Cloro</option>
-                            </select>
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <label class="text-xs font-bold tracking-wide text-slate-400 uppercase">Caudal (m³/h)</label>
-                            <input type="number" name="caudal_m3h" step="0.1" min="0" max="99999"
-                                   value="{{ old('caudal_m3h') }}"
-                                   placeholder="0.0"
-                                   class="w-40 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono">
-                        </div>
-                        <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-8 rounded shadow-lg transition tracking-wide text-sm">
-                            REGISTRAR
-                        </button>
-                    </div>
-                </form>
-
-                {{-- Historial --}}
-                @if($ultimosCaudales->count() > 0)
-                <div class="bg-slate-900/50 rounded-xl border border-slate-700 overflow-hidden">
-                    <table class="w-full text-sm text-center text-slate-300 border-collapse">
-                        <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
-                            <tr>
-                                <th class="py-3 px-4 border border-slate-700">Fecha y Hora</th>
-                                <th class="py-3 px-4 border border-slate-700">Bomba</th>
-                                <th class="py-3 px-4 border border-slate-700">Caudal (m³/h)</th>
-                                <th class="py-3 px-4 border border-slate-700">Químico</th>
-                                <th class="py-3 px-4 border border-slate-700">Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($ultimosCaudales as $caudal)
-                            <tr class="hover:bg-slate-800/40 transition">
-                                <td class="py-3 px-4 font-mono text-slate-400 border border-slate-700">
-                                    {{ $caudal->created_at->format('d/m/Y H:i') }}
-                                </td>
-                                <td class="py-3 px-4 border border-slate-700">
-                                    <span class="font-bold {{ $caudal->bomba === 'sulfato' ? 'text-amber-400' : 'text-green-400' }}">
-                                        {{ ucfirst($caudal->bomba) }}
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4 font-mono font-bold text-white border border-slate-700">
-                                    {{ number_format($caudal->caudal_m3h, 1) }}
-                                </td>
-                                <td class="py-3 px-4 border border-slate-700">
-                                    {{ $caudal->user->name ?? 'N/A' }}
-                                </td>
-                                <td class="py-3 px-4 border border-slate-700">
-                                    @if(auth()->id() == $caudal->user_id && $caudal->created_at->gt(now()->subHours(2)))
-                                        <form method="POST" action="{{ route('quimico.destroyCaudalimetro', $caudal->id) }}"
-                                              onsubmit="return confirm('¿Eliminar esta lectura?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition">
-                                                Borrar
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="text-slate-600">—</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-
-            </div>
-        </details>
-
         <details id="details-calidad" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">1. MONITOREO DE CALIDAD</span>
+                <span class="text-blue-400">2. MONITOREO DE CALIDAD</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -433,10 +290,153 @@
         </div>
         </details>
 
+        {{-- ══ CAUDALÍMETROS ══ --}}
+        <details id="details-caudal" @if(session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h'])) open @endif
+                 class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">3. CAUDALÍMETROS DE BOMBAS DOSIFICADORAS</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+
+            <div class="p-6 md:p-8">
+
+                @if(session('success_caudal'))
+                    <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
+                        {{ session('success_caudal') }}
+                    </div>
+                @endif
+                @if(session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h']))
+                    <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                        <ul class="list-disc list-inside text-left">
+                            @if(session('error_caudal'))<li>{{ session('error_caudal') }}</li>@endif
+                            @error('bomba')<li>{{ $message }}</li>@enderror
+                            @error('caudal_m3h')<li>{{ $message }}</li>@enderror
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- Lecturas actuales --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                    {{-- Sulfato --}}
+                    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col items-center gap-2">
+                        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Bomba de Sulfato</span>
+                        <span class="text-3xl font-mono font-bold {{ $ultimoCaudalSulfato ? 'text-amber-400' : 'text-slate-600' }}">
+                            {{ $ultimoCaudalSulfato ? number_format($ultimoCaudalSulfato->caudal_m3h, 1) : '—' }}
+                        </span>
+                        <span class="text-xs text-slate-500">m³/h</span>
+                        @if($ultimoCaudalSulfato)
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-500 font-mono">{{ $ultimoCaudalSulfato->created_at->format('d/m/Y H:i') }}</span>
+                                <span class="text-[10px] bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                                    <i class="fa-solid fa-user mr-1"></i>{{ $ultimoCaudalSulfato->user->name ?? 'N/A' }}
+                                </span>
+                            </div>
+                        @endif
+                    </div>
+                    {{-- Cloro --}}
+                    <div class="bg-slate-800/60 border border-slate-700 rounded-xl p-5 flex flex-col items-center gap-2">
+                        <span class="text-xs font-bold tracking-widest text-slate-400 uppercase">Bomba de Cloro</span>
+                        <span class="text-3xl font-mono font-bold {{ $ultimoCaudalCloro ? 'text-green-400' : 'text-slate-600' }}">
+                            {{ $ultimoCaudalCloro ? number_format($ultimoCaudalCloro->caudal_m3h, 1) : '—' }}
+                        </span>
+                        <span class="text-xs text-slate-500">m³/h</span>
+                        @if($ultimoCaudalCloro)
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-slate-500 font-mono">{{ $ultimoCaudalCloro->created_at->format('d/m/Y H:i') }}</span>
+                                <span class="text-[10px] bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                                    <i class="fa-solid fa-user mr-1"></i>{{ $ultimoCaudalCloro->user->name ?? 'N/A' }}
+                                </span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Formulario de registro --}}
+                <form action="{{ route('quimico.storeCaudalimetro') }}" method="POST"
+                      class="mb-8"
+                      onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50','cursor-not-allowed'); });">
+                    @csrf
+                    <div class="flex flex-wrap items-end gap-4 justify-center">
+                        <div class="flex flex-col items-center gap-1">
+                            <label class="text-xs font-bold tracking-wide text-slate-400 uppercase">Bomba</label>
+                            <select name="bomba" class="w-40 bg-slate-900 border border-slate-600 rounded px-2 py-2 text-white focus:outline-none focus:border-blue-500 text-sm font-semibold text-center">
+                                <option value="">Seleccionar</option>
+                                <option value="sulfato" {{ old('bomba') == 'sulfato' ? 'selected' : '' }}>Sulfato</option>
+                                <option value="cloro"   {{ old('bomba') == 'cloro'   ? 'selected' : '' }}>Cloro</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <label class="text-xs font-bold tracking-wide text-slate-400 uppercase">Caudal (m³/h)</label>
+                            <input type="number" name="caudal_m3h" step="0.1" min="0" max="99999"
+                                   value="{{ old('caudal_m3h') }}"
+                                   placeholder="0.0"
+                                   class="w-40 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono">
+                        </div>
+                        <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-8 rounded shadow-lg transition tracking-wide text-sm">
+                            REGISTRAR
+                        </button>
+                    </div>
+                </form>
+
+                {{-- Historial --}}
+                @if($ultimosCaudales->count() > 0)
+                <div class="bg-slate-900/50 rounded-xl border border-slate-700 overflow-hidden">
+                    <table class="w-full text-sm text-center text-slate-300 border-collapse">
+                        <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4 border border-slate-700">Fecha y Hora</th>
+                                <th class="py-3 px-4 border border-slate-700">Bomba</th>
+                                <th class="py-3 px-4 border border-slate-700">Caudal (m³/h)</th>
+                                <th class="py-3 px-4 border border-slate-700">Químico</th>
+                                <th class="py-3 px-4 border border-slate-700">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($ultimosCaudales as $caudal)
+                            <tr class="hover:bg-slate-800/40 transition">
+                                <td class="py-3 px-4 font-mono text-slate-400 border border-slate-700">
+                                    {{ $caudal->created_at->format('d/m/Y H:i') }}
+                                </td>
+                                <td class="py-3 px-4 border border-slate-700">
+                                    <span class="font-bold {{ $caudal->bomba === 'sulfato' ? 'text-amber-400' : 'text-green-400' }}">
+                                        {{ ucfirst($caudal->bomba) }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 font-mono font-bold text-white border border-slate-700">
+                                    {{ number_format($caudal->caudal_m3h, 1) }}
+                                </td>
+                                <td class="py-3 px-4 border border-slate-700">
+                                    {{ $caudal->user->name ?? 'N/A' }}
+                                </td>
+                                <td class="py-3 px-4 border border-slate-700">
+                                    @if(auth()->id() == $caudal->user_id && $caudal->created_at->gt(now()->subHours(2)))
+                                        <form method="POST" action="{{ route('quimico.destroyCaudalimetro', $caudal->id) }}"
+                                              onsubmit="return confirm('¿Eliminar esta lectura?');">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition">
+                                                Borrar
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-slate-600">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+
+            </div>
+        </details>
+
         <!-- Sección: Novedades del Turno -->
         <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">2. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">

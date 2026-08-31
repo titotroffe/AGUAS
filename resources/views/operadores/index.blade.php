@@ -113,7 +113,7 @@
 
         <details id="details-presiones" @if($erroresPresiones) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">1. PRESIONES Y NIVELES DE CISTERNA</span>
+                <span class="text-blue-400">2. PRESIONES Y NIVELES DE CISTERNA</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -254,7 +254,7 @@
 
         <details id="details-lavados" @if($erroresLavados) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">2. LAVADO DE FILTROS</span>
+                <span class="text-blue-400">3. LAVADO DE FILTROS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -424,7 +424,7 @@
 
         <details id="details-quimicos" @if($erroresQuimicos) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">3. NIVELES DE TANQUES QUÍMICOS</span>
+                <span class="text-blue-400">4. NIVELES DE TANQUES QUÍMICOS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -513,7 +513,7 @@
 
         <details id="novedades-details" @if($erroresNovedades) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
