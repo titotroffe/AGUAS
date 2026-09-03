@@ -46,6 +46,8 @@ Route::middleware(['auth', 'role:quimico'])->group(function () {
     Route::get('/quimico', [QuimicoController::class, 'index'])->name('quimico.index');
     Route::post('/quimico/calidad', [QuimicoController::class, 'storeCalidad'])->name('quimico.storeCalidad');
     Route::delete('/quimico/calidad/{id}', [QuimicoController::class, 'destroyCalidad'])->name('quimico.destroyCalidad');
+    Route::post('/quimico/bacteriologico', [QuimicoController::class, 'storeBacteriologico'])->name('quimico.storeBacteriologico');
+    Route::delete('/quimico/bacteriologico/{id}', [QuimicoController::class, 'destroyBacteriologico'])->name('quimico.destroyBacteriologico');
     Route::post('/quimico/novedad', [QuimicoController::class, 'storeNovedad'])->name('quimico.storeNovedad');
     Route::post('/quimico/novedades/leidas', [QuimicoController::class, 'marcarLeidas'])->name('quimico.marcarLeidas');
     Route::delete('/quimico/novedad/{id}', [QuimicoController::class, 'destroyNovedad'])->name('quimico.destroyNovedad');

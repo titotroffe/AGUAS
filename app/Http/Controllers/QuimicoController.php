@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CalidadAgua;
+use App\Models\EnsayoBacteriologico;
 use App\Models\Novedad;
 use App\Models\Caudalimetro;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,11 @@ class QuimicoController extends Controller
     public function index()
     {
         $ultimosRegistros = CalidadAgua::with('user')
+            ->orderBy('id', 'desc')
+            ->take(24)
+            ->get();
+
+        $ultimosEnsayosBacteriologicos = EnsayoBacteriologico::with('user')
             ->orderBy('id', 'desc')
             ->take(24)
             ->get();
@@ -38,7 +44,7 @@ class QuimicoController extends Controller
         $ultimosCaudales     = Caudalimetro::with('user')->latest()->take(20)->get();
 
         return view('quimico.index', compact(
-            'ultimosRegistros', 'ultimasNovedades', 'novedadesRecientes',
+            'ultimosRegistros', 'ultimosEnsayosBacteriologicos', 'ultimasNovedades', 'novedadesRecientes',
             'estadosBombas', 'ultimoCaudalSulfato', 'ultimoCaudalCloro', 'ultimosCaudales'
         ));
     }
@@ -316,5 +322,99 @@ class QuimicoController extends Controller
         $registro->delete();
 
         return back()->with('success_caudal', 'Registro eliminado correctamente.');
+    }
+
+    // Guardar ensayo bacteriológico
+    public function storeBacteriologico(Request $request)
+    {
+        $request->validate([
+            'cisterna_e_coli' => 'nullable|numeric|min:0',
+            'cisterna_coliformes' => 'nullable|numeric|min:0',
+            'bajada_tanque_e_coli' => 'nullable|numeric|min:0',
+            'bajada_tanque_coliformes' => 'nullable|numeric|min:0',
+            'rio_e_coli' => 'nullable|numeric|min:0',
+            'rio_coliformes' => 'nullable|numeric|min:0',
+            'decantador_select' => 'nullable|in:Norte,Sur',
+            'decantador_e_coli' => 'nullable|numeric|min:0',
+            'decantador_coliformes' => 'nullable|numeric|min:0',
+        ]);
+
+        if (($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes')) && !$request->filled('decantador_select')) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'decantador_select' => 'Debe seleccionar un decantador (Norte o Sur) si ingresa resultados.',
+            ]);
+        }
+
+        $hasData = false;
+        if ($request->filled('cisterna_e_coli') || $request->filled('cisterna_coliformes')) $hasData = true;
+        if ($request->filled('bajada_tanque_e_coli') || $request->filled('bajada_tanque_coliformes')) $hasData = true;
+        if ($request->filled('rio_e_coli') || $request->filled('rio_coliformes')) $hasData = true;
+        if ($request->filled('decantador_select') && ($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes'))) $hasData = true;
+
+        if (!$hasData) {
+            return back()->with('error', 'Debe completar al menos un ensayo antes de confirmar.')->withInput();
+        }
+
+        $recordsCreated = 0;
+
+        if ($request->filled('cisterna_e_coli') || $request->filled('cisterna_coliformes')) {
+            EnsayoBacteriologico::create([
+                'user_id' => Auth::id(),
+                'lugar' => 'CISTERNA',
+                'e_coli' => $request->cisterna_e_coli,
+                'coliformes_totales' => $request->cisterna_coliformes,
+            ]);
+            $recordsCreated++;
+        }
+
+        if ($request->filled('bajada_tanque_e_coli') || $request->filled('bajada_tanque_coliformes')) {
+            EnsayoBacteriologico::create([
+                'user_id' => Auth::id(),
+                'lugar' => 'BAJADA DE TANQUE',
+                'e_coli' => $request->bajada_tanque_e_coli,
+                'coliformes_totales' => $request->bajada_tanque_coliformes,
+            ]);
+            $recordsCreated++;
+        }
+
+        if ($request->filled('rio_e_coli') || $request->filled('rio_coliformes')) {
+            EnsayoBacteriologico::create([
+                'user_id' => Auth::id(),
+                'lugar' => 'RÍO',
+                'e_coli' => $request->rio_e_coli,
+                'coliformes_totales' => $request->rio_coliformes,
+            ]);
+            $recordsCreated++;
+        }
+
+        if ($request->filled('decantador_select') && ($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes'))) {
+            EnsayoBacteriologico::create([
+                'user_id' => Auth::id(),
+                'lugar' => 'DECANTADOR ' . strtoupper($request->decantador_select),
+                'e_coli' => $request->decantador_e_coli,
+                'coliformes_totales' => $request->decantador_coliformes,
+            ]);
+            $recordsCreated++;
+        }
+
+        return back()->with('success', "Se registraron correctamente $recordsCreated ensayos bacteriológicos.");
+    }
+
+    // Borrar un ensayo bacteriológico
+    public function destroyBacteriologico($id)
+    {
+        $registro = EnsayoBacteriologico::findOrFail($id);
+
+        if ($registro->user_id !== Auth::id()) {
+            return back()->with('error', 'No tienes permisos para borrar este registro.');
+        }
+
+        if ($registro->created_at->lt(now()->subHours(2))) {
+            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+        }
+
+        $registro->delete();
+
+        return back()->with('deleted', 'Ensayo bacteriológico eliminado correctamente.');
     }
 }

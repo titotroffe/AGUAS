@@ -311,6 +311,147 @@
         </div>
         </details>
 
+        {{-- ══ ENSAYOS BACTERIOLÓGICOS ══ --}}
+        <details id="details-bacteriologico" @if(session('success_bacteriologico') || session('error_bacteriologico')) open @endif
+                 class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">3. ENSAYOS BACTERIOLÓGICOS</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <form action="{{ route('quimico.storeBacteriologico') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                    @csrf
+                    <!-- Grid de Ensayos -->
+                    <div class="grid grid-cols-4 gap-8 mb-8 text-center items-start">
+                        
+                        <!-- Cisterna -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">CISTERNA</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">E. COLI</label>
+                            <input type="number" name="cisterna_e_coli" step="0.01" min="0" value="{{ old('cisterna_e_coli') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLIFORMES TOTALES</label>
+                            <input type="number" name="cisterna_coliformes" step="0.01" min="0" value="{{ old('cisterna_coliformes') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
+                        <!-- Bajada de Tanque -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">BAJADA DE TANQUE</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">E. COLI</label>
+                            <input type="number" name="bajada_tanque_e_coli" step="0.01" min="0" value="{{ old('bajada_tanque_e_coli') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLIFORMES TOTALES</label>
+                            <input type="number" name="bajada_tanque_coliformes" step="0.01" min="0" value="{{ old('bajada_tanque_coliformes') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
+                        <!-- Decantadores -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADORES</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN</label>
+                            <select name="decantador_select" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4">
+                                <option value="">Elegir</option>
+                                <option value="Norte" {{ old('decantador_select') == 'Norte' ? 'selected' : '' }}>Norte</option>
+                                <option value="Sur" {{ old('decantador_select') == 'Sur' ? 'selected' : '' }}>Sur</option>
+                            </select>
+
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">E. COLI</label>
+                            <input type="number" name="decantador_e_coli" step="0.01" min="0" value="{{ old('decantador_e_coli') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLIFORMES TOTALES</label>
+                            <input type="number" name="decantador_coliformes" step="0.01" min="0" value="{{ old('decantador_coliformes') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
+                        <!-- Río -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">RÍO</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">E. COLI</label>
+                            <input type="number" name="rio_e_coli" step="0.01" min="0" value="{{ old('rio_e_coli') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">COLIFORMES TOTALES</label>
+                            <input type="number" name="rio_coliformes" step="0.01" min="0" value="{{ old('rio_coliformes') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <!-- Botón Confirmar -->
+                    <div class="flex justify-center mb-4">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                            CONFIRMAR ENSAYOS
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tabla: Registros Bacteriológicos -->
+                <div class="mt-8 mb-4 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+                    <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">
+                        REGISTROS DE ENSAYOS BACTERIOLÓGICOS
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                            <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Fecha y Hora</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Químico</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Lugar</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">E. Coli</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Coliformes Totales</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-medium">
+                                @forelse($ultimosEnsayosBacteriologicos as $index => $registro)
+                                    <tr class="hover:bg-slate-800/40 transition bac-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
+                                        <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">
+                                            {{ $registro->created_at->format('d/m/Y H:i') }}
+                                        </td>
+                                        <td class="py-4 px-4 text-white font-semibold border border-slate-700">
+                                            {{ $registro->user->name ?? 'N/A' }}
+                                        </td>
+                                        <td class="py-4 px-4 text-white font-semibold border border-slate-700 text-center">
+                                            {{ $registro->lugar }}
+                                        </td>
+                                        <td class="py-4 px-4 text-center font-mono text-blue-400 border border-slate-700">
+                                            {{ $registro->e_coli !== null ? number_format($registro->e_coli, 2) : '-' }}
+                                        </td>
+                                        <td class="py-4 px-4 text-center font-mono text-emerald-400 border border-slate-700">
+                                            {{ $registro->coliformes_totales !== null ? number_format($registro->coliformes_totales, 2) : '-' }}
+                                        </td>
+                                        <td class="py-4 px-4 text-center border border-slate-700">
+                                            @if(auth()->id() == $registro->user_id && $registro->created_at->gt(now()->subHours(2)))
+                                                <button type="button" 
+                                                        onclick="confirmarEliminar('delete-bac-form', '{{ route('quimico.destroyBacteriologico', $registro->id) }}', '¿Seguro que deseas borrar este ensayo bacteriológico?')"
+                                                        class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-auto">
+                                                    Borrar
+                                                </button>
+                                            @else
+                                                <span class="text-slate-500 text-xs">-</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">
+                                            No hay ensayos bacteriológicos cargados todavía.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    @if(count($ultimosEnsayosBacteriologicos) > 8)
+                    <div class="flex justify-center items-center mt-6 space-x-2 text-sm font-bold text-slate-300">
+                        <button type="button" onclick="changeBacPage(-1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</button>
+                        <span id="bac-page-indicator" class="px-4 text-blue-400 font-mono">Página 1 / {{ ceil(count($ultimosEnsayosBacteriologicos) / 8) }}</span>
+                        <button type="button" onclick="changeBacPage(1)" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </details>
+
         {{-- ══ CAUDALÍMETROS ══ --}}
         <details id="details-caudal" @if(session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h'])) open @endif
                  class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
@@ -524,6 +665,10 @@
         @csrf
         @method('DELETE')
     </form>
+    <form id="delete-bac-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
 
     <script>
         // Configuración global de SweetAlert2 con tema Slate
@@ -647,6 +792,37 @@
                 const index = parseInt(row.getAttribute('data-index'));
                 const start = (currentPage - 1) * itemsPerPage;
                 const end = start + itemsPerPage - 1;
+                
+                if (index >= start && index <= end) {
+                    row.style.display = ''; // Mostrar
+                } else {
+                    row.style.display = 'none'; // Ocultar
+                }
+            });
+        }
+
+        // Paginación en Frontend para Tabla de Bacteriológicos
+        let currentBacPage = 1;
+        const totalBacItems = {{ count($ultimosEnsayosBacteriologicos ?? []) }};
+        const itemsBacPerPage = 8;
+        const totalBacPages = Math.ceil(totalBacItems / itemsBacPerPage);
+
+        function changeBacPage(direction) {
+            currentBacPage += direction;
+            
+            if (currentBacPage < 1) currentBacPage = 1;
+            if (currentBacPage > totalBacPages) currentBacPage = totalBacPages;
+
+            // Actualizar texto del indicador
+            const indicator = document.getElementById('bac-page-indicator');
+            if(indicator) indicator.innerText = `Página ${currentBacPage} / ${totalBacPages}`;
+
+            // Ocultar todas las filas y mostrar solo las de la página actual
+            const rows = document.querySelectorAll('.bac-row');
+            rows.forEach(row => {
+                const index = parseInt(row.getAttribute('data-index'));
+                const start = (currentBacPage - 1) * itemsBacPerPage;
+                const end = start + itemsBacPerPage - 1;
                 
                 if (index >= start && index <= end) {
                     row.style.display = ''; // Mostrar
