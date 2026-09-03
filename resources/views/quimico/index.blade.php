@@ -111,8 +111,37 @@
             <div class="p-8">
                 <form action="{{ route('quimico.storeCalidad') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                                     <!-- Grid de Mediciones por Lugar -->
-                    <div class="grid grid-cols-6 gap-8 mb-8 text-center items-start">
+                    <!-- Fila 1: 4 Elementos -->
+                    <div class="grid grid-cols-4 gap-8 mb-8 text-center items-start">
                     
+                        <!-- Cisterna -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">CISTERNA</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
+                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
+                            <input type="number" name="cisterna_ph" step="0.01" min="0" max="14" value="{{ old('cisterna_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
+                            <input type="number" name="cisterna_cloro" step="0.01" min="0" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
+                        <!-- Bajada de Tanque -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">BAJADA DE TANQUE</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
+                            <input type="number" name="bajada_tanque_turbiedad" step="0.01" min="0" value="{{ old('bajada_tanque_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
+                            <input type="number" name="bajada_tanque_ph" step="0.01" min="0" max="14" value="{{ old('bajada_tanque_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
+                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
                         <!-- Decantador Norte -->
                         <div class="flex flex-col items-center">
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADOR NORTE</label>
@@ -135,31 +164,11 @@
                             <input type="number" name="decantador_sur_ph" step="0.01" min="0" max="14" value="{{ old('decantador_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
 
-                        <!-- Cisterna -->
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">CISTERNA</label>
-                            
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                            
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
-                            <input type="number" name="cisterna_ph" step="0.01" min="0" max="14" value="{{ old('cisterna_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                            
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="cisterna_cloro" step="0.01" min="0" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
+                    </div>
 
-                        <!-- Río -->
-                        <div class="flex flex-col items-center">
-                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">RÍO</label>
-                            
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="rio_turbiedad" step="0.01" min="0" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                            
-                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
-                            <input type="number" name="rio_ph" step="0.01" min="0" max="14" value="{{ old('rio_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                        </div>
-
+                    <!-- Fila 2: 3 Elementos -->
+                    <div class="grid grid-cols-3 gap-8 mb-8 text-center items-start max-w-3xl mx-auto">
+                    
                         <!-- Filtro Línea Norte -->
                         <div class="flex flex-col items-center">
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">FILTRO LÍNEA NORTE</label>
@@ -197,6 +206,18 @@
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="filtro_sur_ph" step="0.01" min="0" max="14" value="{{ old('filtro_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
+
+                        <!-- Río -->
+                        <div class="flex flex-col items-center">
+                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">RÍO</label>
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
+                            <input type="number" name="rio_turbiedad" step="0.01" min="0" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            
+                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
+                            <input type="number" name="rio_ph" step="0.01" min="0" max="14" value="{{ old('rio_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                        </div>
+
                     </div>
 
                 <!-- Botón Confirmar -->

@@ -54,6 +54,9 @@ class QuimicoController extends Controller
             'cisterna_turbiedad' => 'nullable|numeric|min:0|max:10',
             'cisterna_ph' => 'nullable|numeric|min:0|max:14',
             'cisterna_cloro' => 'nullable|numeric|min:0|max:3',
+            'bajada_tanque_turbiedad' => 'nullable|numeric|min:0|max:10',
+            'bajada_tanque_ph' => 'nullable|numeric|min:0|max:14',
+            'bajada_tanque_cloro' => 'nullable|numeric|min:0|max:3',
             'rio_turbiedad' => 'nullable|numeric|min:0|max:300',
             'rio_ph' => 'nullable|numeric|min:0|max:14',
             'filtro_norte_select' => 'nullable|string|in:Filtro 1,Filtro 2,Filtro 3',
@@ -68,6 +71,7 @@ class QuimicoController extends Controller
             'decantador_norte_ph.max' => 'El pH de decantador norte no puede superar 14.',
             'decantador_sur_ph.max' => 'El pH de decantador sur no puede superar 14.',
             'cisterna_ph.max' => 'El pH de cisterna no puede superar 14.',
+            'bajada_tanque_ph.max' => 'El pH de bajada de tanque no puede superar 14.',
             'rio_ph.max' => 'El pH de río no puede superar 14.',
             'filtro_norte_ph.max' => 'El pH de filtro línea norte no puede superar 14.',
             'filtro_sur_ph.max' => 'El pH de filtro línea sur no puede superar 14.',
@@ -77,15 +81,19 @@ class QuimicoController extends Controller
             'decantador_sur_turbiedad.max' => 'La turbiedad de Decantador Sur no puede superar 300.',
             'rio_turbiedad.max' => 'La turbiedad de Río no puede superar 300.',
             'cisterna_turbiedad.max' => 'La turbiedad de Cisterna no puede superar 10.',
+            'bajada_tanque_turbiedad.max' => 'La turbiedad de Bajada de Tanque no puede superar 10.',
             'filtro_norte_turbiedad.max' => 'La turbiedad de Filtro Línea Norte no puede superar 50.',
             'decantador_norte_turbiedad.min' => 'La turbiedad de Decantador Norte no puede ser menor a 0.',
             'decantador_sur_turbiedad.min' => 'La turbiedad de Decantador Sur no puede ser menor a 0.',
             'rio_turbiedad.min' => 'La turbiedad de Río no puede ser menor a 0.',
             'cisterna_turbiedad.min' => 'La turbiedad de Cisterna no puede ser menor a 0.',
+            'bajada_tanque_turbiedad.min' => 'La turbiedad de Bajada de Tanque no puede ser menor a 0.',
             'filtro_norte_turbiedad.min' => 'La turbiedad de Filtro Línea Norte no puede ser menor a 0.',
             'filtro_sur_turbiedad.min' => 'La turbiedad de Filtro Línea Sur no puede ser menor a 0.',
             'cisterna_cloro.max' => 'El cloro residual de Cisterna no puede superar 3.',
             'cisterna_cloro.min' => 'El cloro residual de Cisterna no puede ser menor a 0.',
+            'bajada_tanque_cloro.max' => 'El cloro residual de Bajada de Tanque no puede superar 3.',
+            'bajada_tanque_cloro.min' => 'El cloro residual de Bajada de Tanque no puede ser menor a 0.',
         ]);
 
         // Validaciones cruzadas para los filtros
@@ -106,6 +114,7 @@ class QuimicoController extends Controller
         if ($request->filled('decantador_norte_turbiedad') || $request->filled('decantador_norte_ph')) $hasData = true;
         if ($request->filled('decantador_sur_turbiedad') || $request->filled('decantador_sur_ph')) $hasData = true;
         if ($request->filled('cisterna_turbiedad') || $request->filled('cisterna_ph') || $request->filled('cisterna_cloro')) $hasData = true;
+        if ($request->filled('bajada_tanque_turbiedad') || $request->filled('bajada_tanque_ph') || $request->filled('bajada_tanque_cloro')) $hasData = true;
         if ($request->filled('rio_turbiedad') || $request->filled('rio_ph')) $hasData = true;
         if ($request->filled('filtro_norte_select') && ($request->filled('filtro_norte_turbiedad') || $request->filled('filtro_norte_ph'))) $hasData = true;
         if ($request->filled('filtro_sur_select') && ($request->filled('filtro_sur_turbiedad') || $request->filled('filtro_sur_ph'))) $hasData = true;
@@ -146,6 +155,18 @@ class QuimicoController extends Controller
                 'turbiedad' => $request->cisterna_turbiedad,
                 'ph' => $request->cisterna_ph,
                 'cloro_residual' => $request->cisterna_cloro,
+            ]);
+            $recordsCreated++;
+        }
+
+        // 3.5. Bajada de Tanque
+        if ($request->filled('bajada_tanque_turbiedad') || $request->filled('bajada_tanque_ph') || $request->filled('bajada_tanque_cloro')) {
+            CalidadAgua::create([
+                'user_id' => Auth::id(),
+                'lugar' => 'BAJADA DE TANQUE',
+                'turbiedad' => $request->bajada_tanque_turbiedad,
+                'ph' => $request->bajada_tanque_ph,
+                'cloro_residual' => $request->bajada_tanque_cloro,
             ]);
             $recordsCreated++;
         }
