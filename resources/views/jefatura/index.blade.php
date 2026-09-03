@@ -99,12 +99,21 @@
                                 {{ $user->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="py-3 px-4 border border-amber-700/50">
-                                <form method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" onsubmit="return confirm('¿Aprobar acceso al sistema para este usuario?');">
-                                    @csrf
-                                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
-                                        <i class="fa-solid fa-check"></i> Aprobar
-                                    </button>
-                                </form>
+                                <div class="flex justify-center gap-2">
+                                    <form method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" onsubmit="return confirm('¿Aprobar acceso al sistema para este usuario?');">
+                                        @csrf
+                                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                            <i class="fa-solid fa-check"></i> Aprobar
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('jefatura.rechazarUsuario', $user->id) }}" onsubmit="return confirm('¿Rechazar y eliminar a este usuario?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                            <i class="fa-solid fa-times"></i> Rechazar
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -113,6 +122,68 @@
             </div>
         </div>
         @endif
+
+        <!-- Panel Gestión de Personal -->
+        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-indigo-400 uppercase">Gestión de Personal</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-6">
+                <div class="overflow-x-auto relative z-10">
+                    <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
+                        <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                            <tr>
+                                <th class="py-3 px-4 border border-slate-700/50">Nombre</th>
+                                <th class="py-3 px-4 border border-slate-700/50">Email</th>
+                                <th class="py-3 px-4 border border-slate-700/50">Rol</th>
+                                <th class="py-3 px-4 border border-slate-700/50">Fecha de Registro</th>
+                                <th class="py-3 px-4 border border-slate-700/50">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-medium bg-slate-900/50">
+                            @foreach($empleados as $emp)
+                            <tr class="hover:bg-slate-800/40 transition">
+                                <td class="py-3 px-4 border border-slate-700/50 font-bold text-white">{{ $emp->name }}</td>
+                                <td class="py-3 px-4 border border-slate-700/50">{{ $emp->email }}</td>
+                                <td class="py-3 px-4 border border-slate-700/50">
+                                    <form method="POST" action="{{ route('jefatura.actualizarRol', $emp->id) }}" class="flex items-center justify-center gap-2">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="role" class="bg-slate-800 border border-slate-600 rounded text-xs p-1 text-white focus:outline-none focus:border-indigo-500 font-bold uppercase tracking-wider">
+                                            <option value="operador" {{ $emp->role === 'operador' ? 'selected' : '' }}>Operador</option>
+                                            <option value="quimico" {{ $emp->role === 'quimico' ? 'selected' : '' }}>Químico</option>
+                                            <option value="laboratorio" {{ $emp->role === 'laboratorio' ? 'selected' : '' }}>Laboratorio</option>
+                                            <option value="jefatura" {{ $emp->role === 'jefatura' ? 'selected' : '' }}>Jefatura</option>
+                                        </select>
+                                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white p-1.5 px-3 rounded transition shadow flex items-center" title="Guardar Rol">
+                                            <span class="text-xs font-bold uppercase tracking-wider">Guardar</span>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="py-3 px-4 border border-slate-700/50 text-xs font-mono text-slate-400">
+                                    {{ $emp->created_at->format('d/m/Y') }}
+                                </td>
+                                <td class="py-3 px-4 border border-slate-700/50">
+                                    @if($emp->id !== auth()->id())
+                                    <form method="POST" action="{{ route('jefatura.darDeBaja', $emp->id) }}" onsubmit="return confirm('¿Dar de baja y eliminar a este empleado?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
+                                            <i class="fa-solid fa-user-xmark"></i> Dar de Baja
+                                        </button>
+                                    </form>
+                                    @else
+                                        <span class="text-slate-500 text-xs font-bold text-emerald-500">TÚ</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </details>
 
         <!-- Mensaje de Éxito Genérico -->
         @if(session('success'))

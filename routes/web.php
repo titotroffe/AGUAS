@@ -60,6 +60,9 @@ Route::middleware(['auth', 'role:quimico'])->group(function () {
 Route::middleware(['auth', 'role:jefatura,admin'])->group(function () {
     Route::get('/jefatura', [JefaturaController::class, 'index'])->name('jefatura.index');
     Route::post('/jefatura/aprobar-usuario/{id}', [JefaturaController::class, 'aprobarUsuario'])->name('jefatura.aprobarUsuario');
+    Route::delete('/jefatura/rechazar-usuario/{id}', [JefaturaController::class, 'rechazarUsuario'])->name('jefatura.rechazarUsuario');
+    Route::put('/jefatura/actualizar-rol/{id}', [JefaturaController::class, 'actualizarRol'])->name('jefatura.actualizarRol');
+    Route::delete('/jefatura/dar-de-baja/{id}', [JefaturaController::class, 'darDeBaja'])->name('jefatura.darDeBaja');
 });
 
 // Rutas para Bombas y Pozos
