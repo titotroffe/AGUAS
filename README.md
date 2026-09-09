@@ -1,58 +1,79 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 💧 AGUAS - Sistema Integral de Planta Potabilizadora
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema web integral desarrollado en **Laravel** para la telemetría, gestión operativa, monitoreo de calidad fisicoquímica/bacteriológica y supervisión en tiempo real de una planta potabilizadora de agua.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📌 Módulos del Sistema
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Encargado de Turno (`/operadores`)**:
+   - Accionamiento de bombas de captación (Río y Pozos) con enclavamiento de seguridad.
+   - Registro de presiones hidráulicas (Bajada de Tanque, Planta, Falcón) y nivel de cisterna.
+   - Registro y control de ciclos de retrolavado de filtros rápidos (Línea Norte y Línea Sur).
+   - Monitoreo de porcentaje de reactivos químicos (Cloro, Poliamina, Sulfato).
+   - Libro de guardia / novedades por turno.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Técnico Químico (`/quimico`)**:
+   - Telemetría en tiempo real de bombas en modo lectura.
+   - Ensayos fisicoquímicos en 7 puntos (Río, Decantadores, Filtros, Cisterna, Bajada de Tanque).
+   - Ensayos bacteriológicos rápidos (*E. coli* y Coliformes Totales).
+   - Registro de caudalímetros de dosificación ($m^3/h$).
 
-## Learning Laravel
+3. **Laboratorio Central (`/laboratorio`)**:
+   - Arquitectura flexible basada en el patrón **EAV (Entity-Attribute-Value)**.
+   - Ensayos de calidad en recepción de insumos químicos (Sulfato, Hipoclorito, Poliamina, Cal).
+   - Ensayos completos fisicoquímicos, toxicológicos y biológicos en Agua Cruda y Producto Terminado.
+   - Análisis microbiológico de pozos de extracción subterránea.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. **Jefatura y Dirección (`/jefatura`)**:
+   - Control de acceso y aprobación jerárquica de usuarios registrados.
+   - Gestión de empleados y reasignación de roles RBAC.
+   - Dashboards analíticos e interactivos con **Chart.js** (curvas de turbiedad, pH, cloro, presiones y lavado de filtros).
+   - Reportes históricos paginados con filtros multidimensionales.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🚀 Puesta en Marcha Rápida
 
-## Agentic Development
+### Requisitos:
+- PHP 8.3+ con extensiones requeridas de Laravel (`curl`, `mbstring`, `pdo_mysql`, `bcmath`, `xml`).
+- Composer 2+
+- MySQL 8.0+ / MariaDB 10.6+
+- Node.js 20+ y NPM
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
+### Instalación:
 ```bash
-composer require laravel/boost --dev
+# 1. Clonar el repositorio
+git clone https://github.com/titotroffe/AGUAS.git
+cd AGUAS
 
-php artisan boost:install
+# 2. Instalar dependencias
+composer install
+npm install
+
+# 3. Configurar entorno
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configurar base de datos en .env y migrar
+php artisan migrate --force
+php artisan db:seed --class=EavSeeder
+
+# 5. Compilar assets y levantar servidor
+npm run build
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 📖 Documentación Completa
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Para acceder a la especificación técnica exhaustiva, diagrama de arquitectura, modelo relacional de base de datos (ERD), matriz RBAC, catálogo de endpoints y manual de usuario por puesto, consulte el documento:
 
-## Code of Conduct
+👉 **[DOCUMENTACION.md](DOCUMENTACION.md)**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🛡️ Seguridad y Buenas Prácticas
+Consulte los reportes de auditoría y análisis de calidad de software en `/pentesting/aguas/` para el plan de remediación antes de despliegues en entornos de producción.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
