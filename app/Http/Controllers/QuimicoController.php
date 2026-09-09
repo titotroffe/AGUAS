@@ -380,7 +380,7 @@ class QuimicoController extends Controller
         if ($request->filled('rio_e_coli') || $request->filled('rio_coliformes')) {
             EnsayoBacteriologico::create([
                 'user_id' => Auth::id(),
-                'lugar' => 'RÍO',
+                'lugar' => 'RIO',
                 'e_coli' => $request->rio_e_coli,
                 'coliformes_totales' => $request->rio_coliformes,
             ]);
