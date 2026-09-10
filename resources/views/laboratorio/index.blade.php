@@ -243,7 +243,9 @@
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
-                          <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                    </div>
+
+                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_cruda" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleAguaCrudaFields(this.value)">
                             <option value="">Seleccionar Frecuencia</option>
