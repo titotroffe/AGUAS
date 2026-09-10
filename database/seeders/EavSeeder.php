@@ -121,6 +121,17 @@ class EavSeeder extends Seeder
             ['id' => 63, 'nombre' => 'Trihalometanos: Bromoformo', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 64, 'nombre' => 'Trihalometanos: Dibromoclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 65, 'nombre' => 'Trihalometanos: Bromodiclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Mensual Tratamiento - Nuevos Fisicoquimicos (66-74)
+            ['id' => 66, 'nombre' => 'Zinc', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 67, 'nombre' => 'Sodio', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 68, 'nombre' => 'Detergentes sintéticos', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 69, 'nombre' => 'Plomo', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 70, 'nombre' => 'DBO', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 71, 'nombre' => 'DQO', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 72, 'nombre' => 'Clorfenoles: 2, 4, 6 - Tricorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 73, 'nombre' => 'Hidrocarburos: Benzeno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 74, 'nombre' => 'Hidrocarburos: Benzeno (a) pireno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
         ];
         foreach ($tiposMedicion as $item) {
             DB::table('lab_tipos_medicion')->updateOrInsert(['id' => $item['id']], $item);
@@ -161,8 +172,8 @@ class EavSeeder extends Seeder
             ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 9, 'activo' => true, 'min' => 0, 'max' => 1000],
         ];
         
-        // Configuración para Agua Cruda (Modulo 2) - MENSUAL (11-28)
-        $camposAguaCrudaMensual = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+        // Configuración para Agua Cruda (Modulo 2) - MENSUAL (11-28, 66-74)
+        $camposAguaCrudaMensual = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 66, 67, 68, 69, 70, 71, 72, 73, 74];
         foreach ($camposAguaCrudaMensual as $tipoId) {
             $min = ($tipoId == 18) ? 0 : 0;
             $max = ($tipoId == 18) ? 14 : 1000;
