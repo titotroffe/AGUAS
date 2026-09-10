@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class LabMedicion extends Model
 {
     protected $table = 'lab_mediciones';
-    protected $fillable = ['modulo_id', 'insumo_id', 'pozo_id', 'tipo_medicion_id', 'activo', 'min', 'max'];
+    protected $fillable = ['modulo_id', 'insumo_id', 'pozo_id', 'frecuencia_id', 'tipo_medicion_id', 'activo', 'min', 'max'];
 
     public function modulo() { return $this->belongsTo(LabModulo::class, 'modulo_id'); }
     public function insumo() { return $this->belongsTo(LabInsumo::class, 'insumo_id'); }
     public function pozo() { return $this->belongsTo(LabPozo::class, 'pozo_id'); }
+    public function frecuencia() { return $this->belongsTo(LabFrecuencia::class, 'frecuencia_id'); }
     public function tipoMedicion() { return $this->belongsTo(LabTipoMedicion::class, 'tipo_medicion_id'); }
 
     public function getIsTextAttribute(): bool

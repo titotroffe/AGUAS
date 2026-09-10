@@ -70,6 +70,57 @@ class EavSeeder extends Seeder
             // Pozos (29-30)
             ['id' => 29, 'nombre' => 'Coliformes Totales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
             ['id' => 30, 'nombre' => 'E. Coli / Coliformes Fecales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+
+            // Trimestrales - Metales Pesados e Inorganicos (31-43)
+            ['id' => 31, 'nombre' => 'Arsénico [As]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 32, 'nombre' => 'Cadmio [Cd]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 33, 'nombre' => 'Cianuro [CN⁻]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 34, 'nombre' => 'Cobre [Cu]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 35, 'nombre' => 'Cromo Total [Cr Total]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 36, 'nombre' => 'Fluor [F]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 37, 'nombre' => 'Manganeso [Mn]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 38, 'nombre' => 'Mercurio Total [Hg Total]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 39, 'nombre' => 'Nitrato (como NO₃⁻)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 40, 'nombre' => 'Nitrito (como NO₂⁻)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 41, 'nombre' => 'Plomo [Pb]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 42, 'nombre' => 'Selenio [Se]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 43, 'nombre' => 'Plata [Ag]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Alcanos Clorados (44-45)
+            ['id' => 44, 'nombre' => 'Alcanos Clorados: 1,2 Dicloroetano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 45, 'nombre' => 'Alcanos Clorados: Tetracloruro de carbono', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Etenos Clorados (46-48)
+            ['id' => 46, 'nombre' => 'Etenos Clorados: 1.1 Dicloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 47, 'nombre' => 'Etenos Clorados: Tricloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 48, 'nombre' => 'Etenos Clorados: Tetracloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Hidrocarburos Aromaticos (49-50)
+            ['id' => 49, 'nombre' => 'Hidrocarburos Aromáticos: Benceno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 50, 'nombre' => 'Hidrocarburos Aromáticos: Benzo (a) pireno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Pesticidas (51-59)
+            ['id' => 51, 'nombre' => 'Pesticidas: Aldrín/Dieldrín', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 52, 'nombre' => 'Pesticidas: Clordano (total isómeros)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 53, 'nombre' => 'Pesticidas: 2,4D (ácido dicloro-fenoxiacético)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 54, 'nombre' => 'Pesticidas: DDT (total isómeros)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 55, 'nombre' => 'Pesticidas: Heptacloro y Heptacloroepóxido', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 56, 'nombre' => 'Pesticidas: Hexaclorobenceno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 57, 'nombre' => 'Pesticidas: Lindano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 58, 'nombre' => 'Pesticidas: Metoxicloro', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 59, 'nombre' => 'Pesticidas: Pentaclorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Desinfectantes y subproductos (60-61)
+            ['id' => 60, 'nombre' => 'Desinfectantes: Cloro (libre residual)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 61, 'nombre' => 'Desinfectantes: Monocloramina', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Clorfenoles (62)
+            ['id' => 62, 'nombre' => 'Clorfenoles: 2,4,6 - Tricorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+
+            // Trimestrales - Trihalometanos (63-65)
+            ['id' => 63, 'nombre' => 'Trihalometanos: Bromoformo', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 64, 'nombre' => 'Trihalometanos: Dibromoclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 65, 'nombre' => 'Trihalometanos: Bromodiclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
         ];
         foreach ($tiposMedicion as $item) {
             DB::table('lab_tipos_medicion')->updateOrInsert(['id' => $item['id']], $item);
@@ -87,48 +138,54 @@ class EavSeeder extends Seeder
 
         $configuraciones = [
             // Sulfato
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 1, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 2, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 3, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 4, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 5, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 6, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 1, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 2, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 3, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 4, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 5, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 6, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 1, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
             
             // Hipoclorito
-            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
-            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'tipo_medicion_id' => 8, 'activo' => true, 'min' => 0, 'max' => 1000],
-            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
+            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 8, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 2, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
 
             // Poliamina
-            ['modulo_id' => 1, 'insumo_id' => 3, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
-            ['modulo_id' => 1, 'insumo_id' => 3, 'pozo_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 3, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
+            ['modulo_id' => 1, 'insumo_id' => 3, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 7, 'activo' => true, 'min' => 0, 'max' => 1000],
 
             // Cal
-            ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
-            ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'tipo_medicion_id' => 9, 'activo' => true, 'min' => 0, 'max' => 1000],
+            ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 10, 'activo' => true, 'min' => null, 'max' => null],
+            ['modulo_id' => 1, 'insumo_id' => 4, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => 9, 'activo' => true, 'min' => 0, 'max' => 1000],
         ];
         
-        // Configuración para Agua Cruda (Modulo 2)
-        $camposAguaCruda = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
-        foreach ($camposAguaCruda as $tipoId) {
+        // Configuración para Agua Cruda (Modulo 2) - MENSUAL (11-28)
+        $camposAguaCrudaMensual = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+        foreach ($camposAguaCrudaMensual as $tipoId) {
             $min = ($tipoId == 18) ? 0 : 0;
             $max = ($tipoId == 18) ? 14 : 1000;
-            $configuraciones[] = ['modulo_id' => 2, 'insumo_id' => null, 'pozo_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
+            $configuraciones[] = ['modulo_id' => 2, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => 1, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
+        }
+
+        // Configuración para Agua Cruda (Modulo 2) - TRIMESTRAL (31-65)
+        $camposAguaCrudaTrimestral = range(31, 65);
+        foreach ($camposAguaCrudaTrimestral as $tipoId) {
+            $configuraciones[] = ['modulo_id' => 2, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => 2, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => null, 'max' => null];
         }
 
         // Configuración para Producto Terminado (Modulo 3)
-        foreach ($camposAguaCruda as $tipoId) {
+        foreach ($camposAguaCrudaMensual as $tipoId) {
             $min = ($tipoId == 18) ? 0 : 0;
             $max = ($tipoId == 18) ? 14 : 1000;
-            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
+            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
         }
 
         // Configuración para Pozos (Modulo 4)
         foreach ($pozos as $pozo) {
-            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'tipo_medicion_id' => 29, 'activo' => true, 'min' => null, 'max' => null];
-            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'tipo_medicion_id' => 30, 'activo' => true, 'min' => null, 'max' => null];
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => null, 'tipo_medicion_id' => 29, 'activo' => true, 'min' => null, 'max' => null];
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => null, 'tipo_medicion_id' => 30, 'activo' => true, 'min' => null, 'max' => null];
         }
 
         foreach ($configuraciones as $config) {

@@ -243,69 +243,48 @@
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
-                    </div>
-
-                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
-                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TIPO DE ANÁLISIS</label>
+                          <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_cruda" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleAguaCrudaFields(this.value)">
-                            <option value="">Seleccionar Análisis</option>
-                            <option value="mensual" {{ old('frecuencia_cruda', 'mensual') == 'mensual' ? 'selected' : '' }}>Análisis Mensual</option>
-                            <option value="trimestral" {{ old('frecuencia_cruda') == 'trimestral' ? 'selected' : '' }}>Análisis Trimestral</option>
+                            <option value="">Seleccionar Frecuencia</option>
+                            @foreach($frecuenciasAguaCruda as $frecuencia)
+                                <option value="{{ $frecuencia->id }}" {{ old('frecuencia_cruda') == $frecuencia->id ? 'selected' : '' }}>Análisis {{ $frecuencia->nombre }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div id="campos-cruda" class="w-full">
-                        <!-- MENSUAL -->
-                        <div class="f-cruda-mensual {{ old('frecuencia_cruda', 'mensual') == 'mensual' ? '' : 'hidden' }}">
-                            @foreach($categoriasAguaCruda as $nombre => $categoria)
-                                @if(strpos($nombre, 'TRIMESTRAL') === false)
-                                    @if($categoria['mediciones']->count() > 0)
-                                        <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
-                                            {{ $nombre }}
-                                        </label>
-                                        <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
-                                            @foreach($categoria['mediciones'] as $config)
-                                                <div class="flex flex-col items-center">
-                                                    <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                                    @if($config->isText)
-                                                        <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                                    @else
-                                                        <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                @endif
-                            @endforeach
-                        </div>
-
-                        <!-- TRIMESTRAL -->
-                        <div class="f-cruda-trimestral {{ old('frecuencia_cruda') == 'trimestral' ? '' : 'hidden' }}">
-                            @php $hasTrimestral = false; @endphp
-                            @foreach($categoriasAguaCruda as $nombre => $categoria)
-                                @if(strpos($nombre, 'TRIMESTRAL') !== false && $categoria['mediciones']->count() > 0)
-                                    @php $hasTrimestral = true; @endphp
-                                    <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">{{ str_replace('TRIMESTRAL_', '', $nombre) }}</label>
-                                    <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
-                                        @foreach($categoria['mediciones'] as $config)
-                                            <div class="flex flex-col items-center">
-                                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                                @if($config->isText)
-                                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                                @else
-                                                    <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                                                @endif
+                        @foreach($frecuenciasAguaCruda as $frecuencia)
+                            <div class="f-cruda-{{ $frecuencia->id }} {{ old('frecuencia_cruda') == $frecuencia->id ? '' : 'hidden' }}">
+                                @php
+                                    $categorias = $categoriasAguaCruda->get($frecuencia->id);
+                                @endphp
+                                
+                                @if($categorias && $categorias->count() > 0)
+                                    @foreach($categorias as $nombre => $categoria)
+                                        @if($categoria['mediciones']->count() > 0)
+                                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                {{ $nombre }}
+                                            </label>
+                                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                @foreach($categoria['mediciones'] as $config)
+                                                    <div class="flex flex-col items-center">
+                                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                        @if($config->isText)
+                                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                        @else
+                                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                        @endforeach
-                                    </div>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte {{ strtolower($frecuencia->nombre) }} todavía.</p>
                                 @endif
-                            @endforeach
-
-                            @if(!$hasTrimestral)
-                                <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte trimestral todavía.</p>
-                            @endif
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="flex justify-center mb-4">

@@ -7,6 +7,7 @@ use App\Models\Novedad;
 use App\Models\LabValor;
 use App\Models\LabMedicion;
 use App\Models\LabInsumo;
+use App\Models\LabFrecuencia;
 use App\Models\LabPozo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -79,15 +80,20 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $medicionesConfigAguaCruda = LabMedicion::with('tipoMedicion')
+        $frecuenciasAguaCruda = LabFrecuencia::all();
+
+        $medicionesConfigAguaCruda = LabMedicion::with('tipoMedicion', 'frecuencia')
             ->where('modulo_id', 2)->where('activo', true)->get();
         
         $categoriasAguaCruda = $medicionesConfigAguaCruda
-            ->groupBy(fn($c) => $c->tipoMedicion->categoria ?? 'FISICOQUÍMICO')
-            ->map(fn($mediciones) => [
-                'clases_grid' => 'grid-cols-2 md:grid-cols-4',
-                'mediciones' => $mediciones
-            ]);
+            ->groupBy('frecuencia_id')
+            ->map(function($medicionesFrecuencia) {
+                return $medicionesFrecuencia->groupBy(fn($c) => $c->tipoMedicion->categoria ?? 'FISICOQUÍMICO')
+                    ->map(fn($mediciones) => [
+                        'clases_grid' => 'grid-cols-2 md:grid-cols-4',
+                        'mediciones' => $mediciones
+                    ]);
+            });
 
         // ---------------------------------------------------------
         // 3. PRODUCTO TERMINADO (modulo_id = 3)
@@ -155,7 +161,7 @@ class LaboratorioController extends Controller
 
         return view('laboratorio.index', compact(
             'tiposInsumos', 'insumoFields', 'insumos', 'medicionesConfigInsumos',
-            'aguaCruda', 'medicionesConfigAguaCruda', 'categoriasAguaCruda',
+            'frecuenciasAguaCruda', 'aguaCruda', 'medicionesConfigAguaCruda', 'categoriasAguaCruda',
             'productoTerminado', 'medicionesConfigProducto', 'categoriasProducto',
             'pozos', 'tiposPozos', 'medicionesConfigPozos',
             'ultimasNovedades', 'novedadesRecientes'
