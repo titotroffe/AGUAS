@@ -64,6 +64,13 @@ Route::middleware(['auth', 'role:jefatura,admin'])->group(function () {
     Route::put('/jefatura/actualizar-rol/{id}', [JefaturaController::class, 'actualizarRol'])->name('jefatura.actualizarRol');
     Route::delete('/jefatura/dar-de-baja/{id}', [JefaturaController::class, 'darDeBaja'])->name('jefatura.darDeBaja');
     Route::post('/jefatura/reactivar-usuario/{id}', [JefaturaController::class, 'reactivarUsuario'])->name('jefatura.reactivarUsuario');
+
+    // ABM Dinámico
+    Route::get('/jefatura/abm', [\App\Http\Controllers\AbmController::class, 'index'])->name('jefatura.abm.index');
+    Route::get('/jefatura/abm/{table}', [\App\Http\Controllers\AbmController::class, 'showTable'])->name('jefatura.abm.show');
+    Route::post('/jefatura/abm/{table}', [\App\Http\Controllers\AbmController::class, 'store'])->name('jefatura.abm.store');
+    Route::put('/jefatura/abm/{table}/{id}', [\App\Http\Controllers\AbmController::class, 'update'])->name('jefatura.abm.update');
+    Route::delete('/jefatura/abm/{table}/{id}', [\App\Http\Controllers\AbmController::class, 'destroy'])->name('jefatura.abm.destroy');
 });
 
 // Rutas para Bombas y Pozos

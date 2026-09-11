@@ -59,6 +59,11 @@
             <h1 class="text-xl md:text-2xl font-bold text-white tracking-wider text-center m-0 w-full uppercase">
                 PANEL DE JEFATURA
             </h1>
+            <div class="md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 flex justify-center z-10 mt-4 md:mt-0">
+                <a href="{{ route('jefatura.abm.index') }}" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition text-sm font-bold shadow-lg flex items-center gap-2">
+                    <i class="fa-solid fa-database"></i> ABM DATOS
+                </a>
+            </div>
         </div>
 
         @php
@@ -332,6 +337,8 @@
                     <canvas id="chartCloro"></canvas>
                 </div>
             </div>
+
+
 
             <!-- pH -->
             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20 lg:col-span-2">
