@@ -81,6 +81,9 @@ class JefaturaController extends Controller
         // 7. Todos los empleados (usuarios aprobados)
         $empleados = \App\Models\User::where('is_approved', true)->orderBy('name', 'asc')->get();
 
+        // 8. Empleados dados de baja (SoftDeleted)
+        $empleadosDadosDeBaja = \App\Models\User::onlyTrashed()->orderBy('name', 'asc')->get();
+
         return view('jefatura.index', compact(
             'presiones', 
             'calidadAgua',
@@ -95,7 +98,8 @@ class JefaturaController extends Controller
             'presionesFechaInicio',
             'presionesFechaFin',
             'usuariosPendientes',
-            'empleados'
+            'empleados',
+            'empleadosDadosDeBaja'
         ));
     }
 
@@ -115,8 +119,8 @@ class JefaturaController extends Controller
         // Solo podemos rechazar si aún no está aprobado
         if (!$user->is_approved) {
             $nombre = $user->name;
-            $user->delete();
-            return redirect()->route('jefatura.index')->with('success', "El usuario {$nombre} ha sido rechazado y eliminado.");
+            $user->forceDelete();
+            return redirect()->route('jefatura.index')->with('success', "El usuario {$nombre} ha sido rechazado y eliminado permanentemente.");
         }
 
         return redirect()->route('jefatura.index')->with('error', "No se puede rechazar a un usuario que ya está aprobado.");
@@ -153,5 +157,13 @@ class JefaturaController extends Controller
         $user->delete();
 
         return redirect()->route('jefatura.index')->with('success', "El empleado {$nombre} ha sido dado de baja exitosamente.");
+    }
+
+    public function reactivarUsuario($id)
+    {
+        $user = \App\Models\User::onlyTrashed()->findOrFail($id);
+        $user->restore();
+
+        return redirect()->route('jefatura.index')->with('success', "El empleado {$user->name} ha sido reactivado y dado de alta exitosamente.");
     }
 }

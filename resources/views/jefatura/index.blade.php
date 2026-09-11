@@ -166,7 +166,7 @@
                                 </td>
                                 <td class="py-3 px-4 border border-slate-700/50">
                                     @if($emp->id !== auth()->id())
-                                    <form method="POST" action="{{ route('jefatura.darDeBaja', $emp->id) }}" onsubmit="return confirm('¿Dar de baja y eliminar a este empleado?');">
+                                    <form method="POST" action="{{ route('jefatura.darDeBaja', $emp->id) }}" onsubmit="return confirm('¿Dar de baja a este empleado? Sus mediciones e historial se mantendrán intactos.');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
@@ -182,6 +182,47 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if(isset($empleadosDadosDeBaja) && $empleadosDadosDeBaja->count() > 0)
+                <div class="mt-8 border-t border-slate-700/50 pt-6">
+                    <h3 class="text-lg font-bold text-slate-300 tracking-wide mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-users-slash text-slate-500"></i> Personal Dado de Baja
+                    </h3>
+                    <div class="overflow-x-auto relative z-10 opacity-80">
+                        <table class="w-full text-center text-sm text-slate-400 border-collapse border border-slate-700/50">
+                            <thead class="text-xs uppercase bg-slate-800 text-slate-500 tracking-wider">
+                                <tr>
+                                    <th class="py-2 px-4 border border-slate-700/50">Nombre</th>
+                                    <th class="py-2 px-4 border border-slate-700/50">Email</th>
+                                    <th class="py-2 px-4 border border-slate-700/50">Rol</th>
+                                    <th class="py-2 px-4 border border-slate-700/50">Fecha de Baja</th>
+                                    <th class="py-2 px-4 border border-slate-700/50">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-medium bg-slate-900/30">
+                                @foreach($empleadosDadosDeBaja as $emp)
+                                <tr class="hover:bg-slate-800/40 transition">
+                                    <td class="py-2 px-4 border border-slate-700/50 font-bold text-slate-300">{{ $emp->name }}</td>
+                                    <td class="py-2 px-4 border border-slate-700/50">{{ $emp->email }}</td>
+                                    <td class="py-2 px-4 border border-slate-700/50 uppercase text-xs">{{ $emp->role }}</td>
+                                    <td class="py-2 px-4 border border-slate-700/50 text-xs font-mono text-slate-500">
+                                        {{ $emp->deleted_at->format('d/m/Y H:i') }}
+                                    </td>
+                                    <td class="py-2 px-4 border border-slate-700/50">
+                                        <form method="POST" action="{{ route('jefatura.reactivarUsuario', $emp->id) }}" onsubmit="return confirm('¿Reactivar a este empleado y darle de alta nuevamente en el sistema?');">
+                                            @csrf
+                                            <button type="submit" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
+                                                <i class="fa-solid fa-user-check"></i> Reactivar
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
             </div>
         </details>
 
@@ -198,25 +239,25 @@
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Tanque</p>
                 <p class="text-3xl font-black text-sky-400">{{ number_format($ultimaPresion->presion_tanque, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-sky-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-sky-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
                 <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Planta</p>
                 <p class="text-3xl font-black text-indigo-400">{{ number_format($ultimaPresion->presion_planta, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-indigo-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-indigo-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
                 <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Falcón</p>
                 <p class="text-3xl font-black text-purple-400">{{ number_format($ultimaPresion->presion_falcon, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-purple-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-purple-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
                 <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
                 <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Nivel Cisterna</p>
                 <p class="text-3xl font-black text-emerald-400">{{ number_format($ultimaPresion->nivel_cisterna, 2) }}%</p>
-                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
                 <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
             </div>
         </div>
@@ -228,7 +269,7 @@
             @foreach($ultimosPorLugar as $lugar)
             <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
                 <p class="text-slate-300 text-[11px] font-black tracking-widest uppercase mb-1 line-clamp-1" title="{{ $lugar->lugar }} {{ $lugar->filtro_numero }}">{{ $lugar->lugar }} {{ $lugar->filtro_numero }}</p>
-                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mb-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($lugar->user)->name ?? 'SISTEMA' }}</p>
+                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mb-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($lugar->user)->name ?? 'SISTEMA' }} @if(optional($lugar->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</p>
                 <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
                     <span class="text-slate-500 text-[10px] font-black uppercase">Turbiedad</span>
                     <span class="text-amber-400 font-bold">{{ $lugar->turbiedad !== null ? $lugar->turbiedad : '-' }}</span>
@@ -430,7 +471,7 @@
                                             <td class="p-3 text-center text-amber-300">{{ $reg->turbiedad ?? '-' }}</td>
                                             <td class="p-3 text-center text-emerald-300">{{ $reg->ph ?? '-' }}</td>
                                             <td class="p-3 text-center text-rose-300">{{ $reg->cloro_residual ?? '-' }}</td>
-                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }}</td>
+                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }} @if(optional($reg->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</td>
                                         </tr>
                                         @empty
                                         <tr>
@@ -518,7 +559,7 @@
                                             <td class="p-3 text-center text-indigo-300">{{ $reg->presion_planta ?? '-' }} MCA</td>
                                             <td class="p-3 text-center text-purple-300">{{ $reg->presion_falcon ?? '-' }} MCA</td>
                                             <td class="p-3 text-center text-emerald-300">{{ $reg->nivel_cisterna ?? '-' }}%</td>
-                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }}</td>
+                                            <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }} @if(optional($reg->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</td>
                                         </tr>
                                         @empty
                                         <tr>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ensayos_bacteriologicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->string('lugar'); 
             $table->string('filtro_numero')->nullable();
             $table->decimal('e_coli', 10, 2)->nullable();

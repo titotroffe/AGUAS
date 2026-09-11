@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('calidad_aguas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->string('lugar'); 
             $table->string('filtro_numero')->nullable();
             $table->decimal('turbiedad', 8, 2)->nullable();

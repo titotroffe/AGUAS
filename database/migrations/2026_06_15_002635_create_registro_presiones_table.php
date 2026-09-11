@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('registro_presiones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
             $table->decimal('presion_tanque', 8, 2)->nullable();
             $table->decimal('presion_planta', 8, 2)->nullable();
             $table->decimal('presion_falcon', 8, 2)->nullable();
