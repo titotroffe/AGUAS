@@ -47,9 +47,42 @@ class AbmController extends Controller
             $columnTypes[$col->Field] = $col->Type;
         }
 
+        // Obtener foreign keys y sus datos relacionados
+        $foreignKeys = Schema::getForeignKeys($table);
+        $foreignData = [];
+        
+        foreach ($foreignKeys as $fk) {
+            $localColumn = $fk['columns'][0] ?? null;
+            $foreignTable = $fk['foreign_table'];
+            $foreignCol = $fk['foreign_columns'][0] ?? 'id';
+            
+            if ($localColumn && $foreignTable && Schema::hasTable($foreignTable)) {
+                // Try to find a display column
+                $foreignTableCols = Schema::getColumnListing($foreignTable);
+                $displayCol = $foreignCol; // fallback to ID
+                $candidates = ['nombre', 'name', 'titulo', 'title', 'descripcion', 'description'];
+                
+                foreach ($candidates as $cand) {
+                    if (in_array($cand, $foreignTableCols)) {
+                        $displayCol = $cand;
+                        break;
+                    }
+                }
+                
+                // Fetch data
+                $data = DB::table($foreignTable)->select($foreignCol, $displayCol)->get();
+                $foreignData[$localColumn] = [
+                    'table' => $foreignTable,
+                    'key' => $foreignCol,
+                    'display' => $displayCol,
+                    'options' => $data
+                ];
+            }
+        }
+
         $records = DB::table($table)->paginate(15);
 
-        return view('jefatura.abm.table', compact('table', 'columns', 'columnTypes', 'records'));
+        return view('jefatura.abm.table', compact('table', 'columns', 'columnTypes', 'records', 'foreignData'));
     }
 
     public function store(Request $request, $table)
@@ -139,6 +172,52 @@ class AbmController extends Controller
             return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro eliminado correctamente.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error al eliminar. Es posible que el registro esté siendo usado en otra tabla.');
+        }
+    }
+
+    public function addColumn(Request $request, $table)
+    {
+        if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table)) {
+            abort(403);
+        }
+
+        $request->validate([
+            'column_name' => 'required|string|regex:/^[a-zA-Z0-9_]+$/|max:64',
+            'column_type' => 'required|in:string,integer,float,date,boolean'
+        ]);
+
+        $name = strtolower($request->column_name);
+        $type = $request->column_type;
+
+        if (Schema::hasColumn($table, $name)) {
+            return redirect()->back()->with('error', 'La columna ya existe en esta tabla.');
+        }
+
+        try {
+            Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($name, $type) {
+                switch ($type) {
+                    case 'integer':
+                        $t->integer($name)->nullable();
+                        break;
+                    case 'float':
+                        $t->float($name)->nullable();
+                        break;
+                    case 'date':
+                        $t->date($name)->nullable();
+                        break;
+                    case 'boolean':
+                        $t->boolean($name)->nullable()->default(0);
+                        break;
+                    case 'string':
+                    default:
+                        $t->string($name)->nullable();
+                        break;
+                }
+            });
+            return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna '{$name}' añadida exitosamente.");
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'Error al añadir columna: ' . $e->getMessage());
         }
     }
 }

@@ -17,9 +17,15 @@
             </a>
             <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">GESTIÓN DE: <span class="text-blue-400">{{ strtoupper($table) }}</span></h1>
             
-            <button onclick="openModal('create')" class="absolute right-0 top-1/2 -translate-y-1/2 bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-500 transition text-sm font-bold shadow-lg">
-                + NUEVO REGISTRO
-            </button>
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-3">
+                <button onclick="openColumnModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded border border-indigo-500 transition text-sm font-bold shadow-lg">
+                    <i class="fa-solid fa-plus-minus mr-1"></i> COLUMNA
+                </button>
+                
+                <button onclick="openModal('create')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-500 transition text-sm font-bold shadow-lg">
+                    + NUEVO REGISTRO
+                </button>
+            </div>
         </div>
 
         @if(session('success'))
@@ -50,7 +56,20 @@
                         @forelse($records as $row)
                             <tr class="hover:bg-slate-800/40 transition border-b border-slate-700/50">
                                 @foreach($columns as $col)
-                                    <td class="py-3 px-4 max-w-xs truncate" title="{{ $row->$col }}">{{ $row->$col }}</td>
+                                    @php
+                                        $displayValue = $row->$col;
+                                        if (isset($foreignData[$col])) {
+                                            $fkInfo = $foreignData[$col];
+                                            $match = collect($fkInfo['options'])->firstWhere($fkInfo['key'], $row->$col);
+                                            if ($match) {
+                                                $displayValue = $match->{$fkInfo['display']};
+                                                if ($fkInfo['key'] !== $fkInfo['display']) {
+                                                    $displayValue = $row->$col . ' - ' . $displayValue;
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    <td class="py-3 px-4 max-w-xs truncate" title="{{ $displayValue }}">{{ $displayValue }}</td>
                                 @endforeach
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <button onclick="openModal('edit', {{ json_encode($row) }})" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Editar</button>
@@ -113,7 +132,17 @@
                             <div class="flex flex-col">
                                 <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">{{ $col }}</label>
                                 
-                                @if($inputType === 'checkbox')
+                                @if(isset($foreignData[$col]))
+                                    @php $fkInfo = $foreignData[$col]; @endphp
+                                    <select name="{{ $col }}" id="input-{{ $col }}" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                                        <option value="">(Nulo / Sin asignar)</option>
+                                        @foreach($fkInfo['options'] as $opt)
+                                            <option value="{{ $opt->{$fkInfo['key']} }}">
+                                                {{ $opt->{$fkInfo['key']} }} - {{ $opt->{$fkInfo['display']} }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                @elseif($inputType === 'checkbox')
                                     <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mt-2">
                                         <input type="checkbox" name="{{ $col }}" id="input-{{ $col }}" value="1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-600"/>
                                         <label for="input-{{ $col }}" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-600 cursor-pointer"></label>
@@ -135,6 +164,47 @@
                 </button>
                 <button type="button" onclick="document.getElementById('abm-form').submit()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
                     GUARDAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Add Column -->
+    <div id="add-column-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-600 rounded-xl w-full max-w-md shadow-2xl flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-xl">
+                <h3 class="text-xl font-bold text-white tracking-wide">AÑADIR COLUMNA A: {{ strtoupper($table) }}</h3>
+                <button onclick="closeColumnModal()" class="text-slate-400 hover:text-white text-2xl transition">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <form id="add-column-form" method="POST" action="{{ route('jefatura.abm.addColumn', $table) }}">
+                    @csrf
+                    <div class="flex flex-col mb-4">
+                        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">Nombre de la Columna</label>
+                        <input type="text" name="column_name" required pattern="[a-zA-Z0-9_]+" title="Solo letras, números y guiones bajos" placeholder="ej: observaciones_extra" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500">
+                        <span class="text-xs text-slate-500 mt-1">Sin espacios ni caracteres especiales.</span>
+                    </div>
+
+                    <div class="flex flex-col mb-4">
+                        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">Tipo de Dato</label>
+                        <select name="column_type" required class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500">
+                            <option value="string">Texto Corto (Varchar)</option>
+                            <option value="integer">Número Entero (Integer)</option>
+                            <option value="float">Número Decimal (Float)</option>
+                            <option value="date">Fecha (Date)</option>
+                            <option value="boolean">Casilla Si/No (Boolean)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="p-4 border-t border-slate-700 bg-slate-900/50 rounded-b-xl flex justify-end gap-4">
+                <button type="button" onclick="closeColumnModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded transition">
+                    CANCELAR
+                </button>
+                <button type="button" onclick="document.getElementById('add-column-form').submit()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
+                    AÑADIR COLUMNA
                 </button>
             </div>
         </div>
@@ -186,6 +256,15 @@
 
         function closeModal() {
             document.getElementById('abm-modal').classList.add('hidden');
+        }
+
+        function openColumnModal() {
+            document.getElementById('add-column-form').reset();
+            document.getElementById('add-column-modal').classList.remove('hidden');
+        }
+
+        function closeColumnModal() {
+            document.getElementById('add-column-modal').classList.add('hidden');
         }
     </script>
 </body>
