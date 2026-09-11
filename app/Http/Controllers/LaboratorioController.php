@@ -47,8 +47,8 @@ class LaboratorioController extends Controller
         $insumos = $insumosAgrupados;
 
         $medicionesConfigInsumos = LabMedicion::with('tipoMedicion', 'insumo')
-            ->where('modulo_id', 1)->where('activo', true)->get();
-        $tiposInsumos = LabInsumo::all();
+            ->where('modulo_id', 1)->where('activo', true)->get()->sortBy(fn($c) => strtolower(\Illuminate\Support\Str::ascii($c->tipoMedicion->nombre)))->values();
+        $tiposInsumos = LabInsumo::orderBy('nombre')->get();
         $insumoFields = [];
         foreach ($medicionesConfigInsumos as $config) {
             if ($config->tipoMedicion?->es_booleano) continue; 
@@ -80,10 +80,10 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $frecuenciasAguaCruda = LabFrecuencia::all();
+        $frecuenciasAguaCruda = LabFrecuencia::orderBy('nombre')->get();
 
         $medicionesConfigAguaCruda = LabMedicion::with('tipoMedicion', 'frecuencia')
-            ->where('modulo_id', 2)->where('activo', true)->get();
+            ->where('modulo_id', 2)->where('activo', true)->get()->sortBy(fn($c) => strtolower(\Illuminate\Support\Str::ascii($c->tipoMedicion->nombre)))->values();
         
         $categoriasAguaCruda = $medicionesConfigAguaCruda
             ->groupBy('frecuencia_id')
@@ -113,7 +113,7 @@ class LaboratorioController extends Controller
         })->take(24)->values();
         
         $medicionesConfigProducto = LabMedicion::with('tipoMedicion')
-            ->where('modulo_id', 3)->where('activo', true)->get();
+            ->where('modulo_id', 3)->where('activo', true)->get()->sortBy(fn($c) => strtolower(\Illuminate\Support\Str::ascii($c->tipoMedicion->nombre)))->values();
         
         $categoriasProducto = $medicionesConfigProducto
             ->groupBy(fn($c) => $c->tipoMedicion->categoria ?? 'FISICOQUÍMICO')
@@ -144,9 +144,9 @@ class LaboratorioController extends Controller
             return $obj;
         })->take(24)->values();
         
-        $tiposPozos = LabPozo::where('activo', true)->get();
+        $tiposPozos = LabPozo::where('activo', true)->orderBy('nombre')->get();
         $medicionesConfigPozos = LabMedicion::with('tipoMedicion', 'pozo')
-            ->where('modulo_id', 4)->where('activo', true)->get();
+            ->where('modulo_id', 4)->where('activo', true)->get()->sortBy(fn($c) => strtolower(\Illuminate\Support\Str::ascii($c->tipoMedicion->nombre)))->values();
 
         // ---------------------------------------------------------
         // Novedades
