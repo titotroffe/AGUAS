@@ -302,9 +302,6 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
-                                    @foreach($medicionesConfigAguaCruda->take(2) as $col)
-                                        <th scope="col" class="py-3 px-4 border border-slate-700">{{ $col->tipoMedicion->nombre }}</th>
-                                    @endforeach
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -312,9 +309,6 @@
                                 @forelse($aguaCruda as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition cruda-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        @foreach($medicionesConfigAguaCruda->take(2) as $col)
-                                            <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->{'medicion_'.$col->id} ?? '-' }}</td>
-                                        @endforeach
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-cruda-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -325,7 +319,7 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-cruda-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigAguaCruda as $config)
                                                     @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
@@ -338,7 +332,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="4" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -366,28 +360,52 @@
                     @csrf
                     <input type="hidden" name="_section" value="producto">
                     
-                    <div class="flex flex-col items-center mb-8">
+                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
+                        <select name="frecuencia_producto" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleProductoFields(this.value)">
+                            <option value="">Seleccionar Frecuencia</option>
+                            @foreach($frecuenciasProducto as $frecuencia)
+                                <option value="{{ $frecuencia->id }}" {{ old('frecuencia_producto') == $frecuencia->id ? 'selected' : '' }}>Análisis {{ $frecuencia->nombre }}</option>
+                            @endforeach
+                        </select>
+
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
-                    @foreach($categoriasProducto as $nombre => $categoria)
-                        @if($categoria['mediciones']->count() > 0)
-                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">{{ $nombre }}</label>
-                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
-                                @foreach($categoria['mediciones'] as $config)
-                                    <div class="flex flex-col items-center">
-                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                        @if($config->isText)
-                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                        @else
-                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                    <div id="campos-producto" class="w-full">
+                        @foreach($frecuenciasProducto as $frecuencia)
+                            <div class="f-producto-{{ $frecuencia->id }} {{ old('frecuencia_producto') == $frecuencia->id ? '' : 'hidden' }}">
+                                @php
+                                    $categorias = $categoriasProducto->get($frecuencia->id);
+                                @endphp
+                                
+                                @if($categorias && $categorias->count() > 0)
+                                    @foreach($categorias as $nombre => $categoria)
+                                        @if($categoria['mediciones']->count() > 0)
+                                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                {{ $nombre }}
+                                            </label>
+                                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                @foreach($categoria['mediciones'] as $config)
+                                                    <div class="flex flex-col items-center">
+                                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                        @if($config->tipoMedicion?->es_texto)
+                                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                        @else
+                                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         @endif
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                @else
+                                    <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte {{ strtolower($frecuencia->nombre) }} todavía.</p>
+                                @endif
                             </div>
-                        @endif
-                    @endforeach
+                        @endforeach
+                    </div>
 
                     <div class="flex justify-center mb-4">
                         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
@@ -404,9 +422,6 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
-                                    @foreach($medicionesConfigProducto->take(2) as $col)
-                                        <th scope="col" class="py-3 px-4 border border-slate-700">{{ $col->tipoMedicion->nombre }}</th>
-                                    @endforeach
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -414,9 +429,6 @@
                                 @forelse($productoTerminado as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition producto-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
-                                        @foreach($medicionesConfigProducto->take(2) as $col)
-                                            <td class="py-4 px-4 text-blue-400 font-mono border border-slate-700">{{ $registro->{'medicion_'.$col->id} ?? '-' }}</td>
-                                        @endforeach
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-producto-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -427,7 +439,7 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-producto-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigProducto as $config)
                                                     @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
@@ -440,7 +452,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="4" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -457,10 +469,130 @@
             </div>
         </details>
 
-        <!-- 4. POZOS -->
+        <!-- 4. AGUA POTABLE DE RED -->
+        <details id="details-aguared" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">4. AGUA POTABLE DE RED</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <form action="{{ route('laboratorio.storeAguaRed') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                    @csrf
+                    <input type="hidden" name="_section" value="aguared">
+                    
+                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
+                        <select name="frecuencia_aguared" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleAguaRedFields(this.value)">
+                            <option value="">Seleccionar Frecuencia</option>
+                            @foreach($frecuenciasAguaRed as $frecuencia)
+                                <option value="{{ $frecuencia->id }}" {{ old('frecuencia_aguared') == $frecuencia->id ? 'selected' : '' }}>Análisis {{ $frecuencia->nombre }}</option>
+                            @endforeach
+                        </select>
+
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                    </div>
+
+                    <div id="campos-aguared" class="w-full">
+                        @foreach($frecuenciasAguaRed as $frecuencia)
+                            <div class="f-aguared-{{ $frecuencia->id }} {{ old('frecuencia_aguared') == $frecuencia->id ? '' : 'hidden' }}">
+                                @php
+                                    $categorias = $categoriasAguaRed->get($frecuencia->id);
+                                @endphp
+                                
+                                @if($categorias && $categorias->count() > 0)
+                                    @foreach($categorias as $nombre => $categoria)
+                                        @if($categoria['mediciones']->count() > 0)
+                                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                {{ $nombre }}
+                                            </label>
+                                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                @foreach($categoria['mediciones'] as $config)
+                                                    <div class="flex flex-col items-center">
+                                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                        @if($config->tipoMedicion?->es_texto)
+                                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                        @else
+                                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte {{ strtolower($frecuencia->nombre) }} todavía.</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex justify-center mb-4">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                            CONFIRMAR AGUA DE RED
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tabla Registros Agua de Red -->
+                <div class="mt-8 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+                    <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">REGISTROS AGUA DE RED</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                            <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-medium">
+                                @forelse($aguaRed as $index => $registro)
+                                    <tr class="hover:bg-slate-800/40 transition aguared-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
+                                        <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-aguared-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
+                                            <button type="button" 
+                                                    onclick="confirmarEliminar('delete-aguared-form', '{{ route('laboratorio.destroyAguaRed', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
+                                                Borrar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-aguared-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigAguaRed as $config)
+                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    <div class="text-xs">
+                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                        <span class="text-white">{{ $val }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if(count($aguaRed) > 8)
+                    <div class="flex justify-center items-center mt-6 space-x-2 text-sm font-bold text-slate-300" id="aguared-pagination">
+                        <button type="button" onclick="changePage('aguared', -1, {{ count($aguaRed) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</button>
+                        <span id="aguared-page-indicator" class="px-4 text-blue-400 font-mono">Página 1 / {{ ceil(count($aguaRed) / 8) }}</span>
+                        <button type="button" onclick="changePage('aguared', 1, {{ count($aguaRed) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </details>
+
+        <!-- 5. POZOS -->
         <details id="details-pozos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">4. POZOS DE EXTRACCIÓN</span>
+                <span class="text-blue-400">5. POZOS DE EXTRACCIÓN</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -470,27 +602,58 @@
                     
                     <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">SELECCIÓN DE POZO</label>
-                        <select name="pozo_numero" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="togglePozoFields(this.value)">
+                        <select name="pozo_numero" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="togglePozoFrecuenciaFields()">
                             <option value="">Elegir Pozo</option>
                             @foreach($tiposPozos as $pozo)
                                 <option value="{{ $pozo->id }}" {{ old('pozo_numero') == $pozo->id ? 'selected' : '' }}>{{ $pozo->nombre }}</option>
                             @endforeach
                         </select>
                         
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FRECUENCIA DE CONTROL</label>
+                        <select name="frecuencia_pozos" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="togglePozoFrecuenciaFields()">
+                            <option value="">Elegir Frecuencia</option>
+                            @foreach($frecuenciasPozos as $frec)
+                                <option value="{{ $frec->id }}" {{ old('frecuencia_pozos') == $frec->id ? 'selected' : '' }}>Análisis {{ $frec->nombre }}</option>
+                            @endforeach
+                        </select>
+
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
                         <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-8 mb-8 text-center items-start justify-center max-w-lg mx-auto">
-                        @foreach($medicionesConfigPozos as $config)
-                            <div class="flex flex-col items-center f-pozo-{{ $config->pozo_id }} {{ old('pozo_numero') == $config->pozo_id ? '' : 'hidden' }}">
-                                <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                @if($config->isText)
-                                    <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
-                                @else
-                                    <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
-                                @endif
-                            </div>
+                    <div id="campos-pozos" class="w-full">
+                        @foreach($frecuenciasPozos as $frecuencia)
+                            @foreach($tiposPozos as $pozo)
+                                <div class="fp-pozo-{{ $pozo->id }}-{{ $frecuencia->id }} {{ (old('pozo_numero') == $pozo->id && old('frecuencia_pozos') == $frecuencia->id) ? '' : 'hidden' }}">
+                                    @php
+                                        $categorias = $categoriasPozos->get($pozo->id)?->get($frecuencia->id);
+                                    @endphp
+                                    
+                                    @if($categorias && $categorias->count() > 0)
+                                        @foreach($categorias as $nombre => $categoria)
+                                            @if($categoria['mediciones']->count() > 0)
+                                                <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                    {{ $nombre }}
+                                                </label>
+                                                <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                    @foreach($categoria['mediciones'] as $config)
+                                                        <div class="flex flex-col items-center">
+                                                            <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                            @if($config->tipoMedicion?->es_texto)
+                                                                <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                            @else
+                                                                <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados.</p>
+                                    @endif
+                                </div>
+                            @endforeach
                         @endforeach
                     </div>
 
@@ -560,10 +723,250 @@
             </div>
         </details>
 
-        <!-- 5. NOVEDADES Y COMENTARIOS DEL TURNO -->
+        <!-- 6. CONTROL ESCRITURADO -->
+        <details id="details-escriturado" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">6. CONTROL ESCRITURADO</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <form action="{{ route('laboratorio.storeControlEscriturado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                    @csrf
+                    <input type="hidden" name="_section" value="escriturado">
+                    
+                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
+                        <select name="frecuencia_escriturado" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleEscrituradoFields(this.value)">
+                            <option value="">Seleccionar Frecuencia</option>
+                            @foreach($frecuenciasEscriturado as $frecuencia)
+                                <option value="{{ $frecuencia->id }}" {{ old('frecuencia_escriturado') == $frecuencia->id ? 'selected' : '' }}>Análisis {{ $frecuencia->nombre }}</option>
+                            @endforeach
+                        </select>
+
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                    </div>
+
+                    <div id="campos-escriturado" class="w-full">
+                        @foreach($frecuenciasEscriturado as $frecuencia)
+                            <div class="f-escriturado-{{ $frecuencia->id }} {{ old('frecuencia_escriturado') == $frecuencia->id ? '' : 'hidden' }}">
+                                @php
+                                    $categorias = $categoriasEscriturado->get($frecuencia->id);
+                                @endphp
+                                
+                                @if($categorias && $categorias->count() > 0)
+                                    @foreach($categorias as $nombre => $categoria)
+                                        @if($categoria['mediciones']->count() > 0)
+                                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                {{ $nombre }}
+                                            </label>
+                                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                @foreach($categoria['mediciones'] as $config)
+                                                    <div class="flex flex-col items-center">
+                                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                        @if($config->tipoMedicion?->es_texto)
+                                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                        @else
+                                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte {{ strtolower($frecuencia->nombre) }} todavía.</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex justify-center mb-4">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                            CONFIRMAR CONTROL ESCRITURADO
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tabla Registros Control Escriturado -->
+                <div class="mt-8 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+                    <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">REGISTROS CONTROL ESCRITURADO</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                            <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-medium">
+                                @forelse($controlEscriturado as $index => $registro)
+                                    <tr class="hover:bg-slate-800/40 transition escriturado-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
+                                        <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-escriturado-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
+                                            <button type="button" 
+                                                    onclick="confirmarEliminar('delete-escriturado-form', '{{ route('laboratorio.destroyControlEscriturado', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
+                                                Borrar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-escriturado-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigEscriturado as $config)
+                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    <div class="text-xs">
+                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                        <span class="text-white">{{ $val }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if(count($controlEscriturado) > 8)
+                    <div class="flex justify-center items-center mt-6 space-x-2 text-sm font-bold text-slate-300" id="escriturado-pagination">
+                        <button type="button" onclick="changePage('escriturado', -1, {{ count($controlEscriturado) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</button>
+                        <span id="escriturado-page-indicator" class="px-4 text-blue-400 font-mono">Página 1 / {{ ceil(count($controlEscriturado) / 8) }}</span>
+                        <button type="button" onclick="changePage('escriturado', 1, {{ count($controlEscriturado) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </details>
+
+        <!-- 7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES -->
+        <details id="details-tanques" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
+            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+                <span class="text-blue-400">7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES</span>
+                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+            </summary>
+            <div class="p-8">
+                <form action="{{ route('laboratorio.storeControlTanques') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                    @csrf
+                    <input type="hidden" name="_section" value="tanques">
+                    
+                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
+                        <select name="frecuencia_tanques" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleTanquesFields(this.value)">
+                            <option value="">Seleccionar Frecuencia</option>
+                            @foreach($frecuenciasTanques as $frecuencia)
+                                <option value="{{ $frecuencia->id }}" {{ old('frecuencia_tanques') == $frecuencia->id ? 'selected' : '' }}>Análisis {{ $frecuencia->nombre }}</option>
+                            @endforeach
+                        </select>
+
+                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 mt-2">FECHA</label>
+                        <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" max="{{ date('Y-m-d') }}" class="w-48 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" required>
+                    </div>
+
+                    <div id="campos-tanques" class="w-full">
+                        @foreach($frecuenciasTanques as $frecuencia)
+                            <div class="f-tanques-{{ $frecuencia->id }} {{ old('frecuencia_tanques') == $frecuencia->id ? '' : 'hidden' }}">
+                                @php
+                                    $categorias = $categoriasTanques->get($frecuencia->id);
+                                @endphp
+                                
+                                @if($categorias && $categorias->count() > 0)
+                                    @foreach($categorias as $nombre => $categoria)
+                                        @if($categoria['mediciones']->count() > 0)
+                                            <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full block border-b border-slate-700 pb-2">
+                                                {{ $nombre }}
+                                            </label>
+                                            <div class="grid {{ $categoria['clases_grid'] }} gap-8 mb-8 text-center items-start">
+                                                @foreach($categoria['mediciones'] as $config)
+                                                    <div class="flex flex-col items-center">
+                                                        <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
+                                                        @if($config->tipoMedicion?->es_texto)
+                                                            <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
+                                                        @else
+                                                            <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p class="text-center text-slate-500 font-bold py-4 text-sm mb-8">No hay análisis configurados para el reporte {{ strtolower($frecuencia->nombre) }} todavía.</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex justify-center mb-4">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-12 rounded shadow-lg transition tracking-wide text-sm">
+                            CONFIRMAR CONTROL DE TANQUES
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tabla Registros Control Tanques -->
+                <div class="mt-8 bg-slate-900/50 rounded-xl border border-slate-700 p-6 shadow-2xl">
+                    <h2 class="text-xl font-bold text-white text-center mb-6 tracking-wider uppercase">REGISTROS CONTROL DE TANQUES</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700">
+                            <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-medium">
+                                @forelse($controlTanques as $index => $registro)
+                                    <tr class="hover:bg-slate-800/40 transition tanques-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
+                                        <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 border border-slate-700">
+                                            <button type="button" onclick="toggleDetalle('detail-tanques-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
+                                            <button type="button" 
+                                                    onclick="confirmarEliminar('delete-tanques-form', '{{ route('laboratorio.destroyControlTanques', $registro->id) }}', '¿Seguro que deseas borrar este registro?')"
+                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">
+                                                Borrar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr id="detail-tanques-{{ $index }}" class="bg-slate-800/60" style="display:none;">
+                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                @foreach($medicionesConfigTanques as $config)
+                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    <div class="text-xs">
+                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                        <span class="text-white">{{ $val }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    @if(count($controlTanques) > 8)
+                    <div class="flex justify-center items-center mt-6 space-x-2 text-sm font-bold text-slate-300" id="tanques-pagination">
+                        <button type="button" onclick="changePage('tanques', -1, {{ count($controlTanques) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</button>
+                        <span id="tanques-page-indicator" class="px-4 text-blue-400 font-mono">Página 1 / {{ ceil(count($controlTanques) / 8) }}</span>
+                        <button type="button" onclick="changePage('tanques', 1, {{ count($controlTanques) }})" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </details>
+
+        <!-- 8. NOVEDADES Y COMENTARIOS DEL TURNO -->
         <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                <span class="text-blue-400">8. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
             <div class="p-8">
@@ -637,7 +1040,16 @@
     <form id="delete-producto-form" method="POST" style="display: none;">
         @csrf @method('DELETE')
     </form>
+    <form id="delete-aguared-form" method="POST" style="display: none;">
+        @csrf @method('DELETE')
+    </form>
     <form id="delete-pozo-form" method="POST" style="display: none;">
+        @csrf @method('DELETE')
+    </form>
+    <form id="delete-escriturado-form" method="POST" style="display: none;">
+        @csrf @method('DELETE')
+    </form>
+    <form id="delete-tanques-form" method="POST" style="display: none;">
         @csrf @method('DELETE')
     </form>
     <form id="delete-novedad-form" method="POST" style="display: none;">
@@ -690,10 +1102,12 @@
             }
         }
 
-        function togglePozoFields(pozoId) {
-            document.querySelectorAll('[class*="f-pozo-"]').forEach(el => el.classList.add('hidden'));
-            if (pozoId) {
-                document.querySelectorAll('.f-pozo-' + pozoId).forEach(el => el.classList.remove('hidden'));
+        function togglePozoFrecuenciaFields() {
+            const pozo = document.querySelector('select[name="pozo_numero"]').value;
+            const frec = document.querySelector('select[name="frecuencia_pozos"]').value;
+            document.querySelectorAll('[class*="fp-pozo-"]').forEach(el => el.classList.add('hidden'));
+            if(pozo && frec) {
+                document.querySelectorAll(`.fp-pozo-${pozo}-${frec}`).forEach(el => el.classList.remove('hidden'));
             }
         }
 
@@ -707,6 +1121,46 @@
             }
         }
 
+        function toggleProductoFields(frecuencia) {
+            document.querySelectorAll('[class*="f-producto-"]').forEach(el => el.classList.add('hidden'));
+            if (frecuencia) {
+                document.querySelectorAll('.f-producto-' + frecuencia).forEach(el => el.classList.remove('hidden'));
+                document.getElementById('campos-producto').classList.remove('hidden');
+            } else {
+                document.getElementById('campos-producto').classList.add('hidden');
+            }
+        }
+
+        function toggleAguaRedFields(frecuencia) {
+            document.querySelectorAll('[class*="f-aguared-"]').forEach(el => el.classList.add('hidden'));
+            if (frecuencia) {
+                document.querySelectorAll('.f-aguared-' + frecuencia).forEach(el => el.classList.remove('hidden'));
+                document.getElementById('campos-aguared').classList.remove('hidden');
+            } else {
+                document.getElementById('campos-aguared').classList.add('hidden');
+            }
+        }
+
+        function toggleEscrituradoFields(frecuencia) {
+            document.querySelectorAll('[class*="f-escriturado-"]').forEach(el => el.classList.add('hidden'));
+            if (frecuencia) {
+                document.querySelectorAll('.f-escriturado-' + frecuencia).forEach(el => el.classList.remove('hidden'));
+                document.getElementById('campos-escriturado').classList.remove('hidden');
+            } else {
+                document.getElementById('campos-escriturado').classList.add('hidden');
+            }
+        }
+
+        function toggleTanquesFields(frecuencia) {
+            document.querySelectorAll('[class*="f-tanques-"]').forEach(el => el.classList.add('hidden'));
+            if (frecuencia) {
+                document.querySelectorAll('.f-tanques-' + frecuencia).forEach(el => el.classList.remove('hidden'));
+                document.getElementById('campos-tanques').classList.remove('hidden');
+            } else {
+                document.getElementById('campos-tanques').classList.add('hidden');
+            }
+        }
+
         // Si hay error en un select, forzamos mostrar los campos
         window.onload = function() {
             const tipo = document.querySelector('select[name="tipo_insumo"]').value;
@@ -715,6 +1169,14 @@
             if(pozo) togglePozoFields(pozo);
             const cruda = document.querySelector('select[name="frecuencia_cruda"]').value;
             if(cruda) toggleAguaCrudaFields(cruda);
+            const producto = document.querySelector('select[name="frecuencia_producto"]').value;
+            if(producto) toggleProductoFields(producto);
+            const aguared = document.querySelector('select[name="frecuencia_aguared"]').value;
+            if(aguared) toggleAguaRedFields(aguared);
+            const escriturado = document.querySelector('select[name="frecuencia_escriturado"]').value;
+            if(escriturado) toggleEscrituradoFields(escriturado);
+            const tanques = document.querySelector('select[name="frecuencia_tanques"]').value;
+            if(tanques) toggleTanquesFields(tanques);
         };
 
         // Restaurar estado de bloques
@@ -752,7 +1214,10 @@
                         'insumos'   => 'details-insumos',
                         'cruda'     => 'details-cruda',
                         'producto'  => 'details-producto',
+                        'aguared'   => 'details-aguared',
                         'pozos'     => 'details-pozos',
+                        'escriturado' => 'details-escriturado',
+                        'tanques'   => 'details-tanques',
                         'novedades' => 'novedades-details',
                     ];
                     $errorSection = $sectionMap[old('_section')] ?? null;
@@ -802,7 +1267,10 @@
             'insumo': 1,
             'cruda': 1,
             'producto': 1,
-            'pozo': 1
+            'aguared': 1,
+            'pozo': 1,
+            'escriturado': 1,
+            'tanques': 1
         };
         const itemsPerPage = 8;
 

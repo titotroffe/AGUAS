@@ -181,7 +181,8 @@ class EavSeeder extends Seeder
         }
 
         // Configuración para Agua Cruda (Modulo 2) - TRIMESTRAL (31-65)
-        $camposAguaCrudaTrimestral = range(31, 65);
+        // IDs eliminados por ser duplicados de Mensual/Semestral: 31 (As), 32 (Cd), 35 (Cr), 38 (Hg), 41 (Pb), 49 (Benceno), 50 (Benzo a pireno)
+        $camposAguaCrudaTrimestral = array_diff(range(31, 65), [31, 32, 35, 38, 41, 49, 50]);
         foreach ($camposAguaCrudaTrimestral as $tipoId) {
             $configuraciones[] = ['modulo_id' => 2, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => 2, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => null, 'max' => null];
         }
@@ -190,7 +191,12 @@ class EavSeeder extends Seeder
         foreach ($camposAguaCrudaMensual as $tipoId) {
             $min = ($tipoId == 18) ? 0 : 0;
             $max = ($tipoId == 18) ? 14 : 1000;
-            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => null, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
+            // 21 (Mercurio), 22 (Cadmio), 23 (Arsénico), 24 (Cromo) son Semestrales para Modulo 3
+            $frecuenciaProducto = in_array($tipoId, [21, 22, 23, 24]) ? 3 : 1;
+            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => $frecuenciaProducto, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => $min, 'max' => $max];
+        }
+        foreach ($camposAguaCrudaTrimestral as $tipoId) {
+            $configuraciones[] = ['modulo_id' => 3, 'insumo_id' => null, 'pozo_id' => null, 'frecuencia_id' => 2, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => null, 'max' => null];
         }
 
         // Configuración para Pozos (Modulo 4)

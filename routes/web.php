@@ -92,9 +92,18 @@ Route::middleware(['auth', 'role:laboratorio'])->group(function () {
     
     Route::post('/laboratorio/producto-terminado', [\App\Http\Controllers\LaboratorioController::class, 'storeProductoTerminado'])->name('laboratorio.storeProductoTerminado');
     Route::delete('/laboratorio/producto-terminado/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyProductoTerminado'])->name('laboratorio.destroyProductoTerminado');
+
+    Route::post('/laboratorio/agua-red', [\App\Http\Controllers\LaboratorioController::class, 'storeAguaRed'])->name('laboratorio.storeAguaRed');
+    Route::delete('/laboratorio/agua-red/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyAguaRed'])->name('laboratorio.destroyAguaRed');
     
     Route::post('/laboratorio/pozo', [\App\Http\Controllers\LaboratorioController::class, 'storePozo'])->name('laboratorio.storePozo');
     Route::delete('/laboratorio/pozo/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyPozo'])->name('laboratorio.destroyPozo');
+
+    Route::post('/laboratorio/control-escriturado', [\App\Http\Controllers\LaboratorioController::class, 'storeControlEscriturado'])->name('laboratorio.storeControlEscriturado');
+    Route::delete('/laboratorio/control-escriturado/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyControlEscriturado'])->name('laboratorio.destroyControlEscriturado');
+
+    Route::post('/laboratorio/control-tanques', [\App\Http\Controllers\LaboratorioController::class, 'storeControlTanques'])->name('laboratorio.storeControlTanques');
+    Route::delete('/laboratorio/control-tanques/{id}', [\App\Http\Controllers\LaboratorioController::class, 'destroyControlTanques'])->name('laboratorio.destroyControlTanques');
     
     Route::post('/laboratorio/novedad', [\App\Http\Controllers\LaboratorioController::class, 'storeNovedad'])->name('laboratorio.storeNovedad');
     Route::post('/laboratorio/novedades/leidas', [\App\Http\Controllers\LaboratorioController::class, 'marcarLeidas'])->name('laboratorio.marcarLeidas');
