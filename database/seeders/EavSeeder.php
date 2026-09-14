@@ -33,19 +33,16 @@ class EavSeeder extends Seeder
 
         // Tipos de Medición
         $tiposMedicion = [
-            // Insumos (1-10)
-            ['id' => 1, 'nombre' => 'Residuo Insoluble', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 2, 'nombre' => 'Óxido Ferroso', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 3, 'nombre' => 'Óxido Férrico', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 4, 'nombre' => 'Óxido de Aluminio', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 5, 'nombre' => 'Óxidos Útiles', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 6, 'nombre' => 'Manganeso', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 7, 'nombre' => 'Densidad A 20°C', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 8, 'nombre' => 'Cloro Activo', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 9, 'nombre' => 'Peso Litro', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 10, 'nombre' => 'Preparación Archivo Contramuestra', 'unidad' => null, 'categoria' => 'INSUMOS', 'es_texto' => false, 'es_booleano' => true, 'tipo_campo' => 'boolean'],
-
-            // Agua Cruda / Producto Terminado - FISICOQUÍMICO (11-24)
+            ['id' => 1, 'nombre' => 'Residuo Insoluble', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 2, 'nombre' => 'Óxido Ferroso', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 3, 'nombre' => 'Óxido Férrico', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 4, 'nombre' => 'Óxido de Aluminio', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 5, 'nombre' => 'Óxidos Útiles', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 6, 'nombre' => 'Manganeso', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 7, 'nombre' => 'Densidad A 20°C', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 8, 'nombre' => 'Cloro Activo', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 9, 'nombre' => 'Peso Litro', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 10, 'nombre' => 'Preparación Archivo Contramuestra', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => true, 'tipo_campo' => 'boolean'],
             ['id' => 11, 'nombre' => 'Color', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
             ['id' => 12, 'nombre' => 'Olor', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
             ['id' => 13, 'nombre' => 'Sabor', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
@@ -60,46 +57,27 @@ class EavSeeder extends Seeder
             ['id' => 22, 'nombre' => 'Cadmio', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 23, 'nombre' => 'Arsénico', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 24, 'nombre' => 'Cromo', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // BACTERIOLOGÍA Y BIOLOGÍA (25-28)
-            ['id' => 25, 'nombre' => 'Bacterias Aerobias Heterótrofas', 'unidad' => 'UFC/mL', 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-            ['id' => 26, 'nombre' => 'Pseudomona Aeruginosa', 'unidad' => null, 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-            ['id' => 27, 'nombre' => 'Giardia Lamblia', 'unidad' => null, 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-            ['id' => 28, 'nombre' => 'Fitoplancton / Zooplancton', 'unidad' => null, 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-
-            // Pozos (29-30)
-            ['id' => 29, 'nombre' => 'Coliformes Totales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-            ['id' => 30, 'nombre' => 'E. Coli / Coliformes Fecales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLOGÍA Y BIOLOGÍA', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
-
-            // Trimestrales - Metales Pesados e Inorganicos (31-43)
-            ['id' => 31, 'nombre' => 'Arsénico [As]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 32, 'nombre' => 'Cadmio [Cd]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 25, 'nombre' => 'Bacterias Aerobias Heterótrofas', 'unidad' => 'UFC/mL', 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+            ['id' => 26, 'nombre' => 'Pseudomona Aeruginosa', 'unidad' => null, 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+            ['id' => 27, 'nombre' => 'Giardia Lamblia', 'unidad' => null, 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+            ['id' => 28, 'nombre' => 'Fitoplancton / Zooplancton', 'unidad' => null, 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+            ['id' => 29, 'nombre' => 'Coliformes Totales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
+            ['id' => 30, 'nombre' => 'E. Coli / Coliformes Fecales', 'unidad' => 'NMP/100mL', 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => true, 'es_booleano' => false, 'tipo_campo' => 'text'],
             ['id' => 33, 'nombre' => 'Cianuro [CN⁻]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 34, 'nombre' => 'Cobre [Cu]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 35, 'nombre' => 'Cromo Total [Cr Total]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 36, 'nombre' => 'Fluor [F]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 37, 'nombre' => 'Manganeso [Mn]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 38, 'nombre' => 'Mercurio Total [Hg Total]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 39, 'nombre' => 'Nitrato (como NO₃⁻)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 40, 'nombre' => 'Nitrito (como NO₂⁻)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 41, 'nombre' => 'Plomo [Pb]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 42, 'nombre' => 'Selenio [Se]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 43, 'nombre' => 'Plata [Ag]', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Alcanos Clorados (44-45)
             ['id' => 44, 'nombre' => 'Alcanos Clorados: 1,2 Dicloroetano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 45, 'nombre' => 'Alcanos Clorados: Tetracloruro de carbono', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Etenos Clorados (46-48)
             ['id' => 46, 'nombre' => 'Etenos Clorados: 1.1 Dicloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 47, 'nombre' => 'Etenos Clorados: Tricloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 48, 'nombre' => 'Etenos Clorados: Tetracloroeteno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Hidrocarburos Aromaticos (49-50)
             ['id' => 49, 'nombre' => 'Hidrocarburos Aromáticos: Benceno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 50, 'nombre' => 'Hidrocarburos Aromáticos: Benzo (a) pireno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Pesticidas (51-59)
             ['id' => 51, 'nombre' => 'Pesticidas: Aldrín/Dieldrín', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 52, 'nombre' => 'Pesticidas: Clordano (total isómeros)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 53, 'nombre' => 'Pesticidas: 2,4D (ácido dicloro-fenoxiacético)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
@@ -109,29 +87,18 @@ class EavSeeder extends Seeder
             ['id' => 57, 'nombre' => 'Pesticidas: Lindano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 58, 'nombre' => 'Pesticidas: Metoxicloro', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 59, 'nombre' => 'Pesticidas: Pentaclorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Desinfectantes y subproductos (60-61)
-            ['id' => 60, 'nombre' => 'Desinfectantes: Cloro (libre residual)', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 60, 'nombre' => 'Desinfectantes: Cloro (libre residual)', 'unidad' => null, 'categoria' => 'BACTERIOLÓGICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 61, 'nombre' => 'Desinfectantes: Monocloramina', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Clorfenoles (62)
-            ['id' => 62, 'nombre' => 'Clorfenoles: 2,4,6 - Tricorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Trimestrales - Trihalometanos (63-65)
+            ['id' => 62, 'nombre' => 'Clorfenoles: 2, 4, 6 - Tricorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 63, 'nombre' => 'Trihalometanos: Bromoformo', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 64, 'nombre' => 'Trihalometanos: Dibromoclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 65, 'nombre' => 'Trihalometanos: Bromodiclorometano', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-
-            // Mensual Tratamiento - Nuevos Fisicoquimicos (66-74)
             ['id' => 66, 'nombre' => 'Zinc', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 67, 'nombre' => 'Sodio', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 68, 'nombre' => 'Detergentes sintéticos', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 69, 'nombre' => 'Plomo', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 70, 'nombre' => 'DBO', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
             ['id' => 71, 'nombre' => 'DQO', 'unidad' => 'mg/L', 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 72, 'nombre' => 'Clorfenoles: 2, 4, 6 - Tricorofenol', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 73, 'nombre' => 'Hidrocarburos: Benzeno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
-            ['id' => 74, 'nombre' => 'Hidrocarburos: Benzeno (a) pireno', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
+            ['id' => 76, 'nombre' => 'Trihalometanos: Cloroformo', 'unidad' => null, 'categoria' => 'FISICOQUÍMICO', 'es_texto' => false, 'es_booleano' => false, 'tipo_campo' => 'number'],
         ];
         foreach ($tiposMedicion as $item) {
             DB::table('lab_tipos_medicion')->updateOrInsert(['id' => $item['id']], $item);
