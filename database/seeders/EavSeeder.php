@@ -200,9 +200,14 @@ class EavSeeder extends Seeder
         }
 
         // Configuración para Pozos (Modulo 4)
+        $pozosSemestral = [11, 12, 13, 14, 18, 67, 19, 20, 23, 22, 33, 34, 24, 36, 6, 21, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50];
         foreach ($pozos as $pozo) {
-            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => null, 'tipo_medicion_id' => 29, 'activo' => true, 'min' => null, 'max' => null];
-            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => null, 'tipo_medicion_id' => 30, 'activo' => true, 'min' => null, 'max' => null];
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => 2, 'tipo_medicion_id' => 29, 'activo' => true, 'min' => null, 'max' => null];
+            $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => 2, 'tipo_medicion_id' => 30, 'activo' => true, 'min' => null, 'max' => null];
+            
+            foreach ($pozosSemestral as $tipoId) {
+                $configuraciones[] = ['modulo_id' => 4, 'insumo_id' => null, 'pozo_id' => $pozo['id'], 'frecuencia_id' => 3, 'tipo_medicion_id' => $tipoId, 'activo' => true, 'min' => null, 'max' => null];
+            }
         }
 
         foreach ($configuraciones as $config) {
