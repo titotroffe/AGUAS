@@ -8,7 +8,7 @@ use App\Models\CalidadAgua;
 use App\Models\RegistroFiltro;
 use App\Models\NivelQuimico;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Schema;
 class JefaturaController extends Controller
 {
     public function index(Request $request)
@@ -20,18 +20,23 @@ class JefaturaController extends Controller
         $presionesFechaFin = $request->input('presiones_fecha_fin', Carbon::today()->format('Y-m-d'));
 
         // 1. Datos de Presiones (últimos 30 registros, orden cronológico)
-        $presiones = RegistroPresion::orderBy('created_at', 'desc')->take(30)->get()->reverse()->values();
+        $presiones = RegistroPresion::with('user')->orderBy('created_at', 'desc')->take(30)->get()->reverse()->values();
 
         // 2. Datos de Calidad de Agua (últimos 100 registros para ver mejor la correlación)
-        $calidadAgua = CalidadAgua::orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
+        $calidadAgua = CalidadAgua::with('user')->orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
         
         // 2b. Últimos registros por lugar de Calidad de Agua
-        $ultimosPorLugar = CalidadAgua::with('user')->orderBy('created_at', 'desc')->get()->unique(function ($item) {
-            return $item->lugar . ($item->filtro_numero ? '-' . $item->filtro_numero : '');
-        })->values();
+        $ultimosIds = CalidadAgua::selectRaw('MAX(id) as id')
+            ->groupBy('lugar', 'filtro_numero')
+            ->pluck('id');
 
-        // 3. Niveles de Químicos (obtener el último registro de cada químico y tanque)
-        $quimicosTipos = ['cloro', 'poliamina', 'sulfato'];
+        $ultimosPorLugar = CalidadAgua::with('user')
+            ->whereIn('id', $ultimosIds)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // 3. Niveles de Químicos (Dinámico desde la BD)
+        $quimicosTipos = NivelQuimico::select('quimico')->distinct()->pluck('quimico')->toArray();
         $nivelesQuimicos = [];
         
         foreach ($quimicosTipos as $q) {
@@ -43,19 +48,20 @@ class JefaturaController extends Controller
         }
         
         // 3b. Historial de Químicos (últimos 100 registros)
-        $historialQuimicos = NivelQuimico::orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
+        $historialQuimicos = NivelQuimico::with('user')->orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
 
-        // 4. Lavado de Filtros (conteo de las últimas veces lavadas)
-        // Sumaremos cuántas veces se lavó cada filtro en los últimos 50 registros
-        $filtrosRaw = RegistroFiltro::orderBy('created_at', 'desc')->take(50)->get();
-        $conteoFiltros = [
-            'Norte 1' => $filtrosRaw->where('norte_1', true)->count(),
-            'Norte 2' => $filtrosRaw->where('norte_2', true)->count(),
-            'Norte 3' => $filtrosRaw->where('norte_3', true)->count(),
-            'Sur 1' => $filtrosRaw->where('sur_1', true)->count(),
-            'Sur 2' => $filtrosRaw->where('sur_2', true)->count(),
-            'Sur 3' => $filtrosRaw->where('sur_3', true)->count(),
-        ];
+        // 4. Lavado de Filtros (Dinámico desde la BD consultando las columnas)
+        $filtrosRaw = RegistroFiltro::with('user')->orderBy('created_at', 'desc')->take(50)->get();
+        
+        $todasColumnas = Schema::getColumnListing('registro_filtros');
+        $columnasExcluidas = ['id', 'user_id', 'created_at', 'updated_at', 'inicio_lavado', 'fin_lavado', 'observaciones'];
+        $columnasFiltros = array_diff($todasColumnas, $columnasExcluidas);
+        
+        $conteoFiltros = [];
+        foreach ($columnasFiltros as $columna) {
+            $nombreFiltro = ucwords(str_replace('_', ' ', $columna));
+            $conteoFiltros[$nombreFiltro] = $filtrosRaw->where($columna, true)->count();
+        }
 
         // 5. Históricos para Tablas
         $queryCalidad = CalidadAgua::with('user')

@@ -270,7 +270,7 @@
                                                 @foreach($categoria['mediciones'] as $config)
                                                     <div class="flex flex-col items-center">
                                                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400 min-h-[30px] flex items-end justify-center text-center leading-tight px-1" title="{{ $config->tipoMedicion->nombre }}">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</label>
-                                                        @if($config->isText)
+                                                        @if($config->tipoMedicion?->es_texto)
                                                             <input type="text" name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="-">
                                                         @else
                                                             <input type="number" step="0.01" min="{{ $config->min ?? 0 }}" @if($config->max) max="{{ $config->max }}" @endif name="medicion_{{ $config->id }}" value="{{ old('medicion_'.$config->id) }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
