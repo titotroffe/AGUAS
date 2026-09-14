@@ -360,7 +360,7 @@
                     @csrf
                     <input type="hidden" name="_section" value="producto">
                     
-                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                    <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_producto" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleProductoFields(this.value)">
                             <option value="">Seleccionar Frecuencia</option>
@@ -480,7 +480,7 @@
                     @csrf
                     <input type="hidden" name="_section" value="aguared">
                     
-                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                    <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_aguared" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleAguaRedFields(this.value)">
                             <option value="">Seleccionar Frecuencia</option>
@@ -734,7 +734,7 @@
                     @csrf
                     <input type="hidden" name="_section" value="escriturado">
                     
-                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                    <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_escriturado" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleEscrituradoFields(this.value)">
                             <option value="">Seleccionar Frecuencia</option>
@@ -854,7 +854,7 @@
                     @csrf
                     <input type="hidden" name="_section" value="tanques">
                     
-                    <div class="flex flex-col items-center mb-8 border-t border-slate-700 pt-6">
+                    <div class="flex flex-col items-center mb-8">
                         <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">FRECUENCIA DE ANÁLISIS</label>
                         <select name="frecuencia_tanques" class="w-64 bg-slate-900 border border-slate-600 rounded p-2 text-center focus:outline-none focus:border-blue-500 text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-4" required onchange="toggleTanquesFields(this.value)">
                             <option value="">Seleccionar Frecuencia</option>
