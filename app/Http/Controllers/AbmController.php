@@ -40,11 +40,15 @@ class AbmController extends Controller
 
         $columns = Schema::getColumnListing($table);
         
-        // Obtener tipos de datos
+        // Obtener tipos de datos y nulabilidad
         $columnTypes = [];
+        $requiredColumns = [];
         $describe = DB::select("DESCRIBE `$table`");
         foreach ($describe as $col) {
             $columnTypes[$col->Field] = $col->Type;
+            if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment' && !in_array($col->Field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+                $requiredColumns[] = $col->Field;
+            }
         }
 
         // Obtener foreign keys y sus datos relacionados
@@ -82,7 +86,7 @@ class AbmController extends Controller
 
         $records = DB::table($table)->paginate(15);
 
-        return view('jefatura.abm.table', compact('table', 'columns', 'columnTypes', 'records', 'foreignData'));
+        return view('jefatura.abm.table', compact('table', 'columns', 'columnTypes', 'records', 'foreignData', 'requiredColumns'));
     }
 
     public function store(Request $request, $table)
@@ -90,6 +94,22 @@ class AbmController extends Controller
         if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table)) {
             abort(403);
         }
+
+        // Validaciones dinámicas basadas en las columnas que son NOT NULL
+        $describe = DB::select("DESCRIBE `$table`");
+        $rules = [];
+        $messages = [];
+        foreach ($describe as $col) {
+            $field = $col->Field;
+            if (in_array($field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+                continue;
+            }
+            if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
+                $rules[$field] = 'required';
+                $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+            }
+        }
+        $request->validate($rules, $messages);
 
         $columns = Schema::getColumnListing($table);
         $data = $request->except(['_token', '_method']);
@@ -129,6 +149,22 @@ class AbmController extends Controller
         if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table)) {
             abort(403);
         }
+
+        // Validaciones dinámicas basadas en las columnas que son NOT NULL
+        $describe = DB::select("DESCRIBE `$table`");
+        $rules = [];
+        $messages = [];
+        foreach ($describe as $col) {
+            $field = $col->Field;
+            if (in_array($field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+                continue;
+            }
+            if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
+                $rules[$field] = 'required';
+                $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+            }
+        }
+        $request->validate($rules, $messages);
 
         $columns = Schema::getColumnListing($table);
         $data = $request->except(['_token', '_method']);
@@ -170,8 +206,20 @@ class AbmController extends Controller
         try {
             DB::table($table)->where('id', $id)->delete();
             return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro eliminado correctamente.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            $errorCode = $e->errorInfo[1] ?? 0;
+            if ($errorCode == 1451 || $e->getCode() == 23000) {
+                // Intentar extraer el nombre de la tabla dependiente del mensaje de error
+                preg_match('/CONSTRAINT `[^`]+` FOREIGN KEY \([^)]+\) REFERENCES `([^`]+)`/', $e->getMessage(), $matchesRef);
+                preg_match('/a foreign key constraint fails \(`[^`]+`\.`([^`]+)`/', $e->getMessage(), $matchesTable);
+                
+                $tableName = $matchesTable[1] ?? 'otra tabla';
+                
+                return redirect()->back()->with('error', "No se puede eliminar este registro. Hay datos asociados que dependen de él en la tabla: '{$tableName}'. Por favor, elimine esos datos primero.");
+            }
+            return redirect()->back()->with('error', 'Error de base de datos al eliminar: ' . $e->getMessage());
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al eliminar. Es posible que el registro esté siendo usado en otra tabla.');
+            return redirect()->back()->with('error', 'Error inesperado al eliminar: ' . $e->getMessage());
         }
     }
 
@@ -183,7 +231,8 @@ class AbmController extends Controller
 
         $request->validate([
             'column_name' => 'required|string|regex:/^[a-zA-Z0-9_]+$/|max:64',
-            'column_type' => 'required|in:string,integer,float,date,boolean'
+            'column_type' => 'required|in:string,integer,float,date,boolean',
+            'is_required' => 'nullable|boolean'
         ]);
 
         $name = strtolower($request->column_name);
@@ -193,31 +242,94 @@ class AbmController extends Controller
             return redirect()->back()->with('error', 'La columna ya existe en esta tabla.');
         }
 
+        $isRequired = $request->has('is_required');
+
         try {
-            Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($name, $type) {
+            Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($name, $type, $isRequired) {
+                $col = null;
                 switch ($type) {
                     case 'integer':
-                        $t->integer($name)->nullable();
+                        $col = $t->integer($name);
                         break;
                     case 'float':
-                        $t->float($name)->nullable();
+                        $col = $t->float($name);
                         break;
                     case 'date':
-                        $t->date($name)->nullable();
+                        $col = $t->date($name);
                         break;
                     case 'boolean':
-                        $t->boolean($name)->nullable()->default(0);
+                        $col = $t->boolean($name)->default(0);
                         break;
                     case 'string':
                     default:
-                        $t->string($name)->nullable();
+                        $col = $t->string($name);
                         break;
+                }
+                
+                if (!$isRequired && $type !== 'boolean') {
+                    $col->nullable();
                 }
             });
             return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna '{$name}' añadida exitosamente.");
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return redirect()->back()->with('error', 'Error al añadir columna: ' . $e->getMessage());
+        }
+    }
+
+    public function updateColumn(Request $request, $table, $column)
+    {
+        if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table) || !Schema::hasColumn($table, $column)) {
+            abort(403);
+        }
+
+        $request->validate([
+            'new_column_name' => 'required|string|regex:/^[a-zA-Z0-9_]+$/|max:64',
+        ]);
+
+        $newName = strtolower($request->new_column_name);
+
+        if ($newName !== $column && Schema::hasColumn($table, $newName)) {
+            return redirect()->back()->with('error', 'Ya existe una columna con ese nombre.');
+        }
+
+        try {
+            if ($newName !== $column) {
+                Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($column, $newName) {
+                    $t->renameColumn($column, $newName);
+                });
+            }
+            return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna actualizada exitosamente.");
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar columna: ' . $e->getMessage());
+        }
+    }
+
+    public function destroyColumn($table, $column)
+    {
+        if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table) || !Schema::hasColumn($table, $column)) {
+            abort(403);
+        }
+
+        // Verificar si hay datos asociados (que no sean nulos ni strings vacíos)
+        $hasData = DB::table($table)
+            ->whereNotNull($column)
+            ->whereRaw("CAST(`$column` AS CHAR) != ''")
+            ->exists();
+            
+        if ($hasData) {
+            return redirect()->back()->with('error', "No se puede eliminar la columna '{$column}' porque ya contiene registros asociados.");
+        }
+
+        try {
+            Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($column) {
+                $t->dropColumn($column);
+            });
+            return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna '{$column}' eliminada exitosamente.");
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'Error al eliminar columna: ' . $e->getMessage());
         }
     }
 }

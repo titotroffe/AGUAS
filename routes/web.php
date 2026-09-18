@@ -72,6 +72,8 @@ Route::middleware(['auth', 'role:jefatura,admin'])->group(function () {
     Route::put('/jefatura/abm/{table}/{id}', [\App\Http\Controllers\AbmController::class, 'update'])->name('jefatura.abm.update');
     Route::delete('/jefatura/abm/{table}/{id}', [\App\Http\Controllers\AbmController::class, 'destroy'])->name('jefatura.abm.destroy');
     Route::post('/jefatura/abm/{table}/column', [\App\Http\Controllers\AbmController::class, 'addColumn'])->name('jefatura.abm.addColumn');
+    Route::put('/jefatura/abm/{table}/column/{column}', [\App\Http\Controllers\AbmController::class, 'updateColumn'])->name('jefatura.abm.updateColumn');
+    Route::delete('/jefatura/abm/{table}/column/{column}', [\App\Http\Controllers\AbmController::class, 'destroyColumn'])->name('jefatura.abm.destroyColumn');
 });
 
 // Rutas para Bombas y Pozos

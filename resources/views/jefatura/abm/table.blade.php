@@ -19,7 +19,7 @@
             
             <div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-3">
                 <button onclick="openColumnModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded border border-indigo-500 transition text-sm font-bold shadow-lg">
-                    <i class="fa-solid fa-plus-minus mr-1"></i> COLUMNA
+                    <i class="fa-solid fa-plus mr-1"></i> NUEVA COLUMNA
                 </button>
                 
                 <button onclick="openModal('create')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-500 transition text-sm font-bold shadow-lg">
@@ -40,6 +40,16 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-sm font-semibold shadow-md">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Tabla -->
         <div class="bg-slate-900/40 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
             <div class="overflow-x-auto">
@@ -47,7 +57,19 @@
                     <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                         <tr>
                             @foreach($columns as $col)
-                                <th scope="col" class="py-3 px-4 border-b border-slate-700 whitespace-nowrap">{{ $col }}</th>
+                                <th scope="col" class="py-3 px-4 border-b border-slate-700 whitespace-nowrap group">
+                                    {{ $col }}
+                                    @if(!in_array($col, ['id', 'created_at', 'updated_at', 'deleted_at']))
+                                        <span class="inline-block ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onclick="openEditColumnModal('{{ $col }}')" class="text-blue-400 hover:text-blue-300" title="Editar Columna"><i class="fa-solid fa-pencil"></i></button>
+                                            <form action="{{ route('jefatura.abm.destroyColumn', ['table' => $table, 'column' => $col]) }}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar la columna {{ $col }}? Esto no se puede deshacer.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-400 hover:text-red-300 ml-1" title="Eliminar Columna"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
+                                        </span>
+                                    @endif
+                                </th>
                             @endforeach
                             <th scope="col" class="py-3 px-4 border-b border-slate-700 whitespace-nowrap">Acciones</th>
                         </tr>
@@ -127,14 +149,17 @@
                                 } elseif (str_contains($type, 'tinyint(1)') || str_contains($type, 'bool')) {
                                     $inputType = 'checkbox';
                                 }
+                                
+                                $isRequiredAttr = in_array($col, $requiredColumns) ? 'required' : '';
+                                $asterisk = in_array($col, $requiredColumns) ? '<span class="text-red-500 ml-1" title="Campo Obligatorio">*</span>' : '';
                             @endphp
                             
                             <div class="flex flex-col">
-                                <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">{{ $col }}</label>
+                                <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase flex items-center">{{ $col }} {!! $asterisk !!}</label>
                                 
                                 @if(isset($foreignData[$col]))
                                     @php $fkInfo = $foreignData[$col]; @endphp
-                                    <select name="{{ $col }}" id="input-{{ $col }}" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                                    <select name="{{ $col }}" id="input-{{ $col }}" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500" {{ $isRequiredAttr }}>
                                         <option value="">(Nulo / Sin asignar)</option>
                                         @foreach($fkInfo['options'] as $opt)
                                             <option value="{{ $opt->{$fkInfo['key']} }}">
@@ -148,9 +173,9 @@
                                         <label for="input-{{ $col }}" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-600 cursor-pointer"></label>
                                     </div>
                                 @elseif(str_contains($type, 'text'))
-                                    <textarea name="{{ $col }}" id="input-{{ $col }}" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500"></textarea>
+                                    <textarea name="{{ $col }}" id="input-{{ $col }}" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500" {{ $isRequiredAttr }}></textarea>
                                 @else
-                                    <input type="{{ $inputType }}" name="{{ $col }}" id="input-{{ $col }}" {!! $step !!} class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                                    <input type="{{ $inputType }}" name="{{ $col }}" id="input-{{ $col }}" {!! $step !!} class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500" {{ $isRequiredAttr }}>
                                 @endif
                             </div>
                         @endforeach
@@ -196,6 +221,14 @@
                             <option value="boolean">Casilla Si/No (Boolean)</option>
                         </select>
                     </div>
+
+                    <div class="flex items-center mb-4 mt-6">
+                        <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mr-3">
+                            <input type="checkbox" name="is_required" id="is_required" value="1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-600"/>
+                            <label for="is_required" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-600 cursor-pointer"></label>
+                        </div>
+                        <label for="is_required" class="text-sm font-bold tracking-wide text-slate-300 uppercase cursor-pointer">Obligatorio (No Nulo)</label>
+                    </div>
                 </form>
             </div>
             
@@ -205,6 +238,37 @@
                 </button>
                 <button type="button" onclick="document.getElementById('add-column-form').submit()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
                     AÑADIR COLUMNA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Column -->
+    <div id="edit-column-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-600 rounded-xl w-full max-w-md shadow-2xl flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-xl">
+                <h3 class="text-xl font-bold text-white tracking-wide">EDITAR COLUMNA: <span id="edit-column-name-title" class="text-blue-400"></span></h3>
+                <button onclick="closeEditColumnModal()" class="text-slate-400 hover:text-white text-2xl transition">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <form id="edit-column-form" method="POST" action="">
+                    @csrf
+                    @method('PUT')
+                    <div class="flex flex-col mb-4">
+                        <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">Nuevo Nombre</label>
+                        <input type="text" id="new_column_name" name="new_column_name" required pattern="[a-zA-Z0-9_]+" title="Solo letras, números y guiones bajos" class="w-full bg-slate-900 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500">
+                        <span class="text-xs text-slate-500 mt-1">Sin espacios ni caracteres especiales.</span>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="p-4 border-t border-slate-700 bg-slate-900/50 rounded-b-xl flex justify-end gap-4">
+                <button type="button" onclick="closeEditColumnModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded transition">
+                    CANCELAR
+                </button>
+                <button type="button" onclick="document.getElementById('edit-column-form').submit()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
+                    GUARDAR CAMBIOS
                 </button>
             </div>
         </div>
@@ -265,6 +329,19 @@
 
         function closeColumnModal() {
             document.getElementById('add-column-modal').classList.add('hidden');
+        }
+
+        const updateColumnUrlBase = "{{ route('jefatura.abm.updateColumn', ['table' => $table, 'column' => 'COL_PLACEHOLDER']) }}";
+
+        function openEditColumnModal(columnName) {
+            document.getElementById('edit-column-name-title').innerText = columnName;
+            document.getElementById('new_column_name').value = columnName;
+            document.getElementById('edit-column-form').action = updateColumnUrlBase.replace('COL_PLACEHOLDER', columnName);
+            document.getElementById('edit-column-modal').classList.remove('hidden');
+        }
+
+        function closeEditColumnModal() {
+            document.getElementById('edit-column-modal').classList.add('hidden');
         }
     </script>
 </body>
