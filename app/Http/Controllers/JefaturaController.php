@@ -13,11 +13,34 @@ class JefaturaController extends Controller
 {
     public function index(Request $request)
     {
-        $calidadFechaInicio = $request->input('calidad_fecha_inicio', Carbon::today()->subDays(7)->format('Y-m-d'));
-        $calidadFechaFin = $request->input('calidad_fecha_fin', Carbon::today()->format('Y-m-d'));
+        // Validaciones de fechas si el usuario está enviando los formularios de históricos
+        if ($request->has('calidad_fecha_inicio') || $request->has('calidad_fecha_fin')) {
+            $request->validate([
+                'calidad_fecha_inicio' => 'required|date',
+                'calidad_fecha_fin'    => 'required|date|after_or_equal:calidad_fecha_inicio',
+            ], [
+                'calidad_fecha_inicio.required' => 'La fecha de inicio para Calidad de Agua es obligatoria.',
+                'calidad_fecha_fin.required'    => 'La fecha de fin para Calidad de Agua es obligatoria.',
+                'calidad_fecha_fin.after_or_equal' => 'En Calidad de Agua, la fecha de fin no puede ser anterior a la de inicio.'
+            ]);
+        }
+
+        if ($request->has('presiones_fecha_inicio') || $request->has('presiones_fecha_fin')) {
+            $request->validate([
+                'presiones_fecha_inicio' => 'required|date',
+                'presiones_fecha_fin'    => 'required|date|after_or_equal:presiones_fecha_inicio',
+            ], [
+                'presiones_fecha_inicio.required' => 'La fecha de inicio para Presiones es obligatoria.',
+                'presiones_fecha_fin.required'    => 'La fecha de fin para Presiones es obligatoria.',
+                'presiones_fecha_fin.after_or_equal' => 'En Presiones, la fecha de fin no puede ser anterior a la de inicio.'
+            ]);
+        }
+
+        $calidadFechaInicio = $request->filled('calidad_fecha_inicio') ? $request->calidad_fecha_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $calidadFechaFin = $request->filled('calidad_fecha_fin') ? $request->calidad_fecha_fin : Carbon::today()->format('Y-m-d');
         
-        $presionesFechaInicio = $request->input('presiones_fecha_inicio', Carbon::today()->subDays(7)->format('Y-m-d'));
-        $presionesFechaFin = $request->input('presiones_fecha_fin', Carbon::today()->format('Y-m-d'));
+        $presionesFechaInicio = $request->filled('presiones_fecha_inicio') ? $request->presiones_fecha_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $presionesFechaFin = $request->filled('presiones_fecha_fin') ? $request->presiones_fecha_fin : Carbon::today()->format('Y-m-d');
 
         // 1. Datos de Presiones (últimos 30 registros, orden cronológico)
         $presiones = RegistroPresion::with('user')->orderBy('created_at', 'desc')->take(30)->get()->reverse()->values();
@@ -65,8 +88,7 @@ class JefaturaController extends Controller
 
         // 5. Históricos para Tablas
         $queryCalidad = CalidadAgua::with('user')
-            ->whereDate('created_at', '>=', $calidadFechaInicio)
-            ->whereDate('created_at', '<=', $calidadFechaFin);
+            ->whereBetween('created_at', [$calidadFechaInicio . ' 00:00:00', $calidadFechaFin . ' 23:59:59']);
             
         if ($request->filled('lugar')) {
             $queryCalidad->where('lugar', $request->lugar);
@@ -76,8 +98,7 @@ class JefaturaController extends Controller
             ->paginate(50, ['*'], 'calidad_page')->withQueryString();
 
         $historialPresiones = RegistroPresion::with('user')
-            ->whereDate('created_at', '>=', $presionesFechaInicio)
-            ->whereDate('created_at', '<=', $presionesFechaFin)
+            ->whereBetween('created_at', [$presionesFechaInicio . ' 00:00:00', $presionesFechaFin . ' 23:59:59'])
             ->orderBy('created_at', 'desc')
             ->paginate(50, ['*'], 'presiones_page')->withQueryString();
 

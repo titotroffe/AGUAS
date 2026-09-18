@@ -238,6 +238,17 @@
             </div>
         @endif
 
+        <!-- Errores de Validación -->
+        @if($errors->any())
+            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-8 font-semibold shadow-md">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- KPI Cards -->
         @if($ultimaPresion)
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -410,21 +421,21 @@
             <div class="p-8">
                 <div class="grid grid-cols-1 gap-8 mb-8">
                     <!-- Historial Calidad de Agua -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') ? 'open' : '' }}>
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group/calidad" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') ? 'open' : '' }}>
                         <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
                             <span class="text-sky-300 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Historial: Calidad de Agua</span>
-                            <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+                            <span class="transform transition-transform group-open/calidad:rotate-180 text-slate-400">▼</span>
                         </summary>
                         <div class="p-6 border-t border-slate-700">
                             <!-- Filtro Calidad -->
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="calidad_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                                    <input type="date" id="calidad_fecha_inicio" name="calidad_fecha_inicio" value="{{ $calidadFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
+                                    <input type="date" id="calidad_fecha_inicio" name="calidad_fecha_inicio" value="{{ $calidadFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono" required>
                                 </div>
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="calidad_fecha_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                                    <input type="date" id="calidad_fecha_fin" name="calidad_fecha_fin" value="{{ $calidadFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
+                                    <input type="date" id="calidad_fecha_fin" name="calidad_fecha_fin" value="{{ $calidadFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono" required>
                                 </div>
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="lugar" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Lugar</label>
@@ -442,7 +453,7 @@
                                     <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-6 rounded border border-sky-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index') }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', request()->only(['presiones_fecha_inicio', 'presiones_fecha_fin', 'presiones_page'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
@@ -509,27 +520,27 @@
                     </details>
 
                     <!-- Historial Presiones -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') ? 'open' : '' }}>
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group/presiones" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') ? 'open' : '' }}>
                         <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
                             <span class="text-indigo-300 uppercase"><i class="fa-solid fa-gauge mr-2"></i> Historial: Presiones y Cisterna</span>
-                            <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
+                            <span class="transform transition-transform group-open/presiones:rotate-180 text-slate-400">▼</span>
                         </summary>
                         <div class="p-6 border-t border-slate-700">
                             <!-- Filtro Presiones -->
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="presiones_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                                    <input type="date" id="presiones_fecha_inicio" name="presiones_fecha_inicio" value="{{ $presionesFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                                    <input type="date" id="presiones_fecha_inicio" name="presiones_fecha_inicio" value="{{ $presionesFechaInicio }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
                                 </div>
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="presiones_fecha_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                                    <input type="date" id="presiones_fecha_fin" name="presiones_fecha_fin" value="{{ $presionesFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                                    <input type="date" id="presiones_fecha_fin" name="presiones_fecha_fin" value="{{ $presionesFechaFin }}" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
                                 </div>
                                 <div class="flex gap-3 w-full md:w-auto">
                                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index') }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', request()->only(['calidad_fecha_inicio', 'calidad_fecha_fin', 'lugar', 'calidad_page'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
@@ -872,6 +883,41 @@
                     setTimeout(() => window.dispatchEvent(new Event('resize')), 10);
                 }
             });
+        });
+
+        // Acordeón para details
+        document.addEventListener('DOMContentLoaded', () => {
+            const detailsElements = document.querySelectorAll('details');
+            detailsElements.forEach(details => {
+                details.addEventListener('toggle', function() {
+                    if (this.open) {
+                        detailsElements.forEach(otherDetails => {
+                            if (otherDetails !== details && otherDetails.parentElement === details.parentElement) {
+                                otherDetails.removeAttribute('open');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Validaciones dinámicas de fechas para evitar rangos invertidos
+            const calidadInicio = document.getElementById('calidad_fecha_inicio');
+            const calidadFin = document.getElementById('calidad_fecha_fin');
+            if (calidadInicio && calidadFin) {
+                calidadInicio.addEventListener('change', () => calidadFin.min = calidadInicio.value);
+                calidadFin.addEventListener('change', () => calidadInicio.max = calidadFin.value);
+                calidadFin.min = calidadInicio.value;
+                calidadInicio.max = calidadFin.value;
+            }
+
+            const presionesInicio = document.getElementById('presiones_fecha_inicio');
+            const presionesFin = document.getElementById('presiones_fecha_fin');
+            if (presionesInicio && presionesFin) {
+                presionesInicio.addEventListener('change', () => presionesFin.min = presionesInicio.value);
+                presionesFin.addEventListener('change', () => presionesInicio.max = presionesFin.value);
+                presionesFin.min = presionesInicio.value;
+                presionesInicio.max = presionesFin.value;
+            }
         });
     </script>
 
