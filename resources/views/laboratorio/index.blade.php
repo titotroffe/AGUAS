@@ -1197,6 +1197,13 @@
                 detail.addEventListener('toggle', () => {
                     if (detail.open) {
                         sessionStorage.setItem('lab_state_' + detail.id, 'open');
+                        // Acordeón: cerrar hermanos del mismo nivel
+                        detailsElements.forEach(other => {
+                            if (other !== detail && other.parentElement === detail.parentElement && other.open) {
+                                other.removeAttribute('open');
+                                if (other.id) sessionStorage.removeItem('lab_state_' + other.id);
+                            }
+                        });
                     } else {
                         sessionStorage.removeItem('lab_state_' + detail.id);
                     }
