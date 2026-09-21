@@ -7,21 +7,56 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Botón scroll-to-top */
+        #btn-scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: #334155;
+            border: 1px solid #64748b;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.2s, opacity 0.3s;
+            opacity: 0.85;
+        }
+        #btn-scroll-top:hover {
+            background: #475569;
+            transform: translateY(-3px);
+            opacity: 1;
+        }
+        #btn-scroll-top.visible {
+            display: flex;
+        }
+    </style>
 </head>
-<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen px-4 py-6 md:p-8">
     <div class="max-w-7xl mx-auto">
         <!-- Navegación y Título -->
-        <div class="relative flex items-center justify-center mb-8">
-            <a href="{{ route('jefatura.abm.index') }}" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
-                 ← VOLVER AL LISTADO
-            </a>
-            <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">GESTIÓN DE: <span class="text-blue-400">{{ strtoupper($table) }}</span></h1>
-            
-            <div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-3">
+        <div class="flex flex-col gap-4 mb-8 md:relative md:flex md:items-center md:justify-center">
+            <!-- Volver -->
+            <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center md:justify-start">
+                <a href="{{ route('jefatura.abm.index') }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+                     ← VOLVER AL LISTADO
+                </a>
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold text-white tracking-wider text-center m-0 w-full">GESTIÓN DE: <span class="text-blue-400">{{ strtoupper($table) }}</span></h1>
+            <!-- Acciones -->
+            <div class="md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 flex gap-3 justify-center flex-wrap">
                 <button onclick="openColumnModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded border border-indigo-500 transition text-sm font-bold shadow-lg">
                     <i class="fa-solid fa-plus mr-1"></i> NUEVA COLUMNA
                 </button>
-                
                 <button onclick="openModal('create')" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-500 transition text-sm font-bold shadow-lg">
                     + NUEVO REGISTRO
                 </button>
@@ -62,11 +97,9 @@
                                     @if(!in_array($col, ['id', 'created_at', 'updated_at', 'deleted_at']))
                                         <span class="inline-block ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button onclick="openEditColumnModal('{{ $col }}')" class="text-blue-400 hover:text-blue-300" title="Editar Columna"><i class="fa-solid fa-pencil"></i></button>
-                                            <form action="{{ route('jefatura.abm.destroyColumn', ['table' => $table, 'column' => $col]) }}" method="POST" class="inline" onsubmit="return confirm('¿Seguro que deseas eliminar la columna {{ $col }}? Esto no se puede deshacer.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-400 hover:text-red-300 ml-1" title="Eliminar Columna"><i class="fa-solid fa-trash"></i></button>
-                                            </form>
+                                    <button type="button"
+                                        onclick="confirmarEliminarColumna('{{ route('jefatura.abm.destroyColumn', ['table' => $table, 'column' => $col]) }}', '{{ $col }}')"
+                                        class="text-red-400 hover:text-red-300 ml-1" title="Eliminar Columna"><i class="fa-solid fa-trash"></i></button>
                                         </span>
                                     @endif
                                 </th>
@@ -95,11 +128,10 @@
                                 @endforeach
                                 <td class="py-3 px-4 whitespace-nowrap">
                                     <button onclick="openModal('edit', {{ json_encode($row) }})" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Editar</button>
-                                    <form action="{{ route('jefatura.abm.destroy', ['table' => $table, 'id' => $row->id]) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este registro permanentemente?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Borrar</button>
-                                    </form>
+                                    <button type="button"
+                                        onclick="confirmarEliminar('abm-delete-{{ $row->id }}', '{{ route('jefatura.abm.destroy', ['table' => $table, 'id' => $row->id]) }}', '¿Eliminar este registro permanentemente?')"
+                                        class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Borrar</button>
+                                    <form id="abm-delete-{{ $row->id }}" action="{{ route('jefatura.abm.destroy', ['table' => $table, 'id' => $row->id]) }}" method="POST" class="hidden">@csrf @method('DELETE')</form>
                                 </td>
                             </tr>
                         @empty
@@ -343,6 +375,108 @@
         function closeEditColumnModal() {
             document.getElementById('edit-column-modal').classList.add('hidden');
         }
+
+        // ══ SweetAlert2 Config ══
+        const SwalCustom = Swal.mixin({
+            background: '#1e293b',
+            color: '#f8fafc',
+            confirmButtonColor: '#2563eb',
+            denyButtonColor: '#475569',
+            cancelButtonColor: '#dc2626',
+            customClass: {
+                popup: 'border border-slate-700 rounded-2xl shadow-2xl',
+                title: 'text-[18px] text-white font-bold tracking-wide',
+                htmlContainer: 'text-slate-300 font-medium text-sm',
+                confirmButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+                cancelButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+                denyButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition'
+            },
+            buttonsStyling: true
+        });
+
+        function confirmarEliminar(formId, actionUrl, mensaje = '¿Seguro que deseas borrar este registro?') {
+            SwalCustom.fire({
+                title: '¿Confirmar eliminación?',
+                text: mensaje,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, borrar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(formId);
+                    form.submit();
+                }
+            });
+        }
+
+        // Hidden form global para eliminar columnas
+        const deleteColumnForm = document.createElement('form');
+        deleteColumnForm.method = 'POST';
+        deleteColumnForm.id = 'delete-column-form';
+        deleteColumnForm.style.display = 'none';
+        deleteColumnForm.innerHTML = `@csrf @method('DELETE')`;
+        document.body.appendChild(deleteColumnForm);
+
+        function confirmarEliminarColumna(url, colName) {
+            SwalCustom.fire({
+                title: '¿Eliminar columna?',
+                html: `<span class="font-mono text-red-400">${colName}</span><br><span class="text-sm">Esta acción eliminará la columna y todos sus datos. No se puede deshacer.</span>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('delete-column-form');
+                    form.action = url;
+                    form.submit();
+                }
+            });
+        }
+
+        // Alertas de sesión via SweetAlert2
+        document.addEventListener('DOMContentLoaded', () => {
+            @if(session('success'))
+                SwalCustom.fire({
+                    title: '¡Guardado!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            @elseif(session('deleted'))
+                SwalCustom.fire({
+                    title: '¡Eliminado!',
+                    text: "{{ session('deleted') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            @elseif(session('error'))
+                SwalCustom.fire({
+                    title: '¡Error!',
+                    text: "{{ session('error') }}",
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            @endif
+        });
     </script>
+
+<!-- Botón Volver Arriba -->
+<button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+<script>
+    (function() {
+        var btn = document.getElementById('btn-scroll-top');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) { btn.classList.add('visible'); }
+            else { btn.classList.remove('visible'); }
+        }, { passive: true });
+    })();
+</script>
 </body>
 </html>
+

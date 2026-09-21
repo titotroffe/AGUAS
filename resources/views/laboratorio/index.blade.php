@@ -66,16 +66,18 @@
         }
     </style>
 </head>
-<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen px-4 py-6 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         
         <!-- Navegación y Título -->
-        <div class="relative flex items-center justify-center mb-12">
-            <a href="/menu" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
-                 ← VOLVER AL MENÚ
-            </a>
-            <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">LABORATORIO CENTRAL</h1>
+        <div class="flex flex-col md:relative md:flex md:items-center md:justify-center mb-12 gap-4">
+            <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center">
+                <a href="/menu" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+                     ← VOLVER AL MENÚ
+                </a>
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold text-white tracking-wider text-center m-0 w-full">LABORATORIO CENTRAL</h1>
         </div>
 
         <!-- Alertas Novedades -->
@@ -114,7 +116,7 @@
                 <span class="text-blue-400">1. ANÁLISIS DE INSUMOS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeInsumo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="insumos">
@@ -235,7 +237,7 @@
                 <span class="text-blue-400">2. TRATAMIENTO (Agua Cruda)</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaCruda') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="cruda">
@@ -355,7 +357,7 @@
                 <span class="text-blue-400">3. PRODUCTO TERMINADO (Agua Potable Planta)</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeProductoTerminado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="producto">
@@ -475,7 +477,7 @@
                 <span class="text-blue-400">4. AGUA POTABLE DE RED</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaRed') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="aguared">
@@ -595,7 +597,7 @@
                 <span class="text-blue-400">5. POZOS DE EXTRACCIÓN</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storePozo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="pozos">
@@ -729,7 +731,7 @@
                 <span class="text-blue-400">6. CONTROL ESCRITURADO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlEscriturado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="escriturado">
@@ -849,7 +851,7 @@
                 <span class="text-blue-400">7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlTanques') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="tanques">
@@ -969,7 +971,7 @@
                 <span class="text-blue-400">8. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="novedades">

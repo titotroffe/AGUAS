@@ -58,16 +58,18 @@
         }
     </style>
 </head>
-<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen px-4 py-6 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         
         <!-- Navegación y Título -->
-        <div class="relative flex items-center justify-center mb-12">
-            <a href="/menu" class="absolute left-0 top-1/2 -translate-y-1/2 bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
-                 ← VOLVER AL MENÚ
-            </a>
-            <h1 class="text-2xl font-bold text-white tracking-wider text-center m-0">MONITOREO DE CALIDAD DE AGUA</h1>
+        <div class="flex flex-col md:relative md:flex md:items-center md:justify-center mb-12 gap-4">
+            <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center">
+                <a href="/menu" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
+                     ← VOLVER AL MENÚ
+                </a>
+            </div>
+            <h1 class="text-xl md:text-2xl font-bold text-white tracking-wider text-center m-0 w-full">MONITOREO DE CALIDAD DE AGUA</h1>
         </div>
 
         <!-- Alertas -->
@@ -108,11 +110,11 @@
                 <span class="text-blue-400">2. MONITOREO DE CALIDAD</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeCalidad') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                                     <!-- Grid de Mediciones por Lugar -->
                     <!-- Fila 1: 4 Elementos -->
-                    <div class="grid grid-cols-4 gap-8 mb-8 text-center items-start">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
                     
                         <!-- Cisterna -->
                         <div class="flex flex-col items-center">
@@ -167,7 +169,7 @@
                     </div>
 
                     <!-- Fila 2: 3 Elementos -->
-                    <div class="grid grid-cols-3 gap-8 mb-8 text-center items-start max-w-3xl mx-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8 text-center items-start max-w-3xl mx-auto">
                     
                         <!-- Filtro Línea Norte -->
                         <div class="flex flex-col items-center">
@@ -318,11 +320,11 @@
                 <span class="text-blue-400">3. ENSAYOS BACTERIOLÓGICOS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeBacteriologico') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <!-- Grid de Ensayos -->
-                    <div class="grid grid-cols-4 gap-8 mb-8 text-center items-start">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
                         
                         <!-- Cisterna -->
                         <div class="flex flex-col items-center">
@@ -573,14 +575,11 @@
                                 </td>
                                 <td class="py-3 px-4 border border-slate-700">
                                     @if(auth()->id() == $caudal->user_id && $caudal->created_at->gt(now()->subHours(2)))
-                                        <form method="POST" action="{{ route('quimico.destroyCaudalimetro', $caudal->id) }}"
-                                              onsubmit="return confirm('¿Eliminar esta lectura?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit"
-                                                    class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition">
-                                                Borrar
-                                            </button>
-                                        </form>
+                                        <button type="button"
+                                            onclick="confirmarEliminar('delete-caudal-form', '{{ route('quimico.destroyCaudalimetro', $caudal->id) }}', '\u00bfEliminar esta lectura de caudalimetro?')"
+                                            class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition">
+                                            Borrar
+                                        </button>
                                     @else
                                         <span class="text-slate-600">—</span>
                                     @endif
@@ -601,7 +600,7 @@
                 <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <label class="block text-sm font-bold text-slate-300 mb-3 tracking-wide">REGISTRAR NUEVA NOVEDAD (Máx. 1000 caracteres)</label>
@@ -666,6 +665,10 @@
         @method('DELETE')
     </form>
     <form id="delete-bac-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+    <form id="delete-caudal-form" method="POST" style="display: none;">
         @csrf
         @method('DELETE')
     </form>

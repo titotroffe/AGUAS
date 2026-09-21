@@ -59,7 +59,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen px-4 py-6 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         
@@ -116,7 +116,7 @@
                 <span class="text-blue-400">2. PRESIONES Y NIVELES DE CISTERNA</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 @if(session('success_presiones'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_presiones') }}
@@ -257,7 +257,7 @@
                 <span class="text-blue-400">3. LAVADO DE FILTROS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 @if(session('success_lavados'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_lavados') }}
@@ -427,7 +427,7 @@
                 <span class="text-blue-400">4. NIVELES DE TANQUES QUÍMICOS</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 @if(session('success_quimicos'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_quimicos') }}
@@ -516,7 +516,7 @@
                 <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 @if(session('success_novedades'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_novedades') }}

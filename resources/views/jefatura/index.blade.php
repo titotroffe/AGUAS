@@ -8,6 +8,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .chart-container {
@@ -44,9 +46,22 @@
         #btn-scroll-top.visible {
             display: flex;
         }
+        /* Responsive tables */
+        @media (max-width: 640px) {
+            .responsive-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: #64748b;
+                font-size: 0.65rem;
+                display: block;
+                margin-bottom: 2px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+        }
     </style>
 </head>
-<body class="bg-slate-800 text-slate-200 font-sans min-h-screen p-8">
+<body class="bg-slate-800 text-slate-200 font-sans min-h-screen px-4 py-6 md:p-8">
 
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
@@ -105,19 +120,14 @@
                             </td>
                             <td class="py-3 px-4 border border-amber-700/50">
                                 <div class="flex justify-center gap-2">
-                                    <form method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" onsubmit="return confirm('¿Aprobar acceso al sistema para este usuario?');">
-                                        @csrf
-                                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
-                                            <i class="fa-solid fa-check"></i> Aprobar
-                                        </button>
-                                    </form>
-                                    <form method="POST" action="{{ route('jefatura.rechazarUsuario', $user->id) }}" onsubmit="return confirm('¿Rechazar y eliminar a este usuario?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
-                                            <i class="fa-solid fa-times"></i> Rechazar
-                                        </button>
-                                    </form>
+                                    <button type="button" onclick="confirmarAprobar('aprobar-form-{{ $user->id }}', '{{ route('jefatura.aprobarUsuario', $user->id) }}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                        <i class="fa-solid fa-check"></i> Aprobar
+                                    </button>
+                                    <form id="aprobar-form-{{ $user->id }}" method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" style="display:none">@csrf</form>
+                                    <button type="button" onclick="confirmarRechazar('rechazar-form-{{ $user->id }}', '{{ route('jefatura.rechazarUsuario', $user->id) }}')" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                        <i class="fa-solid fa-times"></i> Rechazar
+                                    </button>
+                                    <form id="rechazar-form-{{ $user->id }}" method="POST" action="{{ route('jefatura.rechazarUsuario', $user->id) }}" style="display:none">@csrf @method('DELETE')</form>
                                 </div>
                             </td>
                         </tr>
@@ -171,13 +181,10 @@
                                 </td>
                                 <td class="py-3 px-4 border border-slate-700/50">
                                     @if($emp->id !== auth()->id())
-                                    <form method="POST" action="{{ route('jefatura.darDeBaja', $emp->id) }}" onsubmit="return confirm('¿Dar de baja a este empleado? Sus mediciones e historial se mantendrán intactos.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
-                                            <i class="fa-solid fa-user-xmark"></i> Dar de Baja
-                                        </button>
-                                    </form>
+                                    <button type="button" onclick="confirmarBaja('baja-form-{{ $emp->id }}', '{{ route('jefatura.darDeBaja', $emp->id) }}')" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
+                                        <i class="fa-solid fa-user-xmark"></i> Dar de Baja
+                                    </button>
+                                    <form id="baja-form-{{ $emp->id }}" method="POST" action="{{ route('jefatura.darDeBaja', $emp->id) }}" style="display:none">@csrf @method('DELETE')</form>
                                     @else
                                         <span class="text-slate-500 text-xs font-bold text-emerald-500">TÚ</span>
                                     @endif
@@ -214,12 +221,10 @@
                                         {{ $emp->deleted_at->format('d/m/Y H:i') }}
                                     </td>
                                     <td class="py-2 px-4 border border-slate-700/50">
-                                        <form method="POST" action="{{ route('jefatura.reactivarUsuario', $emp->id) }}" onsubmit="return confirm('¿Reactivar a este empleado y darle de alta nuevamente en el sistema?');">
-                                            @csrf
-                                            <button type="submit" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
-                                                <i class="fa-solid fa-user-check"></i> Reactivar
-                                            </button>
-                                        </form>
+                                        <button type="button" onclick="confirmarReactivar('reactivar-form-{{ $emp->id }}', '{{ route('jefatura.reactivarUsuario', $emp->id) }}')" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1 px-3 rounded text-xs transition shadow flex items-center gap-2 mx-auto">
+                                            <i class="fa-solid fa-user-check"></i> Reactivar
+                                        </button>
+                                        <form id="reactivar-form-{{ $emp->id }}" method="POST" action="{{ route('jefatura.reactivarUsuario', $emp->id) }}" style="display:none">@csrf</form>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -309,7 +314,7 @@
                 <span class="text-blue-400 uppercase"><i class="fa-solid fa-gauge-high mr-2"></i> Tendencia de Presiones y Cisterna</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <div class="chart-container">
                     <canvas id="chartPresiones"></canvas>
                 </div>
@@ -404,7 +409,7 @@
                 <span class="text-indigo-400 uppercase"><i class="fa-solid fa-filter mr-2"></i> Lavados Frecuentes de Filtros</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <div class="chart-container flex justify-center">
                     <div class="w-[80%] h-full">
                         <canvas id="chartFiltros"></canvas>
@@ -418,7 +423,7 @@
                 <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
             </summary>
-            <div class="p-8">
+            <div class="p-4 md:p-8">
                 <div class="grid grid-cols-1 gap-8 mb-8">
                     <!-- Historial Calidad de Agua -->
                     <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group/calidad" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') ? 'open' : '' }}>
@@ -610,6 +615,22 @@
             </div>
         </details>
     </div>
+
+<!-- Botón Volver Arriba -->
+<button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+    <!-- Scroll-to-top script -->
+    <script>
+    (function() {
+        var btn = document.getElementById('btn-scroll-top');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) { btn.classList.add('visible'); }
+            else { btn.classList.remove('visible'); }
+        }, { passive: true });
+    })();
+    </script>
 
     <!-- Data Injection for Chart.js -->
     <script>
@@ -885,9 +906,118 @@
             });
         });
 
-        // Acordeón para details
+        // ══ SweetAlert2 Config ══
+        const SwalCustom = Swal.mixin({
+            background: '#1e293b',
+            color: '#f8fafc',
+            confirmButtonColor: '#2563eb',
+            denyButtonColor: '#475569',
+            cancelButtonColor: '#dc2626',
+            customClass: {
+                popup: 'border border-slate-700 rounded-2xl shadow-2xl',
+                title: 'text-[18px] text-white font-bold tracking-wide',
+                htmlContainer: 'text-slate-300 font-medium text-sm',
+                confirmButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+                cancelButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition',
+                denyButton: 'px-6 py-2.5 rounded-lg font-semibold text-sm transition'
+            },
+            buttonsStyling: true
+        });
+
+        function confirmarAprobar(formId, url) {
+            SwalCustom.fire({
+                title: '¿Aprobar acceso?',
+                text: '¿Dar acceso al sistema a este usuario?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, aprobar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#059669',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(formId);
+                    form.action = url;
+                    form.submit();
+                }
+            });
+        }
+
+        function confirmarRechazar(formId, url) {
+            SwalCustom.fire({
+                title: '¿Rechazar usuario?',
+                text: 'El usuario será eliminado del sistema. Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, rechazar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(formId);
+                    form.action = url;
+                    form.submit();
+                }
+            });
+        }
+
+        function confirmarBaja(formId, url) {
+            SwalCustom.fire({
+                title: '¿Dar de baja?',
+                text: 'Sus mediciones e historial se mantendrán intactos. Puede reactivarlo después.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, dar de baja',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(formId);
+                    form.action = url;
+                    form.submit();
+                }
+            });
+        }
+
+        function confirmarReactivar(formId, url) {
+            SwalCustom.fire({
+                title: '¿Reactivar empleado?',
+                text: '¿Dar de alta nuevamente a este empleado en el sistema?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, reactivar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#059669',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(formId);
+                    form.action = url;
+                    form.submit();
+                }
+            });
+        }
+
+        // ══ Acordeón + Estado details + Alertas de sesión ══
         document.addEventListener('DOMContentLoaded', () => {
             const detailsElements = document.querySelectorAll('details');
+
+            // Restaurar estado de secciones via sessionStorage
+            detailsElements.forEach(detail => {
+                if (!detail.id) return;
+                if (detail.open) {
+                    sessionStorage.setItem('jef_state_' + detail.id, 'open');
+                } else {
+                    const state = sessionStorage.getItem('jef_state_' + detail.id);
+                    if (state === 'open') { detail.open = true; }
+                }
+                detail.addEventListener('toggle', () => {
+                    if (detail.open) { sessionStorage.setItem('jef_state_' + detail.id, 'open'); }
+                    else { sessionStorage.removeItem('jef_state_' + detail.id); }
+                });
+            });
+
+            // Acordeón: cerrar hermanos al abrir uno
             detailsElements.forEach(details => {
                 details.addEventListener('toggle', function() {
                     if (this.open) {
@@ -899,6 +1029,30 @@
                     }
                 });
             });
+
+            // Alertas de sesión via SweetAlert2
+            @if(session('success'))
+                SwalCustom.fire({
+                    title: '¡Operación exitosa!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            @elseif(session('deleted'))
+                SwalCustom.fire({
+                    title: '¡Eliminado!',
+                    text: "{{ session('deleted') }}",
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar'
+                });
+            @elseif(session('error'))
+                SwalCustom.fire({
+                    title: '¡Error!',
+                    text: "{{ session('error') }}",
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            @endif
 
             // Validaciones dinámicas de fechas para evitar rangos invertidos
             const calidadInicio = document.getElementById('calidad_fecha_inicio');
@@ -921,22 +1075,5 @@
         });
     </script>
 
-<!-- Botón Volver Arriba -->
-<button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <i class="fa-solid fa-chevron-up"></i>
-</button>
-
-<script>
-    (function() {
-        var btn = document.getElementById('btn-scroll-top');
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 300) {
-                btn.classList.add('visible');
-            } else {
-                btn.classList.remove('visible');
-            }
-        }, { passive: true });
-    })();
-</script>
 </body>
 </html>
