@@ -91,7 +91,7 @@
             </div>
         @endif
 
-        @if($errors->any() && !$errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna', 'norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros', 'quimico', 'tanque_principal', 'tanque_auxiliar', 'mensaje']))
+        @if($errors->any() && !$errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna', 'norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros', 'cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar', 'mensaje']))
             <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
                 <ul class="list-disc list-inside">
                     @foreach($errors->all() as $error)
@@ -104,7 +104,7 @@
         @php
             $erroresPresiones = $errors->hasAny(['presion_tanque', 'presion_planta', 'presion_falcon', 'nivel_cisterna']) || session('success_presiones') || session('error_presiones');
             $erroresLavados   = $errors->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros']) || session('success_lavados') || session('error_lavados');
-            $erroresQuimicos  = $errors->hasAny(['quimico', 'tanque_principal', 'tanque_auxiliar']) || session('success_quimicos') || session('error_quimicos');
+            $erroresQuimicos  = $errors->hasAny(['cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar']) || session('success_quimicos') || session('error_quimicos');
             $erroresNovedades = $errors->hasAny(['mensaje']) || session('success_novedades') || session('error_novedades');
         @endphp 
 
@@ -433,13 +433,13 @@
                         {{ session('success_quimicos') }}
                     </div>
                 @endif
-                @if(session('error_quimicos') || $errors->hasAny(['quimico', 'tanque_principal', 'tanque_auxiliar']))
+                @if(session('error_quimicos') || $errors->hasAny(['cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar']))
                     <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
                         <ul class="list-disc list-inside text-left">
                             @if(session('error_quimicos'))
                                 <li>{{ session('error_quimicos') }}</li>
                             @endif
-                            @foreach(['quimico', 'tanque_principal', 'tanque_auxiliar'] as $field)
+                            @foreach(['cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar'] as $field)
                                 @error($field)
                                     <li>{{ $message }}</li>
                                 @enderror
