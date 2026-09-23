@@ -757,24 +757,21 @@
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
-            @elseif(session('success'))
+            @elseif(session('success_caudal') || session('success') || session('deleted'))
+                @php
+                    $successMsg = session('success_caudal') ?? session('success') ?? session('deleted');
+                    $isDeleted = session()->has('deleted') || str_contains(strtolower($successMsg), 'eliminad') || str_contains(strtolower($successMsg), 'borrad');
+                @endphp
                 SwalCustom.fire({
-                    title: '¡Guardado!',
-                    text: @json(session('success')),
+                    title: '{{ $isDeleted ? "¡Eliminado!" : "¡Guardado!" }}',
+                    text: @json($successMsg),
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
-            @elseif(session('deleted'))
-                SwalCustom.fire({
-                    title: '¡Eliminado!',
-                    text: @json(session('deleted')),
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                });
-            @elseif(session('error'))
+            @elseif(session('error_caudal') || session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
-                    text: @json(session('error')),
+                    text: @json(session('error_caudal') ?? session('error')),
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });

@@ -46,7 +46,9 @@ class AbmController extends Controller
         $describe = DB::select("DESCRIBE `$table`");
         foreach ($describe as $col) {
             $columnTypes[$col->Field] = $col->Type;
-            if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment' && !in_array($col->Field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
+            $type = strtolower($col->Type);
+            $isBoolean = str_contains($type, 'tinyint(1)') || str_contains($type, 'bool');
+            if (!$isBoolean && $col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment' && !in_array($col->Field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
                 $requiredColumns[] = $col->Field;
             }
         }
@@ -97,13 +99,24 @@ class AbmController extends Controller
 
         // Validaciones dinámicas basadas en las columnas que son NOT NULL
         $describe = DB::select("DESCRIBE `$table`");
+        $columnTypes = [];
         $rules = [];
         $messages = [];
         foreach ($describe as $col) {
             $field = $col->Field;
+            $type = strtolower($col->Type);
+            $columnTypes[$field] = $type;
+
             if (in_array($field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
                 continue;
             }
+
+            $isBoolean = str_contains($type, 'tinyint(1)') || str_contains($type, 'bool');
+            if ($isBoolean) {
+                $rules[$field] = 'nullable|boolean';
+                continue;
+            }
+
             if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
                 $rules[$field] = 'required';
                 $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
@@ -119,12 +132,17 @@ class AbmController extends Controller
             if ($column === 'id' || $column === 'created_at' || $column === 'updated_at' || $column === 'deleted_at') {
                 continue;
             }
+
+            $isBooleanCol = str_contains($columnTypes[$column] ?? '', 'tinyint(1)') 
+                         || str_contains($columnTypes[$column] ?? '', 'bool');
+
             if (array_key_exists($column, $data)) {
-                $insertData[$column] = $data[$column];
+                $val = $data[$column];
+                $insertData[$column] = $isBooleanCol ? (($val == '1' || $val === true || $val === 1) ? 1 : 0) : $val;
             } else {
-                // If checkbox unchecked, it might not be in request. We should handle booleans.
-                // For simplicity in a dynamic ABM, if it's missing we can set it to null or 0 if it's a boolean.
-                // We will let the view pass a hidden field or handle it explicitly if needed.
+                if ($isBooleanCol) {
+                    $insertData[$column] = 0;
+                }
             }
         }
 
@@ -152,13 +170,24 @@ class AbmController extends Controller
 
         // Validaciones dinámicas basadas en las columnas que son NOT NULL
         $describe = DB::select("DESCRIBE `$table`");
+        $columnTypes = [];
         $rules = [];
         $messages = [];
         foreach ($describe as $col) {
             $field = $col->Field;
+            $type = strtolower($col->Type);
+            $columnTypes[$field] = $type;
+
             if (in_array($field, ['id', 'created_at', 'updated_at', 'deleted_at'])) {
                 continue;
             }
+
+            $isBoolean = str_contains($type, 'tinyint(1)') || str_contains($type, 'bool');
+            if ($isBoolean) {
+                $rules[$field] = 'nullable|boolean';
+                continue;
+            }
+
             if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
                 $rules[$field] = 'required';
                 $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
@@ -174,13 +203,15 @@ class AbmController extends Controller
             if ($column === 'id' || $column === 'created_at' || $column === 'updated_at' || $column === 'deleted_at') {
                 continue;
             }
-            // For updates, we need to carefully handle missing values which could mean a checkbox was unchecked
-            // But since this is dynamic, we'll only update what's passed, except if we know it's a boolean from DB schema.
-            // To simplify, if it's in the request, we update it.
+
+            $isBooleanCol = str_contains($columnTypes[$column] ?? '', 'tinyint(1)') 
+                         || str_contains($columnTypes[$column] ?? '', 'bool');
+
             if (array_key_exists($column, $data)) {
-                $updateData[$column] = $data[$column];
+                $val = $data[$column];
+                $updateData[$column] = $isBooleanCol ? (($val == '1' || $val === true || $val === 1) ? 1 : 0) : $val;
             } else {
-                $updateData[$column] = null; // Basic approach for missing checkbox / empty fields
+                $updateData[$column] = $isBooleanCol ? 0 : null;
             }
         }
 
