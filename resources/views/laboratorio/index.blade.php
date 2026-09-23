@@ -1233,7 +1233,7 @@
                 @endphp
                 SwalCustom.fire({
                     title: 'Faltan completar o corregir datos',
-                    html: '{!! $errorList !!}',
+                    html: @json($errorList),
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 }).then(function() {
