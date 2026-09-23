@@ -440,23 +440,27 @@
         // Alertas de sesión via SweetAlert2
         document.addEventListener('DOMContentLoaded', () => {
             @if(session('success'))
+                @php
+                    $successMsg = session('success');
+                    $isDeleted = str_contains(strtolower($successMsg), 'eliminad') || str_contains(strtolower($successMsg), 'borrad');
+                @endphp
                 SwalCustom.fire({
-                    title: '¡Guardado!',
-                    text: "{{ session('success') }}",
+                    title: '{{ $isDeleted ? "¡Eliminado!" : "¡Guardado!" }}',
+                    text: @json(session('success')),
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
             @elseif(session('deleted'))
                 SwalCustom.fire({
                     title: '¡Eliminado!',
-                    text: "{{ session('deleted') }}",
+                    text: @json(session('deleted')),
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
             @elseif(session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
-                    text: "{{ session('error') }}",
+                    text: @json(session('error')),
                     icon: 'error',
                     confirmButtonText: 'Cerrar'
                 });

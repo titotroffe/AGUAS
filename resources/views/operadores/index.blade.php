@@ -710,14 +710,14 @@
             @endphp
             SwalCustom.fire({
                 title: '{{ $isDeleted ? "¡Eliminado!" : "¡Guardado!" }}',
-                text: "{{ $successMsg }}",
+                text: @json($successMsg),
                 icon: 'success',
                 confirmButtonText: 'Aceptar'
             });
         @elseif(session('error_presiones') || session('error_lavados') || session('error_quimicos') || session('error_novedades') || session('error'))
             SwalCustom.fire({
                 title: '¡Error!',
-                text: "{{ session('error_presiones') ?? session('error_lavados') ?? session('error_quimicos') ?? session('error_novedades') ?? session('error') }}",
+                text: @json(session('error_presiones') ?? session('error_lavados') ?? session('error_quimicos') ?? session('error_novedades') ?? session('error')),
                 icon: 'error',
                 confirmButtonText: 'Cerrar'
             });

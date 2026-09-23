@@ -1034,21 +1034,21 @@
             @if(session('success'))
                 SwalCustom.fire({
                     title: '¡Operación exitosa!',
-                    text: "{{ session('success') }}",
+                    text: @json(session('success')),
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
             @elseif(session('deleted'))
                 SwalCustom.fire({
                     title: '¡Eliminado!',
-                    text: "{{ session('deleted') }}",
+                    text: @json(session('deleted')),
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
             @elseif(session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
-                    text: "{{ session('error') }}",
+                    text: @json(session('error')),
                     icon: 'error',
                     confirmButtonText: 'Cerrar'
                 });
