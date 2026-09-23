@@ -182,8 +182,9 @@
                                     $inputType = 'checkbox';
                                 }
                                 
-                                $isRequiredAttr = in_array($col, $requiredColumns) ? 'required' : '';
-                                $asterisk = in_array($col, $requiredColumns) ? '<span class="text-red-500 ml-1" title="Campo Obligatorio">*</span>' : '';
+                                $isBoolean = ($inputType === 'checkbox');
+                                $isRequiredAttr = (!$isBoolean && in_array($col, $requiredColumns)) ? 'required' : '';
+                                $asterisk = (!$isBoolean && in_array($col, $requiredColumns)) ? '<span class="text-red-500 ml-1" title="Campo Obligatorio">*</span>' : '';
                             @endphp
                             
                             <div class="flex flex-col">
@@ -201,6 +202,7 @@
                                     </select>
                                 @elseif($inputType === 'checkbox')
                                     <div class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mt-2">
+                                        <input type="hidden" name="{{ $col }}" value="0">
                                         <input type="checkbox" name="{{ $col }}" id="input-{{ $col }}" value="1" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-600"/>
                                         <label for="input-{{ $col }}" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-600 cursor-pointer"></label>
                                     </div>
