@@ -159,7 +159,7 @@
             </div>
             
             <div class="p-6 overflow-y-auto flex-1">
-                <form id="abm-form" method="POST" action="">
+                <form id="abm-form" method="POST" action="" onsubmit="event.preventDefault(); submitAbmForm();">
                     @csrf
                     <input type="hidden" name="_method" id="form-method" value="POST">
                     
@@ -219,7 +219,7 @@
                 <button type="button" onclick="closeModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded transition">
                     CANCELAR
                 </button>
-                <button type="button" onclick="document.getElementById('abm-form').submit()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
+                <button type="button" onclick="submitAbmForm()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
                     GUARDAR
                 </button>
             </div>
@@ -235,7 +235,7 @@
             </div>
             
             <div class="p-6">
-                <form id="add-column-form" method="POST" action="{{ route('jefatura.abm.addColumn', $table) }}">
+                <form id="add-column-form" method="POST" action="{{ route('jefatura.abm.addColumn', $table) }}" onsubmit="event.preventDefault(); submitAddColumnForm();">
                     @csrf
                     <div class="flex flex-col mb-4">
                         <label class="text-xs font-bold mb-2 tracking-wide text-slate-400 uppercase">Nombre de la Columna</label>
@@ -268,7 +268,7 @@
                 <button type="button" onclick="closeColumnModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded transition">
                     CANCELAR
                 </button>
-                <button type="button" onclick="document.getElementById('add-column-form').submit()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
+                <button type="button" onclick="submitAddColumnForm()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
                     AÑADIR COLUMNA
                 </button>
             </div>
@@ -284,7 +284,7 @@
             </div>
             
             <div class="p-6">
-                <form id="edit-column-form" method="POST" action="">
+                <form id="edit-column-form" method="POST" action="" onsubmit="event.preventDefault(); submitEditColumnForm();">
                     @csrf
                     @method('PUT')
                     <div class="flex flex-col mb-4">
@@ -299,7 +299,7 @@
                 <button type="button" onclick="closeEditColumnModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded transition">
                     CANCELAR
                 </button>
-                <button type="button" onclick="document.getElementById('edit-column-form').submit()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
+                <button type="button" onclick="submitEditColumnForm()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded shadow-lg transition tracking-wide">
                     GUARDAR CAMBIOS
                 </button>
             </div>
@@ -393,6 +393,53 @@
             },
             buttonsStyling: true
         });
+
+        function submitAbmForm() {
+            const form = document.getElementById('abm-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const method = document.getElementById('form-method').value;
+            const isCreate = method === 'POST';
+            const title = isCreate ? '¿Confirmar nuevo registro?' : '¿Confirmar cambios?';
+            const text = isCreate 
+                ? '¿Deseas guardar este nuevo registro en la tabla?' 
+                : '¿Deseas guardar los cambios realizados en este registro?';
+
+            SwalCustom.fire({
+                title: title,
+                text: text,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, guardar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+
+        function submitAddColumnForm() {
+            const form = document.getElementById('add-column-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            form.submit();
+        }
+
+        function submitEditColumnForm() {
+            const form = document.getElementById('edit-column-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            form.submit();
+        }
 
         function confirmarEliminar(formId, actionUrl, mensaje = '¿Seguro que deseas borrar este registro?') {
             SwalCustom.fire({
