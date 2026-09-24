@@ -8,6 +8,7 @@ use App\Models\RegistroFiltro;
 use App\Models\NivelQuimico;
 use App\Models\Novedad;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\BombasController;
@@ -207,30 +208,32 @@ class OperadoresController extends Controller
 
         $actualizado = false;
 
-        foreach ($quimicos as $quimico) {
-            $principal = $request->input("{$quimico}_principal");
-            $auxiliar = $request->input("{$quimico}_auxiliar");
+        DB::transaction(function () use ($quimicos, $request, &$actualizado) {
+            foreach ($quimicos as $quimico) {
+                $principal = $request->input("{$quimico}_principal");
+                $auxiliar = $request->input("{$quimico}_auxiliar");
 
-            if (!is_null($principal)) {
-                NivelQuimico::create([
-                    'user_id' => Auth::id(),
-                    'quimico' => $quimico,
-                    'tipo_tanque' => 'principal',
-                    'nivel' => $principal,
-                ]);
-                $actualizado = true;
-            }
+                if (!is_null($principal)) {
+                    NivelQuimico::create([
+                        'user_id' => Auth::id(),
+                        'quimico' => $quimico,
+                        'tipo_tanque' => 'principal',
+                        'nivel' => $principal,
+                    ]);
+                    $actualizado = true;
+                }
 
-            if (!is_null($auxiliar)) {
-                NivelQuimico::create([
-                    'user_id' => Auth::id(),
-                    'quimico' => $quimico,
-                    'tipo_tanque' => 'auxiliar',
-                    'nivel' => $auxiliar,
-                ]);
-                $actualizado = true;
+                if (!is_null($auxiliar)) {
+                    NivelQuimico::create([
+                        'user_id' => Auth::id(),
+                        'quimico' => $quimico,
+                        'tipo_tanque' => 'auxiliar',
+                        'nivel' => $auxiliar,
+                    ]);
+                    $actualizado = true;
+                }
             }
-        }
+        });
 
         if (!$actualizado) {
             return back()->with('error_quimicos', 'Debe ingresar al menos el nivel de un tanque para actualizar.');

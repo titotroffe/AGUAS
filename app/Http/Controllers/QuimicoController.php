@@ -8,6 +8,7 @@ use App\Models\EnsayoBacteriologico;
 use App\Models\Novedad;
 use App\Models\Caudalimetro;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\BombasController;
 
 class QuimicoController extends Controller
@@ -131,86 +132,88 @@ class QuimicoController extends Controller
 
         $recordsCreated = 0;
 
-        // 1. Decantador Norte
-        if ($request->filled('decantador_norte_turbiedad') || $request->filled('decantador_norte_ph')) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'DECANTADOR NORTE',
-                'turbiedad' => $request->decantador_norte_turbiedad,
-                'ph' => $request->decantador_norte_ph,
-            ]);
-            $recordsCreated++;
-        }
+        DB::transaction(function () use ($request, &$recordsCreated) {
+            // 1. Decantador Norte
+            if ($request->filled('decantador_norte_turbiedad') || $request->filled('decantador_norte_ph')) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'DECANTADOR NORTE',
+                    'turbiedad' => $request->decantador_norte_turbiedad,
+                    'ph' => $request->decantador_norte_ph,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 2. Decantador Sur
-        if ($request->filled('decantador_sur_turbiedad') || $request->filled('decantador_sur_ph')) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'DECANTADOR SUR',
-                'turbiedad' => $request->decantador_sur_turbiedad,
-                'ph' => $request->decantador_sur_ph,
-            ]);
-            $recordsCreated++;
-        }
+            // 2. Decantador Sur
+            if ($request->filled('decantador_sur_turbiedad') || $request->filled('decantador_sur_ph')) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'DECANTADOR SUR',
+                    'turbiedad' => $request->decantador_sur_turbiedad,
+                    'ph' => $request->decantador_sur_ph,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 3. Cisterna
-        if ($request->filled('cisterna_turbiedad') || $request->filled('cisterna_ph') || $request->filled('cisterna_cloro')) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'CISTERNA',
-                'turbiedad' => $request->cisterna_turbiedad,
-                'ph' => $request->cisterna_ph,
-                'cloro_residual' => $request->cisterna_cloro,
-            ]);
-            $recordsCreated++;
-        }
+            // 3. Cisterna
+            if ($request->filled('cisterna_turbiedad') || $request->filled('cisterna_ph') || $request->filled('cisterna_cloro')) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'CISTERNA',
+                    'turbiedad' => $request->cisterna_turbiedad,
+                    'ph' => $request->cisterna_ph,
+                    'cloro_residual' => $request->cisterna_cloro,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 3.5. Bajada de Tanque
-        if ($request->filled('bajada_tanque_turbiedad') || $request->filled('bajada_tanque_ph') || $request->filled('bajada_tanque_cloro')) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'BAJADA DE TANQUE',
-                'turbiedad' => $request->bajada_tanque_turbiedad,
-                'ph' => $request->bajada_tanque_ph,
-                'cloro_residual' => $request->bajada_tanque_cloro,
-            ]);
-            $recordsCreated++;
-        }
+            // 3.5. Bajada de Tanque
+            if ($request->filled('bajada_tanque_turbiedad') || $request->filled('bajada_tanque_ph') || $request->filled('bajada_tanque_cloro')) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'BAJADA DE TANQUE',
+                    'turbiedad' => $request->bajada_tanque_turbiedad,
+                    'ph' => $request->bajada_tanque_ph,
+                    'cloro_residual' => $request->bajada_tanque_cloro,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 4. Río
-        if ($request->filled('rio_turbiedad') || $request->filled('rio_ph')) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'RIO',
-                'turbiedad' => $request->rio_turbiedad,
-                'ph' => $request->rio_ph,
-            ]);
-            $recordsCreated++;
-        }
+            // 4. Río
+            if ($request->filled('rio_turbiedad') || $request->filled('rio_ph')) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'RIO',
+                    'turbiedad' => $request->rio_turbiedad,
+                    'ph' => $request->rio_ph,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 5. Filtro Línea Norte
-        if ($request->filled('filtro_norte_select') && ($request->filled('filtro_norte_turbiedad') || $request->filled('filtro_norte_ph'))) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'FILTRO LINEA NORTE',
-                'filtro_numero' => $request->filtro_norte_select,
-                'turbiedad' => $request->filtro_norte_turbiedad,
-                'ph' => $request->filtro_norte_ph,
-            ]);
-            $recordsCreated++;
-        }
+            // 5. Filtro Línea Norte
+            if ($request->filled('filtro_norte_select') && ($request->filled('filtro_norte_turbiedad') || $request->filled('filtro_norte_ph'))) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'FILTRO LINEA NORTE',
+                    'filtro_numero' => $request->filtro_norte_select,
+                    'turbiedad' => $request->filtro_norte_turbiedad,
+                    'ph' => $request->filtro_norte_ph,
+                ]);
+                $recordsCreated++;
+            }
 
-        // 6. Filtro Línea Sur
-        if ($request->filled('filtro_sur_select') && ($request->filled('filtro_sur_turbiedad') || $request->filled('filtro_sur_ph'))) {
-            CalidadAgua::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'FILTRO LINEA SUR',
-                'filtro_numero' => $request->filtro_sur_select,
-                'turbiedad' => $request->filtro_sur_turbiedad,
-                'ph' => $request->filtro_sur_ph,
-            ]);
-            $recordsCreated++;
-        }
+            // 6. Filtro Línea Sur
+            if ($request->filled('filtro_sur_select') && ($request->filled('filtro_sur_turbiedad') || $request->filled('filtro_sur_ph'))) {
+                CalidadAgua::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'FILTRO LINEA SUR',
+                    'filtro_numero' => $request->filtro_sur_select,
+                    'turbiedad' => $request->filtro_sur_turbiedad,
+                    'ph' => $request->filtro_sur_ph,
+                ]);
+                $recordsCreated++;
+            }
+        });
 
         return back()->with('success', "Se registraron correctamente $recordsCreated mediciones de calidad de agua.");
     }
@@ -357,45 +360,47 @@ class QuimicoController extends Controller
 
         $recordsCreated = 0;
 
-        if ($request->filled('cisterna_e_coli') || $request->filled('cisterna_coliformes')) {
-            EnsayoBacteriologico::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'CISTERNA',
-                'e_coli' => $request->cisterna_e_coli,
-                'coliformes_totales' => $request->cisterna_coliformes,
-            ]);
-            $recordsCreated++;
-        }
+        DB::transaction(function () use ($request, &$recordsCreated) {
+            if ($request->filled('cisterna_e_coli') || $request->filled('cisterna_coliformes')) {
+                EnsayoBacteriologico::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'CISTERNA',
+                    'e_coli' => $request->cisterna_e_coli,
+                    'coliformes_totales' => $request->cisterna_coliformes,
+                ]);
+                $recordsCreated++;
+            }
 
-        if ($request->filled('bajada_tanque_e_coli') || $request->filled('bajada_tanque_coliformes')) {
-            EnsayoBacteriologico::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'BAJADA DE TANQUE',
-                'e_coli' => $request->bajada_tanque_e_coli,
-                'coliformes_totales' => $request->bajada_tanque_coliformes,
-            ]);
-            $recordsCreated++;
-        }
+            if ($request->filled('bajada_tanque_e_coli') || $request->filled('bajada_tanque_coliformes')) {
+                EnsayoBacteriologico::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'BAJADA DE TANQUE',
+                    'e_coli' => $request->bajada_tanque_e_coli,
+                    'coliformes_totales' => $request->bajada_tanque_coliformes,
+                ]);
+                $recordsCreated++;
+            }
 
-        if ($request->filled('rio_e_coli') || $request->filled('rio_coliformes')) {
-            EnsayoBacteriologico::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'RIO',
-                'e_coli' => $request->rio_e_coli,
-                'coliformes_totales' => $request->rio_coliformes,
-            ]);
-            $recordsCreated++;
-        }
+            if ($request->filled('rio_e_coli') || $request->filled('rio_coliformes')) {
+                EnsayoBacteriologico::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'RIO',
+                    'e_coli' => $request->rio_e_coli,
+                    'coliformes_totales' => $request->rio_coliformes,
+                ]);
+                $recordsCreated++;
+            }
 
-        if ($request->filled('decantador_select') && ($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes'))) {
-            EnsayoBacteriologico::create([
-                'user_id' => Auth::id(),
-                'lugar' => 'DECANTADOR ' . strtoupper($request->decantador_select),
-                'e_coli' => $request->decantador_e_coli,
-                'coliformes_totales' => $request->decantador_coliformes,
-            ]);
-            $recordsCreated++;
-        }
+            if ($request->filled('decantador_select') && ($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes'))) {
+                EnsayoBacteriologico::create([
+                    'user_id' => Auth::id(),
+                    'lugar' => 'DECANTADOR ' . strtoupper($request->decantador_select),
+                    'e_coli' => $request->decantador_e_coli,
+                    'coliformes_totales' => $request->decantador_coliformes,
+                ]);
+                $recordsCreated++;
+            }
+        });
 
         return back()->with('success', "Se registraron correctamente $recordsCreated ensayos bacteriológicos.");
     }
