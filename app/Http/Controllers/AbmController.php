@@ -11,8 +11,13 @@ class AbmController extends Controller
 {
     // Lista de tablas que NO queremos que se puedan editar desde el ABM
     protected $blacklistedTables = [
+        // Tablas del sistema y framework (Laravel internals)
         'migrations', 'password_reset_tokens', 'sessions', 'cache', 'cache_locks',
-        'failed_jobs', 'jobs', 'job_batches', 'personal_access_tokens'
+        'failed_jobs', 'jobs', 'job_batches', 'personal_access_tokens',
+        // QA-06: Tablas sensibles de la aplicación — nunca editar desde el ABM
+        'users',           // Contraseñas, roles y tokens de sesión
+        'estado_bombas',   // Estado físico de equipos críticos de la planta
+        'eventos_bombas',  // Historial de operación de bombas
     ];
 
     public function index()
