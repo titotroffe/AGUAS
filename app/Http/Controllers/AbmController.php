@@ -38,6 +38,11 @@ class AbmController extends Controller
             abort(404, 'Tabla no encontrada o acceso denegado.');
         }
 
+        // QA-02: Validar que el nombre de tabla sea estrictamente alfanumérico
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            abort(422, 'Nombre de tabla inválido.');
+        }
+
         $columns = Schema::getColumnListing($table);
         
         // Obtener tipos de datos y nulabilidad
@@ -95,6 +100,11 @@ class AbmController extends Controller
     {
         if (in_array($table, $this->blacklistedTables) || !Schema::hasTable($table)) {
             abort(403);
+        }
+
+        // QA-02: Validar que el nombre de tabla sea estrictamente alfanumérico
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            abort(422, 'Nombre de tabla inválido.');
         }
 
         // Validaciones dinámicas basadas en las columnas que son NOT NULL
@@ -345,15 +355,21 @@ class AbmController extends Controller
             abort(403);
         }
 
+        // QA-02: Validar que el nombre de columna sea estrictamente alfanumérico
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+            abort(422, 'Nombre de columna inválido.');
+        }
+
         $protectedColumns = ['id', 'created_at', 'updated_at', 'deleted_at'];
         if (in_array(strtolower($column), $protectedColumns)) {
             return redirect()->back()->with('error', "No se puede eliminar la columna protegida '{$column}'.");
         }
 
         // Verificar si hay datos asociados (que no sean nulos ni strings vacíos)
+        // QA-02: $column ya fue validado con regex, seguro para usar en backticks
         $hasData = DB::table($table)
             ->whereNotNull($column)
-            ->whereRaw("CAST(`$column` AS CHAR) != ''")
+            ->whereRaw('CAST(`' . $column . '` AS CHAR) != \'\'') // nombre saneado por regex
             ->exists();
             
         if ($hasData) {
