@@ -343,6 +343,11 @@ class AbmController extends Controller
             abort(403);
         }
 
+        $protectedColumns = ['id', 'created_at', 'updated_at', 'deleted_at'];
+        if (in_array(strtolower($column), $protectedColumns)) {
+            return redirect()->back()->with('error', "No se puede eliminar la columna protegida '{$column}'.");
+        }
+
         // Verificar si hay datos asociados (que no sean nulos ni strings vacíos)
         $hasData = DB::table($table)
             ->whereNotNull($column)
