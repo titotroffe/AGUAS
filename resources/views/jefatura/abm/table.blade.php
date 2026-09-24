@@ -313,6 +313,12 @@
         .toggle-checkbox:checked + .toggle-label { background-color: #06b6d4; }
     </style>
 
+    <!-- Formulario global para eliminar columnas -->
+    <form id="delete-column-form" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+
     <script>
         const storeUrl = "{{ route('jefatura.abm.store', $table) }}";
         const updateUrlBase = "{{ route('jefatura.abm.update', ['table' => $table, 'id' => 'ID_PLACEHOLDER']) }}";
@@ -459,14 +465,6 @@
                 }
             });
         }
-
-        // Hidden form global para eliminar columnas
-        const deleteColumnForm = document.createElement('form');
-        deleteColumnForm.method = 'POST';
-        deleteColumnForm.id = 'delete-column-form';
-        deleteColumnForm.style.display = 'none';
-        deleteColumnForm.innerHTML = `@csrf @method('DELETE')`;
-        document.body.appendChild(deleteColumnForm);
 
         function confirmarEliminarColumna(url, colName) {
             SwalCustom.fire({
