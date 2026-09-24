@@ -187,7 +187,7 @@ class OperadoresController extends Controller
             $principal = $request->input("{$quimico}_principal");
             if (!is_null($principal)) {
                 $ultimoPrincipal = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'principal')->latest()->value('nivel');
-                if ((float)$principal === (float)$ultimoPrincipal) {
+                if (!is_null($ultimoPrincipal) && (float)$principal === (float)$ultimoPrincipal) {
                     $errores["{$quimico}_principal"] = 'No se puede ingresar el mismo porcentaje actual.';
                 }
             }
@@ -195,7 +195,7 @@ class OperadoresController extends Controller
             $auxiliar = $request->input("{$quimico}_auxiliar");
             if (!is_null($auxiliar)) {
                 $ultimoAuxiliar = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'auxiliar')->latest()->value('nivel');
-                if ((float)$auxiliar === (float)$ultimoAuxiliar) {
+                if (!is_null($ultimoAuxiliar) && (float)$auxiliar === (float)$ultimoAuxiliar) {
                     $errores["{$quimico}_auxiliar"] = 'No se puede ingresar el mismo porcentaje actual.';
                 }
             }
