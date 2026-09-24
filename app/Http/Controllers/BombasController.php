@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\EstadoBomba;
 use App\Models\EventoBomba;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 
 class BombasController extends Controller
@@ -46,66 +47,79 @@ class BombasController extends Controller
         $dispositivo = $request->dispositivo;
         $nuevoEstado = (bool) $request->estado;
 
-        // Regla de negocio: máx. 2 bombas de río encendidas simultáneamente
-        if ($nuevoEstado && in_array($dispositivo, self::DISPOSITIVOS_BOMBA)) {
-            $bombasEncendidas = EstadoBomba::whereIn('dispositivo', self::DISPOSITIVOS_BOMBA)
-                ->where('estado', true)
-                ->where('dispositivo', '!=', $dispositivo)
-                ->count();
+        // QA-07: Envolver toda la lógica en una transacción con bloqueo pesimista
+        // para prevenir race conditions al encender bombas simultáneamente.
+        $resultado = DB::transaction(function () use ($dispositivo, $nuevoEstado) {
 
-            if ($bombasEncendidas >= self::MAX_BOMBAS_ENCENDIDAS) {
-                return response()->json([
-                    'ok'      => false,
-                    'mensaje' => 'No se pueden encender más de 2 bombas de río simultáneamente.',
-                ], 422);
+            // Regla de negocio: máx. 2 bombas de río encendidas simultáneamente
+            // lockForUpdate() bloquea las filas hasta que la transacción termine,
+            // evitando que otra petición concurrente lea el count antes de que escribamos.
+            if ($nuevoEstado && in_array($dispositivo, self::DISPOSITIVOS_BOMBA)) {
+                $bombasEncendidas = EstadoBomba::whereIn('dispositivo', self::DISPOSITIVOS_BOMBA)
+                    ->where('estado', true)
+                    ->where('dispositivo', '!=', $dispositivo)
+                    ->lockForUpdate()
+                    ->count();
+
+                if ($bombasEncendidas >= self::MAX_BOMBAS_ENCENDIDAS) {
+                    return [
+                        'ok'      => false,
+                        'mensaje' => 'No se pueden encender más de 2 bombas de río simultáneamente.',
+                        'status'  => 422,
+                    ];
+                }
             }
-        }
 
-        // Actualizar estado actual (upsert por dispositivo)
-        $estadoActual = EstadoBomba::where('dispositivo', $dispositivo)->first();
+            // Actualizar estado actual (upsert por dispositivo)
+            $estadoActual = EstadoBomba::where('dispositivo', $dispositivo)->lockForUpdate()->first();
 
-        // Solo actuar si el estado cambió
-        if ($estadoActual && (bool) $estadoActual->estado === $nuevoEstado) {
-            return response()->json(['ok' => true, 'sin_cambio' => true]);
-        }
+            // Solo actuar si el estado cambió
+            if ($estadoActual && (bool) $estadoActual->estado === $nuevoEstado) {
+                return ['ok' => true, 'sin_cambio' => true, 'status' => 200];
+            }
 
-        EstadoBomba::updateOrCreate(
-            ['dispositivo' => $dispositivo],
-            ['estado' => $nuevoEstado, 'user_id' => Auth::id()]
-        );
+            EstadoBomba::updateOrCreate(
+                ['dispositivo' => $dispositivo],
+                ['estado' => $nuevoEstado, 'user_id' => Auth::id()]
+            );
 
-        // Registrar evento
-        if ($nuevoEstado) {
-            // Encendido: abrir nuevo evento
-            EventoBomba::create([
-                'dispositivo'  => $dispositivo,
-                'user_id'      => Auth::id(),
-                'encendido_at' => now(),
-                'apagado_at'   => null,
-            ]);
-        } else {
-            // Apagado: cerrar el último evento abierto
-            $eventoAbierto = EventoBomba::where('dispositivo', $dispositivo)
-                ->whereNull('apagado_at')
-                ->latest('encendido_at')
-                ->first();
-
-            if ($eventoAbierto) {
-                $duracion = $eventoAbierto->encendido_at->diffInSeconds(now());
-                $eventoAbierto->update([
-                    'apagado_at'        => now(),
-                    'duracion_segundos' => $duracion,
+            // Registrar evento
+            if ($nuevoEstado) {
+                EventoBomba::create([
+                    'dispositivo'  => $dispositivo,
+                    'user_id'      => Auth::id(),
+                    'encendido_at' => now(),
+                    'apagado_at'   => null,
                 ]);
-            }
-        }
+            } else {
+                $eventoAbierto = EventoBomba::where('dispositivo', $dispositivo)
+                    ->whereNull('apagado_at')
+                    ->latest('encendido_at')
+                    ->first();
 
-        return response()->json([
-            'ok'      => true,
-            'estado'  => $nuevoEstado,
-            'mensaje' => $nuevoEstado
-                ? ucfirst(str_replace('_', ' ', $dispositivo)) . ' encendido.'
-                : ucfirst(str_replace('_', ' ', $dispositivo)) . ' apagado.',
-        ]);
+                if ($eventoAbierto) {
+                    $duracion = $eventoAbierto->encendido_at->diffInSeconds(now());
+                    $eventoAbierto->update([
+                        'apagado_at'        => now(),
+                        'duracion_segundos' => $duracion,
+                    ]);
+                }
+            }
+
+            return [
+                'ok'      => true,
+                'estado'  => $nuevoEstado,
+                'mensaje' => $nuevoEstado
+                    ? ucfirst(str_replace('_', ' ', $dispositivo)) . ' encendido.'
+                    : ucfirst(str_replace('_', ' ', $dispositivo)) . ' apagado.',
+                'status'  => 200,
+            ];
+        });
+
+        return response()->json(
+            array_diff_key($resultado, ['status' => '']),
+            $resultado['status']
+        );
     }
 
     /**
