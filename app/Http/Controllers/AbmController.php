@@ -157,8 +157,8 @@ class AbmController extends Controller
             DB::table($table)->insert($insertData);
             return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro creado correctamente.');
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Error al crear el registro: ' . $e->getMessage())->withInput();
+            Log::error("ABM store error [{$table}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al guardar el registro. Contacte al administrador.')->withInput();
         }
     }
 
@@ -223,8 +223,8 @@ class AbmController extends Controller
             DB::table($table)->where('id', $id)->update($updateData);
             return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro actualizado correctamente.');
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage())->withInput();
+            Log::error("ABM update error [{$table}#{$id}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar el registro. Contacte al administrador.')->withInput();
         }
     }
 
@@ -248,9 +248,11 @@ class AbmController extends Controller
                 
                 return redirect()->back()->with('error', "No se puede eliminar este registro. Hay datos asociados que dependen de él en la tabla: '{$tableName}'. Por favor, elimine esos datos primero.");
             }
-            return redirect()->back()->with('error', 'Error de base de datos al eliminar: ' . $e->getMessage());
+            Log::error("ABM destroy FK error [{$table}#{$id}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error de base de datos al eliminar. Contacte al administrador.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error inesperado al eliminar: ' . $e->getMessage());
+            Log::error("ABM destroy error [{$table}#{$id}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error inesperado al eliminar. Contacte al administrador.');
         }
     }
 
@@ -303,8 +305,8 @@ class AbmController extends Controller
             });
             return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna '{$name}' añadida exitosamente.");
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Error al añadir columna: ' . $e->getMessage());
+            Log::error("ABM addColumn error [{$table}.{$name}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al añadir la columna. Contacte al administrador.');
         }
     }
 
@@ -332,8 +334,8 @@ class AbmController extends Controller
             }
             return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna actualizada exitosamente.");
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar columna: ' . $e->getMessage());
+            Log::error("ABM updateColumn error [{$table}.{$column}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar la columna. Contacte al administrador.');
         }
     }
 
@@ -364,8 +366,8 @@ class AbmController extends Controller
             });
             return redirect()->route('jefatura.abm.show', $table)->with('success', "Columna '{$column}' eliminada exitosamente.");
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Error al eliminar columna: ' . $e->getMessage());
+            Log::error("ABM destroyColumn error [{$table}.{$column}]: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar la columna. Contacte al administrador.');
         }
     }
 }
