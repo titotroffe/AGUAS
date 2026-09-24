@@ -265,11 +265,21 @@ class AbmController extends Controller
         }
 
         try {
-            DB::table($table)->where('id', $id)->update($updateData);
-            return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro actualizado correctamente.');
+            // QA-10: Verificar que el registro exista antes de intentar actualizar
+            $exists = DB::table($table)->where('id', $id)->exists();
+            if (!$exists) {
+                return redirect()->route('jefatura.abm.show', $table)
+                    ->with('error', 'El registro no fue encontrado.');
+            }
+
+            $updated = DB::table($table)->where('id', $id)->update($updateData);
+
+            // $updated puede ser 0 si los datos enviados son idénticos a los actuales (sin cambios reales)
+            return redirect()->route('jefatura.abm.show', $table)
+                ->with('success', $updated > 0 ? 'Registro actualizado correctamente.' : 'No se detectaron cambios en el registro.');
         } catch (\Exception $e) {
             Log::error("ABM update error [{$table}#{$id}]: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Ocurrió un error al actualizar el registro. Contacte al administrador.')->withInput();
+            return redirect()->back()->with('error', 'Ocurrio un error al actualizar el registro. Contacte al administrador.')->withInput();
         }
     }
 
