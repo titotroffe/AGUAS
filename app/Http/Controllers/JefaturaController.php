@@ -133,10 +133,18 @@ class JefaturaController extends Controller
     public function aprobarUsuario($id)
     {
         $user = \App\Models\User::findOrFail($id);
+
+        // QA-09: Verificar que el usuario no esté ya aprobado (idempotencia)
+        if ($user->is_approved) {
+            return redirect()->route('jefatura.index')
+                ->with('error', "El usuario {$user->name} ya se encuentra aprobado.");
+        }
+
         $user->is_approved = true;
         $user->save();
 
-        return redirect()->route('jefatura.index')->with('success', "El usuario {$user->name} ha sido aprobado exitosamente.");
+        return redirect()->route('jefatura.index')
+            ->with('success', "El usuario {$user->name} ha sido aprobado exitosamente.");
     }
 
     public function rechazarUsuario($id)
