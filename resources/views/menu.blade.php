@@ -54,7 +54,7 @@
         }
     </style>
 </head>
-<body class="m-0 p-0 overflow-hidden font-sans h-screen flex flex-col relative" style="background-image: url('data:image/jpeg;base64,{{ base64_encode(file_get_contents(public_path("img/fondo-ciudad.jpg"))) }}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #0f172a;">
+<body class="m-0 p-0 overflow-hidden font-sans h-screen flex flex-col relative" style="background-image: url('{{ asset('img/fondo-ciudad.jpg') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #0f172a;">
 
     <div class="relative z-10 bg-[#333333] w-full flex justify-between items-center px-6 py-2 shadow-md">
         <div class="text-white font-bold text-[15px] tracking-wide">
