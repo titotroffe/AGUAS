@@ -581,6 +581,31 @@ class LaboratorioController extends Controller
     // DESTROY METHODS
     // ---------------------------------------------------------
 
+    private function validarYBorrarRegistrosLaboratorio($valores)
+    {
+        if ($valores->isEmpty()) {
+            return back()->with('error', 'No se encontraron registros para eliminar.');
+        }
+
+        $primerRegistro = $valores->first();
+
+        // Verificar que el registro pertenezca al usuario logueado
+        // Si user_id es nulo (registros históricos anteriores a la corrección), no permitimos borrar.
+        if ($primerRegistro->user_id !== Auth::id()) {
+            return back()->with('error', 'No tienes permisos para borrar este registro.');
+        }
+
+        // Verificar que haya sido cargado hace menos de 2 horas
+        if ($primerRegistro->created_at->lt(now()->subHours(2))) {
+            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+        }
+
+        // Usamos el collection de IDs para borrar de forma segura
+        LabValor::whereIn('id', $valores->pluck('id'))->delete();
+
+        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+    }
+
     public function destroyInsumo($tipo, $id)
     {
         $parts = explode('_', $id);
@@ -588,30 +613,31 @@ class LaboratorioController extends Controller
             $fecha = $parts[0];
             $insumo_id = $parts[1];
             $medicionesIds = LabMedicion::where('modulo_id', 1)->where('insumo_id', $insumo_id)->pluck('id');
-            LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
+            $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->get();
+            return $this->validarYBorrarRegistrosLaboratorio($valores);
         }
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        return back()->with('error', 'Formato de ID inválido.');
     }
     
     public function destroyAguaCruda($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 2)->pluck('id');
-        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
+        return $this->validarYBorrarRegistrosLaboratorio($valores);
     }
     
     public function destroyProductoTerminado($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 3)->pluck('id');
-        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
+        return $this->validarYBorrarRegistrosLaboratorio($valores);
     }
     
     public function destroyAguaRed($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 5)->pluck('id');
-        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
+        return $this->validarYBorrarRegistrosLaboratorio($valores);
     }
     
     public function destroyPozo($id)
@@ -621,23 +647,24 @@ class LaboratorioController extends Controller
             $fecha = $parts[0];
             $pozo_id = $parts[1];
             $medicionesIds = LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->pluck('id');
-            LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->delete();
+            $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->get();
+            return $this->validarYBorrarRegistrosLaboratorio($valores);
         }
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        return back()->with('error', 'Formato de ID inválido.');
     }
 
     public function destroyControlEscriturado($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 6)->pluck('id');
-        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
+        return $this->validarYBorrarRegistrosLaboratorio($valores);
     }
 
     public function destroyControlTanques($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 7)->pluck('id');
-        LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->delete();
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
+        return $this->validarYBorrarRegistrosLaboratorio($valores);
     }
 
     public function storeNovedad(Request $request)
