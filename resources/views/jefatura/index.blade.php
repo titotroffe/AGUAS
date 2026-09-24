@@ -1026,6 +1026,8 @@
                                 otherDetails.removeAttribute('open');
                             }
                         });
+                        // BUG-08: Redibujar Chart.js correctamente al abrir acordeón
+                        window.dispatchEvent(new Event('resize'));
                     }
                 });
             });
