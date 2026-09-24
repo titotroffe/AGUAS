@@ -245,7 +245,10 @@ class AbmController extends Controller
         }
 
         try {
-            DB::table($table)->where('id', $id)->delete();
+            $deleted = DB::table($table)->where('id', $id)->delete();
+            if (!$deleted) {
+                return redirect()->route('jefatura.abm.show', $table)->with('error', 'El registro no fue encontrado o ya fue eliminado.');
+            }
             return redirect()->route('jefatura.abm.show', $table)->with('success', 'Registro eliminado correctamente.');
         } catch (\Illuminate\Database\QueryException $e) {
             $errorCode = $e->errorInfo[1] ?? 0;
