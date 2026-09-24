@@ -146,8 +146,12 @@ class JefaturaController extends Controller
         // Solo podemos rechazar si aún no está aprobado
         if (!$user->is_approved) {
             $nombre = $user->name;
-            $user->forceDelete();
-            return redirect()->route('jefatura.index')->with('success', "El usuario {$nombre} ha sido rechazado y eliminado permanentemente.");
+            try {
+                $user->forceDelete();
+                return redirect()->route('jefatura.index')->with('success', "El usuario {$nombre} ha sido rechazado y eliminado permanentemente.");
+            } catch (\Illuminate\Database\QueryException $e) {
+                return redirect()->route('jefatura.index')->with('error', "No se puede eliminar al usuario {$nombre} porque posee registros asociados.");
+            }
         }
 
         return redirect()->route('jefatura.index')->with('error', "No se puede rechazar a un usuario que ya está aprobado.");
