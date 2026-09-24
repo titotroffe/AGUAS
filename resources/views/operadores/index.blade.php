@@ -728,7 +728,7 @@
     let currentPage = 1;
     const totalItems = {{ count($ultimosRegistros) }};
     const itemsPerPage = 8;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
     function changePage(direction) {
         currentPage += direction;

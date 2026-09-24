@@ -1295,7 +1295,7 @@
         }
 
         function changePage(tableId, direction, totalItems) {
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
             pages[tableId] += direction;
             
             if (pages[tableId] < 1) pages[tableId] = 1;

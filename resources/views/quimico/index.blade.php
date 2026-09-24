@@ -782,7 +782,7 @@
         let currentPage = 1;
         const totalItems = {{ count($ultimosRegistros) }};
         const itemsPerPage = 8;
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
         function changePage(direction) {
             currentPage += direction;
@@ -813,7 +813,7 @@
         let currentBacPage = 1;
         const totalBacItems = {{ count($ultimosEnsayosBacteriologicos ?? []) }};
         const itemsBacPerPage = 8;
-        const totalBacPages = Math.ceil(totalBacItems / itemsBacPerPage);
+        const totalBacPages = Math.max(1, Math.ceil(totalBacItems / itemsBacPerPage));
 
         function changeBacPage(direction) {
             currentBacPage += direction;
