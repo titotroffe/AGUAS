@@ -67,13 +67,19 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 2. AGUA CRUDA (modulo_id = 2)
         // ---------------------------------------------------------
-        $valoresAguaCruda = LabValor::with(['medicion.tipoMedicion'])
+        $valoresAguaCruda = LabValor::with(['medicion.tipoMedicion', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 2); })
             ->orderBy('fecha', 'desc')->get();
             
-        $aguaCruda = $valoresAguaCruda->groupBy('fecha')->map(function($grupo) {
+        $aguaCruda = $valoresAguaCruda->groupBy(function($v) {
+            return $v->fecha . '_' . $v->medicion->frecuencia_id;
+        })->map(function($grupo) {
             $first = $grupo->first();
-            $obj = (object) ['id' => $first->fecha, 'fecha' => $first->fecha];
+            $obj = (object) [
+                'id' => $first->fecha . '_' . $first->medicion->frecuencia_id, 
+                'fecha' => $first->fecha,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
+            ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
                 $obj->$prop = $v->valor;
@@ -99,13 +105,19 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 3. PRODUCTO TERMINADO (modulo_id = 3)
         // ---------------------------------------------------------
-        $valoresProducto = LabValor::with(['medicion.tipoMedicion'])
+        $valoresProducto = LabValor::with(['medicion.tipoMedicion', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 3); })
             ->orderBy('fecha', 'desc')->get();
             
-        $productoTerminado = $valoresProducto->groupBy('fecha')->map(function($grupo) {
+        $productoTerminado = $valoresProducto->groupBy(function($v) {
+            return $v->fecha . '_' . $v->medicion->frecuencia_id;
+        })->map(function($grupo) {
             $first = $grupo->first();
-            $obj = (object) ['id' => $first->fecha, 'fecha' => $first->fecha];
+            $obj = (object) [
+                'id' => $first->fecha . '_' . $first->medicion->frecuencia_id, 
+                'fecha' => $first->fecha,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
+            ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
                 $obj->$prop = $v->valor;
@@ -131,13 +143,19 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 4. AGUA POTABLE DE RED (modulo_id = 5)
         // ---------------------------------------------------------
-        $valoresAguaRed = LabValor::with(['medicion.tipoMedicion'])
+        $valoresAguaRed = LabValor::with(['medicion.tipoMedicion', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 5); })
             ->orderBy('fecha', 'desc')->get();
             
-        $aguaRed = $valoresAguaRed->groupBy('fecha')->map(function($grupo) {
+        $aguaRed = $valoresAguaRed->groupBy(function($v) {
+            return $v->fecha . '_' . $v->medicion->frecuencia_id;
+        })->map(function($grupo) {
             $first = $grupo->first();
-            $obj = (object) ['id' => $first->fecha, 'fecha' => $first->fecha];
+            $obj = (object) [
+                'id' => $first->fecha . '_' . $first->medicion->frecuencia_id, 
+                'fecha' => $first->fecha,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
+            ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
                 $obj->$prop = $v->valor;
@@ -163,17 +181,20 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 5. POZOS (modulo_id = 4)
         // ---------------------------------------------------------
-        $valoresPozos = LabValor::with(['medicion.tipoMedicion', 'medicion.pozo'])
+        $valoresPozos = LabValor::with(['medicion.tipoMedicion', 'medicion.pozo', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 4); })
             ->orderBy('fecha', 'desc')->get();
             
-        $pozos = $valoresPozos->groupBy(function($v) { return $v->fecha . '_' . $v->medicion->pozo_id; })->map(function($grupo) {
+        $pozos = $valoresPozos->groupBy(function($v) { 
+            return $v->fecha . '_' . $v->medicion->pozo_id . '_' . $v->medicion->frecuencia_id; 
+        })->map(function($grupo) {
             $first = $grupo->first();
             $obj = (object) [
-                'id' => $first->fecha . '_' . $first->medicion->pozo_id,
+                'id' => $first->fecha . '_' . $first->medicion->pozo_id . '_' . $first->medicion->frecuencia_id,
                 'fecha' => $first->fecha,
                 'pozo_id' => $first->medicion->pozo_id,
                 'pozo_numero' => $first->medicion->pozo->nombre,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
             ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
@@ -204,13 +225,19 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 6. CONTROL ESCRITURADO (modulo_id = 6)
         // ---------------------------------------------------------
-        $valoresEscriturado = LabValor::with(['medicion.tipoMedicion'])
+        $valoresEscriturado = LabValor::with(['medicion.tipoMedicion', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 6); })
             ->orderBy('fecha', 'desc')->get();
             
-        $controlEscriturado = $valoresEscriturado->groupBy('fecha')->map(function($grupo) {
+        $controlEscriturado = $valoresEscriturado->groupBy(function($v) {
+            return $v->fecha . '_' . $v->medicion->frecuencia_id;
+        })->map(function($grupo) {
             $first = $grupo->first();
-            $obj = (object) ['id' => $first->fecha, 'fecha' => $first->fecha];
+            $obj = (object) [
+                'id' => $first->fecha . '_' . $first->medicion->frecuencia_id, 
+                'fecha' => $first->fecha,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
+            ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
                 $obj->$prop = $v->valor;
@@ -230,13 +257,19 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // 7. CONTROL DE TANQUES (modulo_id = 7)
         // ---------------------------------------------------------
-        $valoresTanques = LabValor::with(['medicion.tipoMedicion'])
+        $valoresTanques = LabValor::with(['medicion.tipoMedicion', 'medicion.frecuencia'])
             ->whereHas('medicion', function($q) { $q->where('modulo_id', 7); })
             ->orderBy('fecha', 'desc')->get();
             
-        $controlTanques = $valoresTanques->groupBy('fecha')->map(function($grupo) {
+        $controlTanques = $valoresTanques->groupBy(function($v) {
+            return $v->fecha . '_' . $v->medicion->frecuencia_id;
+        })->map(function($grupo) {
             $first = $grupo->first();
-            $obj = (object) ['id' => $first->fecha, 'fecha' => $first->fecha];
+            $obj = (object) [
+                'id' => $first->fecha . '_' . $first->medicion->frecuencia_id, 
+                'fecha' => $first->fecha,
+                'frecuencia' => $first->medicion->frecuencia->nombre ?? ''
+            ];
             foreach ($grupo as $v) {
                 $prop = 'medicion_' . $v->medicion_id;
                 $obj->$prop = $v->valor;

@@ -304,6 +304,7 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -311,6 +312,7 @@
                                 @forelse($aguaCruda as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition cruda-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-cruda-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -321,20 +323,21 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-cruda-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigAguaCruda as $config)
-                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
-                                                    <div class="text-xs">
-                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                        <span class="text-white">{{ $val }}</span>
-                                                    </div>
+                                                    @if(isset($registro->{'medicion_'.$config->id}))
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="3" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -424,6 +427,7 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -431,6 +435,7 @@
                                 @forelse($productoTerminado as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition producto-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-producto-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -441,14 +446,15 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-producto-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigProducto as $config)
-                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
-                                                    <div class="text-xs">
-                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                        <span class="text-white">{{ $val }}</span>
-                                                    </div>
+                                                    @if(isset($registro->{'medicion_'.$config->id}))
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </td>
@@ -544,6 +550,7 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -551,6 +558,7 @@
                                 @forelse($aguaRed as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition aguared-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-aguared-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -561,20 +569,21 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-aguared-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigAguaRed as $config)
-                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
-                                                    <div class="text-xs">
-                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                        <span class="text-white">{{ $val }}</span>
-                                                    </div>
+                                                    @if(isset($registro->{'medicion_'.$config->id}))
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="3" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -675,6 +684,7 @@
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Pozo Número</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -683,6 +693,7 @@
                                     <tr class="hover:bg-slate-800/40 transition pozo-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
                                         <td class="py-4 px-4 text-white font-bold border border-slate-700">{{ $registro->pozo_numero }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-pozo-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -693,14 +704,13 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-pozo-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="4" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigPozos as $config)
-                                                    @if($config->pozo_id == $registro->pozo_id)
-                                                        @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
+                                                    @if($config->pozo_id == $registro->pozo_id && isset($registro->{'medicion_'.$config->id}))
                                                         <div class="text-xs">
                                                             <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                            <span class="text-white">{{ $val }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
                                                         </div>
                                                     @endif
                                                 @endforeach
@@ -708,7 +718,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="3" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="4" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -798,6 +808,7 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -805,6 +816,7 @@
                                 @forelse($controlEscriturado as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition escriturado-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-escriturado-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -815,20 +827,21 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-escriturado-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigEscriturado as $config)
-                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
-                                                    <div class="text-xs">
-                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                        <span class="text-white">{{ $val }}</span>
-                                                    </div>
+                                                    @if(isset($registro->{'medicion_'.$config->id}))
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="3" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -918,6 +931,7 @@
                             <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
                                 <tr>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Fecha</th>
+                                    <th scope="col" class="py-3 px-4 border border-slate-700">Frecuencia</th>
                                     <th scope="col" class="py-3 px-4 border border-slate-700">Acciones</th>
                                 </tr>
                             </thead>
@@ -925,6 +939,7 @@
                                 @forelse($controlTanques as $index => $registro)
                                     <tr class="hover:bg-slate-800/40 transition tanques-row" data-index="{{ $index }}" style="{{ $index >= 8 ? 'display:none;' : '' }}">
                                         <td class="py-4 px-4 font-mono text-slate-400 border border-slate-700">{{ $registro->fecha }}</td>
+                                        <td class="py-4 px-4 text-slate-400 border border-slate-700 uppercase text-xs font-bold">{{ $registro->frecuencia }}</td>
                                         <td class="py-4 px-4 border border-slate-700">
                                             <button type="button" onclick="toggleDetalle('detail-tanques-{{ $index }}')" class="bg-blue-600/85 hover:bg-blue-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm mx-1">Ver</button>
                                             <button type="button" 
@@ -935,20 +950,21 @@
                                         </td>
                                     </tr>
                                     <tr id="detail-tanques-{{ $index }}" class="bg-slate-800/60" style="display:none;">
-                                        <td colspan="2" class="p-4 border border-slate-700 text-left">
+                                        <td colspan="3" class="p-4 border border-slate-700 text-left">
                                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 @foreach($medicionesConfigTanques as $config)
-                                                    @php $val = $registro->{'medicion_'.$config->id} ?? '-'; @endphp
-                                                    <div class="text-xs">
-                                                        <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
-                                                        <span class="text-white">{{ $val }}</span>
-                                                    </div>
+                                                    @if(isset($registro->{'medicion_'.$config->id}))
+                                                        <div class="text-xs">
+                                                            <span class="text-slate-400 font-bold block">{{ mb_strtoupper($config->tipoMedicion->nombre) }}</span>
+                                                            <span class="text-white">{{ $registro->{'medicion_'.$config->id} }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
+                                    <tr><td colspan="3" class="py-8 text-center text-slate-500 font-semibold border border-slate-700">No hay registros cargados todavía.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
