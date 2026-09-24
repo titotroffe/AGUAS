@@ -358,7 +358,7 @@ class LaboratorioController extends Controller
                 }
             }
             if ($valorStr !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $valorStr, 'observaciones' => $observaciones]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $valorStr, 'observaciones' => $observaciones]);
             }
         }
 
@@ -393,7 +393,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua Cruda guardado correctamente.');
@@ -427,7 +427,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Producto Terminado guardado correctamente.');
@@ -461,7 +461,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua de Red guardado correctamente.');
@@ -503,7 +503,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Pozo guardado correctamente.');
@@ -537,7 +537,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Control Escriturado guardado correctamente.');
@@ -571,7 +571,7 @@ class LaboratorioController extends Controller
         foreach ($configuraciones as $config) {
             $inputName = 'medicion_' . $config->id;
             if ($request->has($inputName) && $request->input($inputName) !== null) {
-                LabValor::create(['fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
+                LabValor::create(['user_id' => Auth::id(), 'fecha' => $fecha, 'medicion_id' => $config->id, 'valor' => (string) $request->input($inputName)]);
             }
         }
         return redirect()->route('laboratorio.index')->with('success', 'Registro de Control de Tanques guardado correctamente.');
