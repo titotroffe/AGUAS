@@ -127,9 +127,24 @@ class AbmController extends Controller
                 continue;
             }
 
+            // QA-04: Derivar el largo máximo del tipo de columna de la BD
+            $isString = str_contains($type, 'varchar') || str_contains($type, 'char')
+                     || str_contains($type, 'text') || str_contains($type, 'enum');
+            $maxLength = null;
+            if ($isString) {
+                preg_match('/\((\d+)\)/', $type, $lengthMatch);
+                $maxLength = isset($lengthMatch[1]) ? (int)$lengthMatch[1] : 65000;
+            }
+
             if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
-                $rules[$field] = 'required';
-                $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+                $rules[$field] = $maxLength ? "required|max:{$maxLength}" : 'required';
+                $messages["{$field}.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+                if ($maxLength) {
+                    $messages["{$field}.max"] = "El campo '" . ucfirst($field) . "' no puede superar los {$maxLength} caracteres.";
+                }
+            } elseif ($maxLength) {
+                $rules[$field] = "nullable|max:{$maxLength}";
+                $messages["{$field}.max"] = "El campo '" . ucfirst($field) . "' no puede superar los {$maxLength} caracteres.";
             }
         }
         $request->validate($rules, $messages);
@@ -198,9 +213,24 @@ class AbmController extends Controller
                 continue;
             }
 
+            // QA-04: Derivar el largo máximo del tipo de columna de la BD
+            $isString = str_contains($type, 'varchar') || str_contains($type, 'char')
+                     || str_contains($type, 'text') || str_contains($type, 'enum');
+            $maxLength = null;
+            if ($isString) {
+                preg_match('/\((\d+)\)/', $type, $lengthMatch);
+                $maxLength = isset($lengthMatch[1]) ? (int)$lengthMatch[1] : 65000;
+            }
+
             if ($col->Null === 'NO' && $col->Default === null && $col->Extra !== 'auto_increment') {
-                $rules[$field] = 'required';
-                $messages["$field.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+                $rules[$field] = $maxLength ? "required|max:{$maxLength}" : 'required';
+                $messages["{$field}.required"] = "El campo '" . ucfirst($field) . "' es obligatorio.";
+                if ($maxLength) {
+                    $messages["{$field}.max"] = "El campo '" . ucfirst($field) . "' no puede superar los {$maxLength} caracteres.";
+                }
+            } elseif ($maxLength) {
+                $rules[$field] = "nullable|max:{$maxLength}";
+                $messages["{$field}.max"] = "El campo '" . ucfirst($field) . "' no puede superar los {$maxLength} caracteres.";
             }
         }
         $request->validate($rules, $messages);
