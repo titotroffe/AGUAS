@@ -63,7 +63,7 @@
     <div class="max-w-6xl mx-auto">
         
         <!-- Navegación y Título -->
-        <div class="flex flex-col md:relative md:flex md:items-center md:justify-center mb-12 gap-4">
+        <div class="flex flex-col md:relative md:flex md:items-center md:justify-center mb-12 relative gap-6">
             <div class="md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 flex justify-center">
                 <a href="/menu" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition text-sm font-semibold">
                      ← VOLVER AL MENÚ
