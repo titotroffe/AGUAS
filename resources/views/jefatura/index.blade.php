@@ -139,18 +139,15 @@
         @endif
 
         @php
-            $defaultTab = 'ultimos';
+            $defaultTab = 'personal';
             if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab'])) {
-                $defaultTab = request('tab', 'ultimos');
+                $defaultTab = request('tab', 'personal');
             }
         @endphp
 
         <div x-data="{ activeTab: '{{ $defaultTab }}' }">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
-                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bolt"></i> ÚLTIMOS REGISTROS
-                </button>
                 <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users"></i> PERSONAL
                 </button>
@@ -169,21 +166,17 @@
                 <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-sky-600/20 text-sky-400 border-b-2 border-sky-500 shadow-[0_-10px_20px_-10px_rgba(14,165,233,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-clock-rotate-left"></i> HISTÓRICOS
                 </button>
-            </div>
-
-            <!-- Panel Últimos Registros y Usuarios Nuevos -->
-            <div x-show="activeTab === 'ultimos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            <!-- Panel Gestión de Personal y Resumen -->
+            <div x-show="activeTab === 'personal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
-                    <!-- Usuarios Nuevos -->
+                    <!-- Usuarios Nuevos (Solo si hay) -->
+                    @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
                         <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
                             <span class="text-orange-400 uppercase"><i class="fa-solid fa-user-plus mr-2"></i> Usuarios Pendientes</span>
-                            @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
-                                <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $usuariosPendientes->count() }}</span>
-                            @endif
+                            <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $usuariosPendientes->count() }}</span>
                         </div>
                         <div class="p-6">
-                            @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
                             <div class="overflow-x-auto relative z-10">
                                 <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
                                     <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
@@ -216,14 +209,9 @@
                                     </tbody>
                                 </table>
                             </div>
-                            @else
-                            <div class="text-center py-8 text-slate-500">
-                                <i class="fa-solid fa-check-circle text-4xl mb-3 text-slate-600"></i>
-                                <p>No hay usuarios pendientes de aprobación.</p>
-                            </div>
-                            @endif
                         </div>
                     </div>
+                    @endif
 
                     <!-- Últimos Registros -->
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
@@ -260,12 +248,9 @@
                             @endif
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Panel Gestión de Personal -->
-            <div x-show="activeTab === 'personal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <!-- Tabla de Personal -->
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
                     <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
                         <span class="text-indigo-400 uppercase">Gestión de Personal</span>
                     </div>
@@ -359,7 +344,9 @@
                 </div>
                 @endif
             </div>
-        </details>
+        </div>
+    </div>
+</div>
 
         <!-- Mensaje de Éxito Genérico -->
         @if(session('success'))
