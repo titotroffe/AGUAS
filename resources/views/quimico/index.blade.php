@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     
     <style>
         input[type=number]::-webkit-inner-spin-button, 
@@ -121,13 +121,13 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">CISTERNA</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" max="10" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="cisterna_ph" step="0.01" min="0" max="14" value="{{ old('cisterna_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="cisterna_cloro" step="0.01" min="0" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="cisterna_cloro" step="0.01" min="0" max="3" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
 
                         <!-- Bajada de Tanque -->
@@ -135,13 +135,13 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">BAJADA DE TANQUE</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="bajada_tanque_turbiedad" step="0.01" min="0" value="{{ old('bajada_tanque_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="bajada_tanque_turbiedad" step="0.01" min="0" max="10" value="{{ old('bajada_tanque_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="bajada_tanque_ph" step="0.01" min="0" max="14" value="{{ old('bajada_tanque_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" max="3" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
 
                         <!-- Decantador Norte -->
@@ -149,7 +149,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADOR NORTE</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="decantador_norte_turbiedad" step="0.01" min="0" value="{{ old('decantador_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="decantador_norte_turbiedad" step="0.01" min="0" max="300" value="{{ old('decantador_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="decantador_norte_ph" step="0.01" min="0" max="14" value="{{ old('decantador_norte_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -160,7 +160,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADOR SUR</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="decantador_sur_turbiedad" step="0.01" min="0" value="{{ old('decantador_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="decantador_sur_turbiedad" step="0.01" min="0" max="300" value="{{ old('decantador_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="decantador_sur_ph" step="0.01" min="0" max="14" value="{{ old('decantador_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -184,7 +184,7 @@
                             </select>
 
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="filtro_norte_turbiedad" step="0.01" min="0" value="{{ old('filtro_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="filtro_norte_turbiedad" step="0.01" min="0" max="50" value="{{ old('filtro_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="filtro_norte_ph" step="0.01" min="0" max="14" value="{{ old('filtro_norte_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -203,7 +203,7 @@
                             </select>
 
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="filtro_sur_turbiedad" step="0.01" min="0" value="{{ old('filtro_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="filtro_sur_turbiedad" step="0.01" min="0" max="50" value="{{ old('filtro_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="filtro_sur_ph" step="0.01" min="0" max="14" value="{{ old('filtro_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -214,7 +214,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">RÍO</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="rio_turbiedad" step="0.01" min="0" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="rio_turbiedad" step="0.01" min="0" max="300" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="rio_ph" step="0.01" min="0" max="14" value="{{ old('rio_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">

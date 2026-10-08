@@ -7,9 +7,9 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/chart.umd.js') }}"></script>
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
 
     <style>
         .chart-container {
@@ -418,7 +418,7 @@
             </div>
         </details>
         <!-- SECCIÓN HISTÓRICOS Y TABLAS -->
-        <details id="historicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden" {{ request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio']) ? 'open' : '' }}>
+        <details id="historicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden" {{ request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab']) ? 'open' : '' }}>
             <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
                 <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
                 <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
@@ -426,7 +426,7 @@
             <div class="p-4 md:p-8">
                 <div class="grid grid-cols-1 gap-8 mb-8">
                     <!-- Historial Calidad de Agua -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group/calidad" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') ? 'open' : '' }}>
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group/calidad" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') || request('tab') === 'calidad' ? 'open' : '' }}>
                         <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
                             <span class="text-sky-300 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Historial: Calidad de Agua</span>
                             <span class="transform transition-transform group-open/calidad:rotate-180 text-slate-400">▼</span>
@@ -458,10 +458,11 @@
                                     <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-6 rounded border border-sky-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index', request()->only(['presiones_fecha_inicio', 'presiones_fecha_fin', 'presiones_page'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', array_merge(request()->only(['presiones_fecha_inicio', 'presiones_fecha_fin', 'presiones_page']), ['tab' => 'calidad'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
+                                <input type="hidden" name="tab" value="calidad">
                                 @if(request()->has('presiones_fecha_inicio'))
                                     <input type="hidden" name="presiones_fecha_inicio" value="{{ request('presiones_fecha_inicio') }}">
                                 @endif
@@ -525,7 +526,7 @@
                     </details>
 
                     <!-- Historial Presiones -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group/presiones" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') ? 'open' : '' }}>
+                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group/presiones" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') || request('tab') === 'presiones' ? 'open' : '' }}>
                         <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
                             <span class="text-indigo-300 uppercase"><i class="fa-solid fa-gauge mr-2"></i> Historial: Presiones y Cisterna</span>
                             <span class="transform transition-transform group-open/presiones:rotate-180 text-slate-400">▼</span>
@@ -545,10 +546,11 @@
                                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index', request()->only(['calidad_fecha_inicio', 'calidad_fecha_fin', 'lugar', 'calidad_page'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', array_merge(request()->only(['calidad_fecha_inicio', 'calidad_fecha_fin', 'lugar', 'calidad_page']), ['tab' => 'presiones'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
+                                <input type="hidden" name="tab" value="presiones">
                                 @if(request()->has('calidad_fecha_inicio'))
                                     <input type="hidden" name="calidad_fecha_inicio" value="{{ request('calidad_fecha_inicio') }}">
                                 @endif
