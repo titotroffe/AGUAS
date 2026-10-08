@@ -36,17 +36,51 @@ class JefaturaController extends Controller
             ]);
         }
 
+        $validarRango = function($inicio, $fin, $nombre) use ($request) {
+            if ($request->has($inicio) || $request->has($fin)) {
+                $request->validate([
+                    $inicio => 'required|date',
+                    $fin    => 'required|date|after_or_equal:'.$inicio,
+                ]);
+            }
+        };
+
+        $validarRango('presiones_grafico_inicio', 'presiones_grafico_fin', 'Presiones Gráfico');
+        $validarRango('calidad_grafico_inicio', 'calidad_grafico_fin', 'Calidad Gráfico');
+        $validarRango('quimicos_grafico_inicio', 'quimicos_grafico_fin', 'Químicos Gráfico');
+        $validarRango('filtros_grafico_inicio', 'filtros_grafico_fin', 'Filtros Gráfico');
+
         $calidadFechaInicio = $request->filled('calidad_fecha_inicio') ? $request->calidad_fecha_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
         $calidadFechaFin = $request->filled('calidad_fecha_fin') ? $request->calidad_fecha_fin : Carbon::today()->format('Y-m-d');
         
         $presionesFechaInicio = $request->filled('presiones_fecha_inicio') ? $request->presiones_fecha_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
         $presionesFechaFin = $request->filled('presiones_fecha_fin') ? $request->presiones_fecha_fin : Carbon::today()->format('Y-m-d');
 
-        // 1. Datos de Presiones (últimos 30 registros, orden cronológico)
-        $presiones = RegistroPresion::with('user')->orderBy('created_at', 'desc')->take(30)->get()->reverse()->values();
+        $presionesGraficoInicio = $request->filled('presiones_grafico_inicio') ? $request->presiones_grafico_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $presionesGraficoFin = $request->filled('presiones_grafico_fin') ? $request->presiones_grafico_fin : Carbon::today()->format('Y-m-d');
 
-        // 2. Datos de Calidad de Agua (últimos 100 registros para ver mejor la correlación)
-        $calidadAgua = CalidadAgua::with('user')->orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
+        $calidadGraficoInicio = $request->filled('calidad_grafico_inicio') ? $request->calidad_grafico_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $calidadGraficoFin = $request->filled('calidad_grafico_fin') ? $request->calidad_grafico_fin : Carbon::today()->format('Y-m-d');
+
+        $quimicosGraficoInicio = $request->filled('quimicos_grafico_inicio') ? $request->quimicos_grafico_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $quimicosGraficoFin = $request->filled('quimicos_grafico_fin') ? $request->quimicos_grafico_fin : Carbon::today()->format('Y-m-d');
+
+        $filtrosGraficoInicio = $request->filled('filtros_grafico_inicio') ? $request->filtros_grafico_inicio : Carbon::today()->subDays(7)->format('Y-m-d');
+        $filtrosGraficoFin = $request->filled('filtros_grafico_fin') ? $request->filtros_grafico_fin : Carbon::today()->format('Y-m-d');
+
+        // 1. Datos de Presiones
+        $presiones = RegistroPresion::with('user')
+            ->whereBetween('created_at', [$presionesGraficoInicio . ' 00:00:00', $presionesGraficoFin . ' 23:59:59'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        $ultimaPresionGlobal = RegistroPresion::with('user')->orderBy('created_at', 'desc')->first();
+
+        // 2. Datos de Calidad de Agua
+        $calidadAgua = CalidadAgua::with('user')
+            ->whereBetween('created_at', [$calidadGraficoInicio . ' 00:00:00', $calidadGraficoFin . ' 23:59:59'])
+            ->orderBy('created_at', 'asc')
+            ->get();
         
         // 2b. Últimos registros por lugar de Calidad de Agua
         $ultimosIds = CalidadAgua::selectRaw('MAX(id) as id')
@@ -70,11 +104,17 @@ class JefaturaController extends Controller
             ];
         }
         
-        // 3b. Historial de Químicos (últimos 100 registros)
-        $historialQuimicos = NivelQuimico::with('user')->orderBy('created_at', 'desc')->take(100)->get()->reverse()->values();
+        // 3b. Historial de Químicos
+        $historialQuimicos = NivelQuimico::with('user')
+            ->whereBetween('created_at', [$quimicosGraficoInicio . ' 00:00:00', $quimicosGraficoFin . ' 23:59:59'])
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-        // 4. Lavado de Filtros (Dinámico desde la BD consultando las columnas)
-        $filtrosRaw = RegistroFiltro::with('user')->orderBy('created_at', 'desc')->take(50)->get();
+        // 4. Lavado de Filtros
+        $filtrosRaw = RegistroFiltro::with('user')
+            ->whereBetween('created_at', [$filtrosGraficoInicio . ' 00:00:00', $filtrosGraficoFin . ' 23:59:59'])
+            ->orderBy('created_at', 'asc')
+            ->get();
         
         $todasColumnas = Schema::getColumnListing('registro_filtros');
         $columnasExcluidas = ['id', 'user_id', 'created_at', 'updated_at', 'inicio_lavado', 'fin_lavado', 'observaciones'];
@@ -126,7 +166,16 @@ class JefaturaController extends Controller
             'presionesFechaFin',
             'usuariosPendientes',
             'empleados',
-            'empleadosDadosDeBaja'
+            'empleadosDadosDeBaja',
+            'ultimaPresionGlobal',
+            'presionesGraficoInicio',
+            'presionesGraficoFin',
+            'calidadGraficoInicio',
+            'calidadGraficoFin',
+            'quimicosGraficoInicio',
+            'quimicosGraficoFin',
+            'filtrosGraficoInicio',
+            'filtrosGraficoFin'
         ));
     }
 
