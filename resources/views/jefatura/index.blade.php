@@ -138,12 +138,137 @@
         </div>
         @endif
 
-        <!-- Panel Gestión de Personal -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-indigo-400 uppercase">Gestión de Personal</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+        @php
+            $defaultTab = 'ultimos';
+            if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab'])) {
+                $defaultTab = request('tab', 'ultimos');
+            }
+        @endphp
+
+        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <!-- Menú Superior de Tabs -->
+            <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
+                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> ÚLTIMOS REGISTROS
+                </button>
+                <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-users"></i> PERSONAL
+                </button>
+                <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-chart-line"></i> TENDENCIAS
+                </button>
+                <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-emerald-600/20 text-emerald-400 border-b-2 border-emerald-500 shadow-[0_-10px_20px_-10px_rgba(16,185,129,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> CALIDAD
+                </button>
+                <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-yellow-600/20 text-yellow-400 border-b-2 border-yellow-500 shadow-[0_-10px_20px_-10px_rgba(234,179,8,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-vial"></i> QUÍMICOS
+                </button>
+                <button @click="activeTab = 'filtros'" :class="activeTab === 'filtros' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-filter"></i> FILTROS
+                </button>
+                <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-sky-600/20 text-sky-400 border-b-2 border-sky-500 shadow-[0_-10px_20px_-10px_rgba(14,165,233,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left"></i> HISTÓRICOS
+                </button>
+            </div>
+
+            <!-- Panel Últimos Registros y Usuarios Nuevos -->
+            <div x-show="activeTab === 'ultimos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
+                    <!-- Usuarios Nuevos -->
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
+                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                            <span class="text-orange-400 uppercase"><i class="fa-solid fa-user-plus mr-2"></i> Usuarios Pendientes</span>
+                            @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
+                                <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $usuariosPendientes->count() }}</span>
+                            @endif
+                        </div>
+                        <div class="p-6">
+                            @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
+                            <div class="overflow-x-auto relative z-10">
+                                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
+                                    <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
+                                        <tr>
+                                            <th class="py-3 px-4 border border-slate-700/50">Nombre</th>
+                                            <th class="py-3 px-4 border border-slate-700/50">Rol Pedido</th>
+                                            <th class="py-3 px-4 border border-slate-700/50">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="font-medium bg-slate-900/50">
+                                        @foreach($usuariosPendientes as $pend)
+                                        <tr class="hover:bg-slate-800/40 transition">
+                                            <td class="py-3 px-4 border border-slate-700/50 font-bold text-white">{{ $pend->name }}</td>
+                                            <td class="py-3 px-4 border border-slate-700/50 uppercase text-xs">{{ $pend->role }}</td>
+                                            <td class="py-3 px-4 border border-slate-700/50">
+                                                <div class="flex justify-center gap-2">
+                                                    <form method="POST" action="{{ route('jefatura.aprobar', $pend->id) }}">
+                                                        @csrf
+                                                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold p-2 rounded text-xs transition shadow" title="Aprobar"><i class="fa-solid fa-check"></i></button>
+                                                    </form>
+                                                    <form method="POST" action="{{ route('jefatura.rechazar', $pend->id) }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" onclick="return confirm('¿Rechazar a este usuario?')" class="bg-red-600 hover:bg-red-500 text-white font-bold p-2 rounded text-xs transition shadow" title="Rechazar"><i class="fa-solid fa-xmark"></i></button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @else
+                            <div class="text-center py-8 text-slate-500">
+                                <i class="fa-solid fa-check-circle text-4xl mb-3 text-slate-600"></i>
+                                <p>No hay usuarios pendientes de aprobación.</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Últimos Registros -->
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
+                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                            <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Últimos Movimientos</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Última Calidad de Agua</h3>
+                            @if(isset($ultimosPorLugar) && $ultimosPorLugar->count() > 0)
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                    @foreach($ultimosPorLugar->take(4) as $reg)
+                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24" title="{{ $reg->lugar }}">{{ $reg->lugar }}</span>
+                                        <span class="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">{{ $reg->created_at->format('d/m H:i') }}</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-slate-500 text-sm mb-6">No hay registros recientes.</p>
+                            @endif
+
+                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Últimos Registros Operadores</h3>
+                            @if(isset($presiones) && $presiones->count() > 0)
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    @foreach($presiones->take(4) as $pres)
+                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24">Presiones</span>
+                                        <span class="text-xs font-mono text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{{ $pres->created_at->format('d/m H:i') }}</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-slate-500 text-sm">No hay registros recientes.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Gestión de Personal -->
+            <div x-show="activeTab === 'personal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-indigo-400 uppercase">Gestión de Personal</span>
+                    </div>
             <div class="p-6">
                 <div class="overflow-x-auto relative z-10">
                     <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
@@ -309,24 +434,26 @@
         </div>
 
         <!-- Panel Presiones -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400 uppercase"><i class="fa-solid fa-gauge-high mr-2"></i> Tendencia de Presiones y Cisterna</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+            <div x-show="activeTab === 'tendencias'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400 uppercase"><i class="fa-solid fa-gauge-high mr-2"></i> Tendencia de Presiones y Cisterna</span>
+                    </div>
             <div class="p-4 md:p-8">
                 <div class="chart-container">
                     <canvas id="chartPresiones"></canvas>
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
         <!-- Calidad Agua separada en 3 (Efecto Decantación) -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-emerald-400 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Calidad de Agua (Por Sector)</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+            <div x-show="activeTab === 'calidad'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-emerald-400 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Calidad de Agua (Por Sector)</span>
+                    </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             <!-- Turbiedad (Efecto Decantación) -->
             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-amber-900/20 lg:col-span-2">
@@ -369,13 +496,15 @@
                 </div>
             </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-yellow-400 uppercase"><i class="fa-solid fa-vial mr-2"></i> Niveles de Químicos</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+            <div x-show="activeTab === 'quimicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-yellow-400 uppercase"><i class="fa-solid fa-vial mr-2"></i> Niveles de Químicos</span>
+                    </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             
             <!-- Historial Quimicos -->
@@ -401,14 +530,16 @@
                 </div>
             </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
         <!-- Panel Filtros -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-indigo-400 uppercase"><i class="fa-solid fa-filter mr-2"></i> Lavados Frecuentes de Filtros</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+            <div x-show="activeTab === 'filtros'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-indigo-400 uppercase"><i class="fa-solid fa-filter mr-2"></i> Lavados Frecuentes de Filtros</span>
+                    </div>
             <div class="p-4 md:p-8">
                 <div class="chart-container flex justify-center">
                     <div class="w-[80%] h-full">
@@ -416,13 +547,15 @@
                     </div>
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
         <!-- SECCIÓN HISTÓRICOS Y TABLAS -->
-        <details id="historicos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden" {{ request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab']) ? 'open' : '' }}>
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+            <div x-show="activeTab === 'historicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
+                    </div>
             <div class="p-4 md:p-8">
                 <div class="grid grid-cols-1 gap-8 mb-8">
                     <!-- Historial Calidad de Agua -->
@@ -615,7 +748,10 @@
                     </details>
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End of x-data tabs -->
     </div>
 
 <!-- Botón Volver Arriba -->

@@ -140,16 +140,15 @@
 {{-- ────────────────────────────────────────────────────────────── --}}
 {{-- PANEL PRINCIPAL                                                --}}
 {{-- ────────────────────────────────────────────────────────────── --}}
-<details id="details-bombas" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
-    <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
+<div id="details-bombas" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl overflow-hidden glass">
+    <div class="bg-slate-800/80 p-5 flex justify-between items-center text-lg font-bold text-white tracking-wider border-b border-slate-700">
         <div class="flex items-center gap-3">
             <span class="text-blue-400">1. ESTADO DE BOMBAS Y POZOS</span>
             @if($readonly)
                 <span class="text-xs font-normal bg-slate-700 text-slate-400 px-3 py-1 rounded-full border border-slate-600">SOLO LECTURA</span>
             @endif
         </div>
-        <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-    </summary>
+    </div>
 
     <div class="p-6 md:p-8">
 
@@ -276,7 +275,7 @@
         </div>
 
     </div>{{-- /p-6 --}}
-</details>
+</div>
 
 {{-- Toast de notificación --}}
 <div id="bombas-toast"></div>
