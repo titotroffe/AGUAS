@@ -110,12 +110,46 @@
             </div>
         @endif
 
-        <!-- 1. ANÁLISIS DE INSUMOS -->
-        <details id="details-insumos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">1. ANÁLISIS DE INSUMOS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+        @php
+            $erroresInsumos = session('success') || session('error') || $errors->hasAny(['tipo_insumo', 'fecha', 'ph', 'concentracion', 'densidad', 'turbiedad', 'aluminio', 'residuo_insoluble', 'aspecto', 'cloro_activo', 'alcalinidad_total', 'ph_1_porciento', 'color']);
+            $erroresCruda = session('success_cruda') || session('error_cruda') || $errors->hasAny(['frecuencia_cruda', 'fecha', 'medicion_*']);
+            $erroresProducto = session('success_producto') || session('error_producto') || $errors->hasAny(['frecuencia_producto', 'fecha', 'medicion_*']);
+            $erroresRed = session('success_red') || session('error_red') || $errors->hasAny(['frecuencia_red', 'fecha', 'medicion_*', 'punto_red_id']);
+            $erroresPozos = session('success_pozos') || session('error_pozos') || $errors->hasAny(['frecuencia_pozos', 'fecha', 'medicion_*', 'pozo_id']);
+            $erroresEscriturado = session('success_escriturado') || session('error_escriturado') || $errors->hasAny(['frecuencia_escriturado', 'fecha', 'medicion_*', 'lugar_id']);
+            $erroresEscuelas = session('success_escuelas') || session('error_escuelas') || $errors->hasAny(['frecuencia_escuelas', 'fecha', 'medicion_*', 'escuela_id', 'resultado_cloro', 'resultado_bacteriologico', 'observaciones']);
+            $erroresNovedades = session('success_novedades') || session('error_novedades') || $errors->hasAny(['mensaje']);
+
+            $defaultTab = 'insumos';
+            if ($erroresCruda) $defaultTab = 'cruda';
+            elseif ($erroresProducto) $defaultTab = 'producto';
+            elseif ($erroresRed) $defaultTab = 'red';
+            elseif ($erroresPozos) $defaultTab = 'pozos';
+            elseif ($erroresEscriturado) $defaultTab = 'escriturado';
+            elseif ($erroresEscuelas) $defaultTab = 'escuelas';
+            elseif ($erroresNovedades) $defaultTab = 'novedades';
+        @endphp
+
+        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <!-- Menú Superior de Tabs -->
+            <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
+                <button @click="activeTab = 'insumos'" :class="activeTab === 'insumos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">1. INSUMOS</button>
+                <button @click="activeTab = 'cruda'" :class="activeTab === 'cruda' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">2. CRUDA</button>
+                <button @click="activeTab = 'producto'" :class="activeTab === 'producto' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">3. PRODUCTO</button>
+                <button @click="activeTab = 'red'" :class="activeTab === 'red' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">4. RED</button>
+                <button @click="activeTab = 'pozos'" :class="activeTab === 'pozos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">5. POZOS</button>
+                <button @click="activeTab = 'escriturado'" :class="activeTab === 'escriturado' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">6. ESCRITURADO</button>
+                <button @click="activeTab = 'escuelas'" :class="activeTab === 'escuelas' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">7. ESCUELAS</button>
+                <button @click="activeTab = 'novedades'" :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">8. NOVEDADES</button>
+            </div>
+
+            <!-- CONTENIDO TABS -->
+
+            <div x-show="activeTab === 'insumos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">1. ANÁLISIS DE INSUMOS</span>
+                    </div>
             <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeInsumo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -229,15 +263,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 2. TRATAMIENTO (AGUA CRUDA) -->
-        <details id="details-cruda" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">2. TRATAMIENTO (Agua Cruda)</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'cruda'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">2. TRATAMIENTO (Agua Cruda)</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaCruda') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="cruda">
@@ -352,15 +387,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 3. PRODUCTO TERMINADO -->
-        <details id="details-producto" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">3. PRODUCTO TERMINADO (Agua Potable Planta)</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'producto'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">3. PRODUCTO TERMINADO (Agua Potable Planta)</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeProductoTerminado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="producto">
@@ -477,13 +513,16 @@
             </div>
         </details>
 
-        <!-- 4. AGUA POTABLE DE RED -->
-        <details id="details-aguared" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">4. AGUA POTABLE DE RED</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'red'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">4. AGUA POTABLE DE RED</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaRed') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="aguared">
@@ -598,15 +637,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 5. POZOS -->
-        <details id="details-pozos" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">5. POZOS DE EXTRACCIÓN</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'pozos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">5. POZOS DE EXTRACCIÓN</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storePozo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="pozos">
@@ -733,15 +773,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 6. CONTROL ESCRITURADO -->
-        <details id="details-escriturado" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">6. CONTROL ESCRITURADO</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'escriturado'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">6. CONTROL ESCRITURADO</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlEscriturado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="escriturado">
@@ -856,15 +897,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES -->
-        <details id="details-tanques" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'escuelas'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlTanques') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="tanques">
@@ -979,15 +1021,16 @@
                     @endif
                 </div>
             </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- 8. NOVEDADES Y COMENTARIOS DEL TURNO -->
-        <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">8. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">8. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <input type="hidden" name="_section" value="novedades">
@@ -1038,10 +1081,11 @@
                         @endforelse
                     </div>
                 </div>
+                    </div>
+                </div>
             </div>
-        </details>
-
-    </div>
+            
+        </div> <!-- End of x-data tabs -->
 
     <!-- Botón Volver Arriba -->
     <button id="btn-scroll-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">
