@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -221,41 +221,7 @@
                     </div>
                     @endif
 
-                    <!-- Últimos Registros (KPI Cards) -->
-                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
-                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                            <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Últimos Movimientos</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Última Calidad de Agua</h3>
-                            @if(isset($ultimosPorLugar) && $ultimosPorLugar->count() > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                    @foreach($ultimosPorLugar->take(4) as $reg)
-                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24" title="{{ $reg->lugar }}">{{ $reg->lugar }}</span>
-                                        <span class="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">{{ $reg->created_at->format('d/m H:i') }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-slate-500 text-sm mb-6">No hay registros recientes.</p>
-                            @endif
 
-                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Últimos Registros Operadores</h3>
-                            @if(isset($presiones) && $presiones->count() > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    @foreach($presiones->take(4) as $pres)
-                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24">Presiones</span>
-                                        <span class="text-xs font-mono text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{{ $pres->created_at->format('d/m H:i') }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-slate-500 text-sm">No hay registros recientes.</p>
-                            @endif
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -381,251 +347,216 @@
 
 
 
-        <!-- Panel Presiones -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400 uppercase"><i class="fa-solid fa-gauge-high mr-2"></i> Tendencia de Presiones y Cisterna</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
-                <!-- Filtro Presiones -->
-                <div class="mb-6 pb-6 border-b border-slate-700/50">
-                    <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
-                        <div>
-                            <label for="presiones_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                            <input type="date" id="presiones_grafico_inicio" name="presiones_grafico_inicio" value="{{ $presionesGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono" required>
+
+            <!-- Panel TENDENCIAS -->
+            <div x-show="activeTab === 'tendencias'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-blue-400 uppercase flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Tendencia de Presiones y Cisterna</h2>
                         </div>
-                        <div>
-                            <label for="presiones_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                            <input type="date" id="presiones_grafico_fin" name="presiones_grafico_fin" value="{{ $presionesGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono" required>
+                        <div class="p-4 md:p-8">
+                            <div class="mb-6 pb-6 border-b border-slate-700/50">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                    <div>
+                                        <label for="presiones_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                        <input type="date" id="presiones_grafico_inicio" name="presiones_grafico_inicio" value="{{ $presionesGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono" required>
+                                    </div>
+                                    <div>
+                                        <label for="presiones_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                        <input type="date" id="presiones_grafico_fin" name="presiones_grafico_fin" value="{{ $presionesGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono" required>
+                                    </div>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-6 rounded border border-blue-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
+                                            <i class="fa-solid fa-filter"></i> Filtrar
+                                        </button>
+                                        <a href="{{ route('jefatura.index', request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </a>
+                                    </div>
+                                    @foreach(request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin']) as $key => $value)
+                                        @if(is_array($value))
+                                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
+                                        @else
+                                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                        @endif
+                                    @endforeach
+                                </form>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartPresiones"></canvas>
+                            </div>
                         </div>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-6 rounded border border-blue-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
-                                <i class="fa-solid fa-filter"></i> Filtrar
-                            </button>
-                            <a href="{{ route('jefatura.index', request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel CALIDAD -->
+            <div x-show="activeTab === 'calidad'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-emerald-400 uppercase flex items-center gap-2"><i class="fa-solid fa-microscope"></i> Calidad de Agua (Por Sector)</h2>
                         </div>
-                        @foreach(request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin']) as $key => $value)
-                            @if(is_array($value))
-                                @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
-                            @else
-                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                            @endif
-                        @endforeach
-                    </form>
-                </div>
-                <div class="chart-container">
-                    <canvas id="chartPresiones"></canvas>
-                </div>
-            </div>
-                    </div>
-                </div>
-            </div>
-
-        <!-- Calidad Agua separada en 3 (Efecto Decantación) -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-emerald-400 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Calidad de Agua (Por Sector)</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            <!-- Filtro Calidad -->
-            <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
-                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
-                    <div>
-                        <label for="calidad_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                        <input type="date" id="calidad_grafico_inicio" name="calidad_grafico_inicio" value="{{ $calidadGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-emerald-500 font-mono" required>
-                    </div>
-                    <div>
-                        <label for="calidad_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                        <input type="date" id="calidad_grafico_fin" name="calidad_grafico_fin" value="{{ $calidadGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-emerald-500 font-mono" required>
-                    </div>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
-                            <i class="fa-solid fa-filter"></i> Filtrar
-                        </button>
-                        <a href="{{ route('jefatura.index', request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </a>
-                    </div>
-                    @foreach(request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin']) as $key => $value)
-                        @if(is_array($value))
-                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
-                        @else
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endif
-                    @endforeach
-                </form>
-            </div>
-            <!-- Turbiedad (Efecto Decantación) -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-amber-900/20 lg:col-span-2">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <div class="bg-amber-500/20 p-2 rounded-lg text-amber-400">
-                        <i class="fa-solid fa-water text-lg"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white tracking-wide">Turbiedad</h3>
-                </div>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="chartTurbiedad"></canvas>
-                </div>
-            </div>
-            
-            <!-- Cloro -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-rose-900/20 lg:col-span-2">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <div class="bg-rose-500/20 p-2 rounded-lg text-rose-400">
-                        <i class="fa-solid fa-flask text-lg"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white tracking-wide">Cloro Residual</h3>
-                </div>
-                <div class="chart-container" style="height: 300px;">
-                    <canvas id="chartCloro"></canvas>
-                </div>
-            </div>
-
-
-
-            <!-- pH -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl transition hover:shadow-emerald-900/20 lg:col-span-2">
-                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
-                    <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400">
-                        <i class="fa-solid fa-vial-circle-check text-lg"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white tracking-wide">pH</h3>
-                </div>
-                <div class="chart-container" style="height: 300px;">
-                    <canvas id="chartPh"></canvas>
-                </div>
-            </div>
-            </div>
-                    </div>
-                </div>
-            </div>
-
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-yellow-400 uppercase"><i class="fa-solid fa-vial mr-2"></i> Niveles de Químicos</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-            <!-- Filtro Químicos -->
-            <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
-                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
-                    <div>
-                        <label for="quimicos_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                        <input type="date" id="quimicos_grafico_inicio" name="quimicos_grafico_inicio" value="{{ $quimicosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-yellow-500 font-mono" required>
-                    </div>
-                    <div>
-                        <label for="quimicos_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                        <input type="date" id="quimicos_grafico_fin" name="quimicos_grafico_fin" value="{{ $quimicosGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-yellow-500 font-mono" required>
-                    </div>
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white py-2 px-6 rounded border border-yellow-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
-                            <i class="fa-solid fa-filter"></i> Filtrar
-                        </button>
-                        <a href="{{ route('jefatura.index', request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </a>
-                    </div>
-                    @foreach(request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin']) as $key => $value)
-                        @if(is_array($value))
-                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
-                        @else
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endif
-                    @endforeach
-                </form>
-            </div>
-            
-            <!-- Historial Quimicos -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
-                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
-                    <h2 class="text-xl font-bold text-white tracking-wide">Historial de Niveles (%)</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="chartHistorialQuimicos"></canvas>
-                </div>
-            </div>
-
-            <!-- Panel Químicos Último -->
-            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl transition hover:shadow-yellow-900/20">
-                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
-                    <div class="bg-yellow-500/20 p-3 rounded-lg text-yellow-400">
-                        <i class="fa-solid fa-vial text-xl"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-white tracking-wide">Últimos Niveles (%)</h2>
-                </div>
-                <div class="chart-container">
-                    <canvas id="chartQuimicos"></canvas>
-                </div>
-            </div>
-            </div>
-                    </div>
-                </div>
-            </div>
-
-        <!-- Panel Filtros -->
-        <details class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-indigo-400 uppercase"><i class="fa-solid fa-filter mr-2"></i> Lavados Frecuentes de Filtros</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
-                <!-- Filtro Lavados -->
-                <div class="mb-6 pb-6 border-b border-slate-700/50">
-                    <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
-                        <div>
-                            <label for="filtros_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
-                            <input type="date" id="filtros_grafico_inicio" name="filtros_grafico_inicio" value="{{ $filtrosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+                            <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                    <div>
+                                        <label for="calidad_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                        <input type="date" id="calidad_grafico_inicio" name="calidad_grafico_inicio" value="{{ $calidadGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-emerald-500 font-mono" required>
+                                    </div>
+                                    <div>
+                                        <label for="calidad_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                        <input type="date" id="calidad_grafico_fin" name="calidad_grafico_fin" value="{{ $calidadGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-emerald-500 font-mono" required>
+                                    </div>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
+                                            <i class="fa-solid fa-filter"></i> Filtrar
+                                        </button>
+                                        <a href="{{ route('jefatura.index', request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </a>
+                                    </div>
+                                    @foreach(request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin']) as $key => $value)
+                                        @if(is_array($value))
+                                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
+                                        @else
+                                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                        @endif
+                                    @endforeach
+                                </form>
+                            </div>
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                                    <div class="bg-amber-500/20 p-2 rounded-lg text-amber-400"><i class="fa-solid fa-water text-lg"></i></div>
+                                    <h3 class="text-xl font-bold text-white tracking-wide">Turbiedad</h3>
+                                </div>
+                                <div class="chart-container" style="height: 350px;"><canvas id="chartTurbiedad"></canvas></div>
+                            </div>
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                                    <div class="bg-rose-500/20 p-2 rounded-lg text-rose-400"><i class="fa-solid fa-flask text-lg"></i></div>
+                                    <h3 class="text-xl font-bold text-white tracking-wide">Cloro Residual</h3>
+                                </div>
+                                <div class="chart-container" style="height: 300px;"><canvas id="chartCloro"></canvas></div>
+                            </div>
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl lg:col-span-2">
+                                <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
+                                    <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400"><i class="fa-solid fa-vial-circle-check text-lg"></i></div>
+                                    <h3 class="text-xl font-bold text-white tracking-wide">pH</h3>
+                                </div>
+                                <div class="chart-container" style="height: 300px;"><canvas id="chartPh"></canvas></div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="filtros_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
-                            <input type="date" id="filtros_grafico_fin" name="filtros_grafico_fin" value="{{ $filtrosGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
-                        </div>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
-                                <i class="fa-solid fa-filter"></i> Filtrar
-                            </button>
-                            <a href="{{ route('jefatura.index', request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </a>
-                        </div>
-                        @foreach(request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin']) as $key => $value)
-                            @if(is_array($value))
-                                @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
-                            @else
-                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                            @endif
-                        @endforeach
-                    </form>
-                </div>
-                <div class="chart-container flex justify-center">
-                    <div class="w-[80%] h-full">
-                        <canvas id="chartFiltros"></canvas>
                     </div>
                 </div>
             </div>
+
+            <!-- Panel QUIMICOS -->
+            <div x-show="activeTab === 'quimicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-yellow-400 uppercase flex items-center gap-2"><i class="fa-solid fa-vial"></i> Niveles de Qu&iacute;micos</h2>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+                            <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                    <div>
+                                        <label for="quimicos_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                        <input type="date" id="quimicos_grafico_inicio" name="quimicos_grafico_inicio" value="{{ $quimicosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-yellow-500 font-mono" required>
+                                    </div>
+                                    <div>
+                                        <label for="quimicos_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                        <input type="date" id="quimicos_grafico_fin" name="quimicos_grafico_fin" value="{{ $quimicosGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-yellow-500 font-mono" required>
+                                    </div>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white py-2 px-6 rounded border border-yellow-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
+                                            <i class="fa-solid fa-filter"></i> Filtrar
+                                        </button>
+                                        <a href="{{ route('jefatura.index', request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </a>
+                                    </div>
+                                    @foreach(request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin']) as $key => $value)
+                                        @if(is_array($value))
+                                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
+                                        @else
+                                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                        @endif
+                                    @endforeach
+                                </form>
+                            </div>
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl">
+                                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
+                                    <h2 class="text-xl font-bold text-white tracking-wide">Historial de Niveles (%)</h2>
+                                </div>
+                                <div class="chart-container"><canvas id="chartHistorialQuimicos"></canvas></div>
+                            </div>
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl">
+                                <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
+                                    <div class="bg-yellow-500/20 p-3 rounded-lg text-yellow-400"><i class="fa-solid fa-vial text-xl"></i></div>
+                                    <h2 class="text-xl font-bold text-white tracking-wide">&Uacute;ltimos Niveles (%)</h2>
+                                </div>
+                                <div class="chart-container"><canvas id="chartQuimicos"></canvas></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        <!-- SECCIÓN HISTÓRICOS Y TABLAS -->
+
+            <!-- Panel FILTROS -->
+            <div x-show="activeTab === 'filtros'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-indigo-400 uppercase flex items-center gap-2"><i class="fa-solid fa-filter"></i> Lavados Frecuentes de Filtros</h2>
+                        </div>
+                        <div class="p-4 md:p-8">
+                            <div class="mb-6 pb-6 border-b border-slate-700/50">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                    <div>
+                                        <label for="filtros_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
+                                        <input type="date" id="filtros_grafico_inicio" name="filtros_grafico_inicio" value="{{ $filtrosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
+                                    </div>
+                                    <div>
+                                        <label for="filtros_grafico_fin" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Fin</label>
+                                        <input type="date" id="filtros_grafico_fin" name="filtros_grafico_fin" value="{{ $filtrosGraficoFin }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
+                                    </div>
+                                    <div class="flex gap-2 w-full md:w-auto">
+                                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
+                                            <i class="fa-solid fa-filter"></i> Filtrar
+                                        </button>
+                                        <a href="{{ route('jefatura.index', request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </a>
+                                    </div>
+                                    @foreach(request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin']) as $key => $value)
+                                        @if(is_array($value))
+                                            @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
+                                        @else
+                                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                        @endif
+                                    @endforeach
+                                </form>
+                            </div>
+                            <div class="chart-container flex justify-center">
+                                <div class="w-[80%] h-full"><canvas id="chartFiltros"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel HISTORICOS -->
             <div x-show="activeTab === 'historicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Consultas Históricas</span>
-                    </div>
-            <div class="p-4 md:p-8">
-                <div class="grid grid-cols-1 gap-8 mb-8">
+                <div class="flex flex-col gap-8 mb-12">
                     <!-- Historial Calidad de Agua -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-sky-900/20 group/calidad" {{ request()->has('calidad_page') || request()->has('calidad_fecha_inicio') || request('tab') === 'calidad' ? 'open' : '' }}>
-                        <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
-                            <span class="text-sky-300 uppercase"><i class="fa-solid fa-microscope mr-2"></i> Historial: Calidad de Agua</span>
-                            <span class="transform transition-transform group-open/calidad:rotate-180 text-slate-400">▼</span>
-                        </summary>
-                        <div class="p-6 border-t border-slate-700">
-                            <!-- Filtro Calidad -->
+                    <div class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/50 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-sky-300 uppercase flex items-center gap-2"><i class="fa-solid fa-microscope"></i> Historial: Calidad de Agua</h2>
+                        </div>
+                        <div class="p-6">
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="calidad_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
@@ -639,7 +570,7 @@
                                     <label for="lugar" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Lugar</label>
                                     <select id="lugar" name="lugar" class="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-sky-500 font-mono">
                                         <option value="">Todos</option>
-                                        <option value="RIO" {{ request('lugar') == 'RIO' ? 'selected' : '' }}>Río</option>
+                                        <option value="RIO" {{ request('lugar') == 'RIO' ? 'selected' : '' }}>R&iacute;o</option>
                                         <option value="DECANTADOR NORTE" {{ request('lugar') == 'DECANTADOR NORTE' ? 'selected' : '' }}>Decantador Norte</option>
                                         <option value="DECANTADOR SUR" {{ request('lugar') == 'DECANTADOR SUR' ? 'selected' : '' }}>Decantador Sur</option>
                                         <option value="CISTERNA" {{ request('lugar') == 'CISTERNA' ? 'selected' : '' }}>Cisterna</option>
@@ -651,20 +582,11 @@
                                     <button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-6 rounded border border-sky-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index', array_merge(request()->only(['presiones_fecha_inicio', 'presiones_fecha_fin', 'presiones_page']), ['tab' => 'calidad'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', ['tab' => 'historicos']) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
-                                <input type="hidden" name="tab" value="calidad">
-                                @if(request()->has('presiones_fecha_inicio'))
-                                    <input type="hidden" name="presiones_fecha_inicio" value="{{ request('presiones_fecha_inicio') }}">
-                                @endif
-                                @if(request()->has('presiones_fecha_fin'))
-                                    <input type="hidden" name="presiones_fecha_fin" value="{{ request('presiones_fecha_fin') }}">
-                                @endif
-                                @if(request()->has('presiones_page'))
-                                    <input type="hidden" name="presiones_page" value="{{ request('presiones_page') }}">
-                                @endif
+                                <input type="hidden" name="tab" value="historicos">
                             </form>
                             <div class="overflow-x-auto rounded-xl border border-slate-700">
                                 <table class="w-full text-left border-collapse">
@@ -672,7 +594,7 @@
                                         <tr class="bg-slate-800 text-slate-300 text-xs uppercase tracking-wider">
                                             <th class="p-3 border-b border-slate-700">Fecha/Hora</th>
                                             <th class="p-3 border-b border-slate-700">Lugar</th>
-                                            <th class="p-3 border-b border-slate-700 text-center">Filtro Nº</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Filtro N&ordm;</th>
                                             <th class="p-3 border-b border-slate-700 text-center">Turbiedad</th>
                                             <th class="p-3 border-b border-slate-700 text-center">pH</th>
                                             <th class="p-3 border-b border-slate-700 text-center">Cloro</th>
@@ -691,9 +613,7 @@
                                             <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }} @if(optional($reg->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</td>
                                         </tr>
                                         @empty
-                                        <tr>
-                                            <td colspan="7" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td>
-                                        </tr>
+                                        <tr><td colspan="7" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td></tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -705,9 +625,7 @@
                                     @else
                                         <a href="{{ $historialCalidad->previousPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</a>
                                     @endif
-                                    
-                                    <span class="px-4 text-sky-400 font-mono">Página {{ $historialCalidad->currentPage() }} / {{ $historialCalidad->lastPage() }}</span>
-                                    
+                                    <span class="px-4 text-sky-400 font-mono">P&aacute;gina {{ $historialCalidad->currentPage() }} / {{ $historialCalidad->lastPage() }}</span>
                                     @if ($historialCalidad->hasMorePages())
                                         <a href="{{ $historialCalidad->nextPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</a>
                                     @else
@@ -716,16 +634,14 @@
                                 </div>
                             </div>
                         </div>
-                    </details>
+                    </div>
 
                     <!-- Historial Presiones -->
-                    <details class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl transition hover:shadow-indigo-900/20 group/presiones" {{ request()->has('presiones_page') || request()->has('presiones_fecha_inicio') || request('tab') === 'presiones' ? 'open' : '' }}>
-                        <summary class="list-none cursor-pointer bg-slate-800/50 p-4 flex justify-between items-center text-lg font-bold text-white tracking-wider hover:bg-slate-700/50 transition rounded-2xl">
-                            <span class="text-indigo-300 uppercase"><i class="fa-solid fa-gauge mr-2"></i> Historial: Presiones y Cisterna</span>
-                            <span class="transform transition-transform group-open/presiones:rotate-180 text-slate-400">▼</span>
-                        </summary>
-                        <div class="p-6 border-t border-slate-700">
-                            <!-- Filtro Presiones -->
+                    <div class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="bg-slate-800/50 p-5 border-b border-slate-700">
+                            <h2 class="text-lg font-bold text-indigo-300 uppercase flex items-center gap-2"><i class="fa-solid fa-gauge"></i> Historial: Presiones y Cisterna</h2>
+                        </div>
+                        <div class="p-6">
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">
                                     <label for="presiones_fecha_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
@@ -739,23 +655,11 @@
                                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide w-full md:w-auto flex-1 text-center justify-center flex items-center gap-2">
                                         <i class="fa-solid fa-filter"></i> Filtrar
                                     </button>
-                                    <a href="{{ route('jefatura.index', array_merge(request()->only(['calidad_fecha_inicio', 'calidad_fecha_fin', 'lugar', 'calidad_page']), ['tab' => 'presiones'])) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
+                                    <a href="{{ route('jefatura.index', ['tab' => 'historicos']) }}#historicos" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide text-center flex items-center gap-2">
                                         <i class="fa-solid fa-rotate-left"></i> Limpiar
                                     </a>
                                 </div>
-                                <input type="hidden" name="tab" value="presiones">
-                                @if(request()->has('calidad_fecha_inicio'))
-                                    <input type="hidden" name="calidad_fecha_inicio" value="{{ request('calidad_fecha_inicio') }}">
-                                @endif
-                                @if(request()->has('calidad_fecha_fin'))
-                                    <input type="hidden" name="calidad_fecha_fin" value="{{ request('calidad_fecha_fin') }}">
-                                @endif
-                                @if(request()->has('lugar'))
-                                    <input type="hidden" name="lugar" value="{{ request('lugar') }}">
-                                @endif
-                                @if(request()->has('calidad_page'))
-                                    <input type="hidden" name="calidad_page" value="{{ request('calidad_page') }}">
-                                @endif
+                                <input type="hidden" name="tab" value="historicos">
                             </form>
                             <div class="overflow-x-auto rounded-xl border border-slate-700">
                                 <table class="w-full text-left border-collapse">
@@ -764,7 +668,7 @@
                                             <th class="p-3 border-b border-slate-700">Fecha/Hora</th>
                                             <th class="p-3 border-b border-slate-700 text-center">Tanque</th>
                                             <th class="p-3 border-b border-slate-700 text-center">Planta</th>
-                                            <th class="p-3 border-b border-slate-700 text-center">Falcón</th>
+                                            <th class="p-3 border-b border-slate-700 text-center">Falc&oacute;n</th>
                                             <th class="p-3 border-b border-slate-700 text-center">Nivel Cisterna</th>
                                             <th class="p-3 border-b border-slate-700 text-right">Operador</th>
                                         </tr>
@@ -780,9 +684,7 @@
                                             <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }} @if(optional($reg->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</td>
                                         </tr>
                                         @empty
-                                        <tr>
-                                            <td colspan="6" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td>
-                                        </tr>
+                                        <tr><td colspan="6" class="p-6 text-center text-slate-500">No hay registros para este periodo.</td></tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -794,9 +696,7 @@
                                     @else
                                         <a href="{{ $historialPresiones->previousPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&lt;</a>
                                     @endif
-                                    
-                                    <span class="px-4 text-sky-400 font-mono">Página {{ $historialPresiones->currentPage() }} / {{ $historialPresiones->lastPage() }}</span>
-                                    
+                                    <span class="px-4 text-sky-400 font-mono">P&aacute;gina {{ $historialPresiones->currentPage() }} / {{ $historialPresiones->lastPage() }}</span>
                                     @if ($historialPresiones->hasMorePages())
                                         <a href="{{ $historialPresiones->nextPageUrl() }}#historicos" class="bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded border border-slate-600 transition">&gt;</a>
                                     @else
@@ -805,13 +705,12 @@
                                 </div>
                             </div>
                         </div>
-                    </details>
-                </div>
-            </div>
                     </div>
                 </div>
             </div>
-        </div> <!-- End of x-data tabs -->
+
+        </div> <!-- End x-data tabs -->
+    </div>
     </div>
 
 <!-- Botón Volver Arriba -->
