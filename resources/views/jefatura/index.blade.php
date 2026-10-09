@@ -81,6 +81,7 @@
             </div>
         </div>
 
+
         @php
             $ultimaPresion = $ultimaPresionGlobal;
         @endphp
@@ -121,6 +122,77 @@
             <!-- Panel Últimos Registros -->
             <div x-show="activeTab === 'ultimos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
             <div class="flex flex-col gap-8 mb-12">
+                    <!-- Mensajes de Sesión -->
+                    @if(session('success'))
+                        <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl text-center font-semibold shadow-md">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('deleted'))
+                        <div class="bg-amber-900/50 border border-amber-500 text-amber-200 px-4 py-3 rounded-xl text-center font-semibold shadow-md">
+                            {{ session('deleted') }}
+                        </div>
+                    @endif
+                    @if($errors->any())
+                        <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl font-semibold shadow-md">
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <!-- Usuarios Nuevos (Solo si hay) -->
+                    @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
+                    <div class="bg-[#3d2613]/60 rounded-xl border border-amber-600/50 shadow-2xl overflow-hidden glass">
+                        <div class="flex items-center gap-3 p-6 border-b border-amber-600/50">
+                            <div class="text-amber-400"><i class="fa-solid fa-user-clock text-2xl"></i></div>
+                            <h2 class="text-2xl font-bold text-amber-400 tracking-wide">Usuarios Pendientes de Aprobación</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="overflow-x-auto relative z-10">
+                                <table class="w-full text-center text-sm text-slate-200 border-collapse border border-amber-700/50">
+                                    <thead class="text-xs uppercase bg-amber-800 text-amber-200 tracking-wider">
+                                        <tr>
+                                            <th class="py-3 px-4 border border-amber-700/50">Nombre</th>
+                                            <th class="py-3 px-4 border border-amber-700/50">Email</th>
+                                            <th class="py-3 px-4 border border-amber-700/50">Rol Solicitado</th>
+                                            <th class="py-3 px-4 border border-amber-700/50">Fecha de Registro</th>
+                                            <th class="py-3 px-4 border border-amber-700/50">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="font-medium bg-amber-900/20 text-slate-200">
+                                        @foreach($usuariosPendientes as $pend)
+                                        <tr class="hover:bg-amber-800/40 transition">
+                                            <td class="py-3 px-4 border border-amber-700/50 font-bold text-white">{{ $pend->name }}</td>
+                                            <td class="py-3 px-4 border border-amber-700/50">{{ $pend->email }}</td>
+                                            <td class="py-3 px-4 border border-amber-700/50">
+                                                <span class="bg-amber-600/80 text-amber-100 py-1 px-3 rounded text-[10px] font-bold uppercase tracking-wider">{{ $pend->role }}</span>
+                                            </td>
+                                            <td class="py-3 px-4 border border-amber-700/50 font-mono text-xs text-slate-300">{{ $pend->created_at->format('d/m/Y H:i') }}</td>
+                                            <td class="py-3 px-4 border border-amber-700/50">
+                                                <div class="flex justify-center gap-2">
+                                                    <button type="button" onclick="confirmarAprobar('aprobar-form-{{ $pend->id }}', '{{ route('jefatura.aprobarUsuario', $pend->id) }}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                                        <i class="fa-solid fa-check"></i> Aprobar
+                                                    </button>
+                                                    <form id="aprobar-form-{{ $pend->id }}" method="POST" action="{{ route('jefatura.aprobarUsuario', $pend->id) }}" style="display:none">@csrf</form>
+
+                                                    <button type="button" onclick="confirmarRechazar('rechazar-form-{{ $pend->id }}', '{{ route('jefatura.rechazarUsuario', $pend->id) }}')" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
+                                                        <i class="fa-solid fa-times"></i> Rechazar
+                                                    </button>
+                                                    <form id="rechazar-form-{{ $pend->id }}" method="POST" action="{{ route('jefatura.rechazarUsuario', $pend->id) }}" style="display:none">@csrf @method('DELETE')</form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+
                     <!-- KPI Cards -->
                     @if($ultimaPresion)
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -177,46 +249,7 @@
                         </div>
                     </div>
 
-                    <!-- Usuarios Nuevos (Solo si hay) -->
-                    @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
-                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
 
-                        <div class="p-6">
-                            <div class="overflow-x-auto relative z-10">
-                                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
-                                    <thead class="text-xs uppercase bg-slate-800 text-slate-400 tracking-wider">
-                                        <tr>
-                                            <th class="py-3 px-4 border border-slate-700/50">Nombre</th>
-                                            <th class="py-3 px-4 border border-slate-700/50">Rol Pedido</th>
-                                            <th class="py-3 px-4 border border-slate-700/50">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="font-medium bg-slate-900/50">
-                                        @foreach($usuariosPendientes as $pend)
-                                        <tr class="hover:bg-slate-800/40 transition">
-                                            <td class="py-3 px-4 border border-slate-700/50 font-bold text-white">{{ $pend->name }}</td>
-                                            <td class="py-3 px-4 border border-slate-700/50 uppercase text-xs">{{ $pend->role }}</td>
-                                            <td class="py-3 px-4 border border-slate-700/50">
-                                                <div class="flex justify-center gap-2">
-                                                    <form method="POST" action="{{ route('jefatura.aprobar', $pend->id) }}">
-                                                        @csrf
-                                                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold p-2 rounded text-xs transition shadow" title="Aprobar"><i class="fa-solid fa-check"></i></button>
-                                                    </form>
-                                                    <form method="POST" action="{{ route('jefatura.rechazar', $pend->id) }}">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" onclick="return confirm('¿Rechazar a este usuario?')" class="bg-red-600 hover:bg-red-500 text-white font-bold p-2 rounded text-xs transition shadow" title="Rechazar"><i class="fa-solid fa-xmark"></i></button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
 
 
                 </div>
@@ -322,23 +355,7 @@
     </div>
 </div>
 
-        <!-- Mensaje de Éxito Genérico -->
-        @if(session('success'))
-            <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-8 text-center font-semibold shadow-md">
-                {{ session('success') }}
-            </div>
-        @endif
 
-        <!-- Errores de Validación -->
-        @if($errors->any())
-            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-8 font-semibold shadow-md">
-                <ul class="list-disc list-inside">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
 
 

@@ -151,7 +151,8 @@ class JefaturaController extends Controller
         // 8. Empleados dados de baja (SoftDeleted)
         $empleadosDadosDeBaja = \App\Models\User::onlyTrashed()->orderBy('name', 'asc')->get();
 
-        return view('jefatura.index', compact(
+        $estadosBombas = \App\Http\Controllers\BombasController::cargarEstados();
+        return view('jefatura.index', compact('estadosBombas', 
             'presiones', 
             'calidadAgua',
             'ultimosPorLugar',
