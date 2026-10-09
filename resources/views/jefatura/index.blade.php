@@ -85,69 +85,20 @@
             $ultimaPresion = $ultimaPresionGlobal;
         @endphp
 
-        <!-- Panel de Usuarios Pendientes -->
-        @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
-        <div class="bg-amber-900/40 border border-amber-600 rounded-xl p-6 shadow-2xl mb-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-20">
-                <i class="fa-solid fa-users-gear text-6xl text-amber-500"></i>
-            </div>
-            <h2 class="text-xl font-bold text-amber-400 tracking-wide mb-4 relative z-10 flex items-center gap-2">
-                <i class="fa-solid fa-user-clock"></i> Usuarios Pendientes de Aprobación
-            </h2>
-            <div class="overflow-x-auto relative z-10">
-                <table class="w-full text-center text-sm text-slate-300 border-collapse border border-amber-700/50">
-                    <thead class="text-xs uppercase bg-amber-900/60 text-amber-200 tracking-wider">
-                        <tr>
-                            <th class="py-3 px-4 border border-amber-700/50">Nombre</th>
-                            <th class="py-3 px-4 border border-amber-700/50">Email</th>
-                            <th class="py-3 px-4 border border-amber-700/50">Rol Solicitado</th>
-                            <th class="py-3 px-4 border border-amber-700/50">Fecha de Registro</th>
-                            <th class="py-3 px-4 border border-amber-700/50">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody class="font-medium bg-slate-900/50">
-                        @foreach($usuariosPendientes as $user)
-                        <tr class="hover:bg-amber-900/30 transition">
-                            <td class="py-3 px-4 border border-amber-700/50 font-bold text-white">{{ $user->name }}</td>
-                            <td class="py-3 px-4 border border-amber-700/50">{{ $user->email }}</td>
-                            <td class="py-3 px-4 border border-amber-700/50">
-                                <span class="bg-amber-600/50 text-amber-100 text-xs px-2 py-1 rounded uppercase font-bold tracking-wider">
-                                    {{ $user->role }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 border border-amber-700/50 text-xs font-mono text-slate-400">
-                                {{ $user->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="py-3 px-4 border border-amber-700/50">
-                                <div class="flex justify-center gap-2">
-                                    <button type="button" onclick="confirmarAprobar('aprobar-form-{{ $user->id }}', '{{ route('jefatura.aprobarUsuario', $user->id) }}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
-                                        <i class="fa-solid fa-check"></i> Aprobar
-                                    </button>
-                                    <form id="aprobar-form-{{ $user->id }}" method="POST" action="{{ route('jefatura.aprobarUsuario', $user->id) }}" style="display:none">@csrf</form>
-                                    <button type="button" onclick="confirmarRechazar('rechazar-form-{{ $user->id }}', '{{ route('jefatura.rechazarUsuario', $user->id) }}')" class="bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-4 rounded text-xs transition shadow flex items-center gap-2">
-                                        <i class="fa-solid fa-times"></i> Rechazar
-                                    </button>
-                                    <form id="rechazar-form-{{ $user->id }}" method="POST" action="{{ route('jefatura.rechazarUsuario', $user->id) }}" style="display:none">@csrf @method('DELETE')</form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        @endif
 
         @php
-            $defaultTab = 'personal';
+            $defaultTab = 'ultimos';
             if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab'])) {
-                $defaultTab = request('tab', 'personal');
+                $defaultTab = request('tab', 'ultimos');
             }
         @endphp
 
         <div x-data="{ activeTab: '{{ $defaultTab }}' }">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
+                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> ÚLTIMOS REGISTROS
+                </button>
                 <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users"></i> PERSONAL
                 </button>
@@ -166,8 +117,9 @@
                 <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-sky-600/20 text-sky-400 border-b-2 border-sky-500 shadow-[0_-10px_20px_-10px_rgba(14,165,233,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-clock-rotate-left"></i> HISTÓRICOS
                 </button>
-            <!-- Panel Gestión de Personal y Resumen -->
-            <div x-show="activeTab === 'personal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+            </div>
+            <!-- Panel Últimos Registros -->
+            <div x-show="activeTab === 'ultimos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
                     <!-- Usuarios Nuevos (Solo si hay) -->
                     @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
@@ -211,44 +163,21 @@
                             </div>
                         </div>
                     </div>
+                    @else
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl p-8 text-center glass">
+                        <i class="fa-solid fa-check-circle text-6xl text-emerald-500 mb-4 opacity-50"></i>
+                        <h2 class="text-xl font-bold text-slate-300 mb-2">Todo al día</h2>
+                        <p class="text-slate-500">No hay usuarios pendientes de aprobación ni tareas pendientes.</p>
+                    </div>
                     @endif
 
-                    <!-- Últimos Registros -->
-                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
-                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                            <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Últimos Movimientos</span>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Última Calidad de Agua</h3>
-                            @if(isset($ultimosPorLugar) && $ultimosPorLugar->count() > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                    @foreach($ultimosPorLugar->take(4) as $reg)
-                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24" title="{{ $reg->lugar }}">{{ $reg->lugar }}</span>
-                                        <span class="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">{{ $reg->created_at->format('d/m H:i') }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-slate-500 text-sm mb-6">No hay registros recientes.</p>
-                            @endif
 
-                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Últimos Registros Operadores</h3>
-                            @if(isset($presiones) && $presiones->count() > 0)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                    @foreach($presiones->take(4) as $pres)
-                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
-                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24">Presiones</span>
-                                        <span class="text-xs font-mono text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{{ $pres->created_at->format('d/m H:i') }}</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <p class="text-slate-500 text-sm">No hay registros recientes.</p>
-                            @endif
-                        </div>
-                    </div>
+                </div>
+            </div>
 
+            <!-- Panel Gestión de Personal -->
+            <div x-show="activeTab === 'personal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="flex flex-col gap-8 mb-12">
                     <!-- Tabla de Personal -->
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
                     <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
