@@ -350,7 +350,7 @@
 
                         <div class="p-4 md:p-8">
                             <div class="mb-6 pb-6 border-b border-slate-700/50">
-                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4"> <input type="hidden" name="tab" value="tendencias">
                                     <div>
                                         <label for="presiones_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
                                         <input type="date" id="presiones_grafico_inicio" name="presiones_grafico_inicio" value="{{ $presionesGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-blue-500 font-mono" required>
@@ -363,11 +363,11 @@
                                         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-6 rounded border border-blue-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
-                                    @foreach(request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin']) as $key => $value)
+                                    @foreach(request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin', 'tab']) as $key => $value)
                                         @if(is_array($value))
                                             @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
                                         @else
@@ -391,7 +391,7 @@
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                             <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
-                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4"> <input type="hidden" name="tab" value="calidad">
                                     <div>
                                         <label for="calidad_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
                                         <input type="date" id="calidad_grafico_inicio" name="calidad_grafico_inicio" value="{{ $calidadGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-emerald-500 font-mono" required>
@@ -404,11 +404,11 @@
                                         <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
-                                    @foreach(request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin']) as $key => $value)
+                                    @foreach(request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin', 'tab']) as $key => $value)
                                         @if(is_array($value))
                                             @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
                                         @else
@@ -450,7 +450,7 @@
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                             <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
-                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4"> <input type="hidden" name="tab" value="quimicos">
                                     <div>
                                         <label for="quimicos_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
                                         <input type="date" id="quimicos_grafico_inicio" name="quimicos_grafico_inicio" value="{{ $quimicosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-yellow-500 font-mono" required>
@@ -463,11 +463,11 @@
                                         <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white py-2 px-6 rounded border border-yellow-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
-                                    @foreach(request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin']) as $key => $value)
+                                    @foreach(request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin', 'tab']) as $key => $value)
                                         @if(is_array($value))
                                             @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
                                         @else
@@ -501,7 +501,7 @@
 
                         <div class="p-4 md:p-8">
                             <div class="mb-6 pb-6 border-b border-slate-700/50">
-                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
+                                <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4"> <input type="hidden" name="tab" value="filtros">
                                     <div>
                                         <label for="filtros_grafico_inicio" class="block text-slate-400 text-xs font-bold mb-2 tracking-wide uppercase">Fecha Inicio</label>
                                         <input type="date" id="filtros_grafico_inicio" name="filtros_grafico_inicio" value="{{ $filtrosGraficoInicio }}" class="w-full md:w-40 bg-slate-800 border border-slate-600 rounded p-2 text-white focus:outline-none focus:border-indigo-500 font-mono" required>
@@ -514,11 +514,11 @@
                                         <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
-                                    @foreach(request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin']) as $key => $value)
+                                    @foreach(request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin', 'tab']) as $key => $value)
                                         @if(is_array($value))
                                             @foreach($value as $k => $v) <input type="hidden" name="{{ $key }}[{{ $k }}]" value="{{ $v }}"> @endforeach
                                         @else
@@ -729,7 +729,7 @@
         // 1. Chart Presiones (Line)
         const labelsPresiones = presionesData.map(p => {
             const date = new Date(p.created_at);
-            return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            return date.toLocaleTimeString([], {day:'2-digit', month:'2-digit', hour: '2-digit', minute:'2-digit'});
         });
         const ctxPresiones = document.getElementById('chartPresiones').getContext('2d');
         new Chart(ctxPresiones, {

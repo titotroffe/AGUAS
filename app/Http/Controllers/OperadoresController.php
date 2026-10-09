@@ -168,43 +168,20 @@ class OperadoresController extends Controller
     public function storeQuimico(Request $request)
     {
         $request->validate([
-            'cloro_principal' => 'nullable|numeric|min:0|max:100',
-            'cloro_auxiliar' => 'nullable|numeric|min:0|max:100',
-            'poliamina_principal' => 'nullable|numeric|min:0|max:100',
-            'poliamina_auxiliar' => 'nullable|numeric|min:0|max:100',
-            'sulfato_principal' => 'nullable|numeric|min:0|max:100',
-            'sulfato_auxiliar' => 'nullable|numeric|min:0|max:100',
+            'cloro_principal' => 'nullable|numeric|min:0|max:3.25',
+            'cloro_auxiliar' => 'nullable|numeric|min:0|max:2.80',
+            'poliamina_principal' => 'nullable|numeric|min:0|max:1200',
+            'poliamina_auxiliar' => 'nullable|numeric|min:0|max:1200',
+            'sulfato_principal' => 'nullable|numeric|min:0|max:3.15',
+            'sulfato_auxiliar' => 'nullable|numeric|min:0|max:3.45',
         ], [
             'numeric' => 'Los niveles deben ser números.',
             'min' => 'El nivel no puede ser negativo.',
-            'max' => 'El nivel no puede superar el 100%.',
+            'max' => 'El valor ingresado supera la capacidad máxima del tanque.',
         ]);
 
         $quimicos = ['cloro', 'poliamina', 'sulfato'];
         $errores = [];
-
-        // Primero verificamos que no haya valores idénticos a los actuales
-        foreach ($quimicos as $quimico) {
-            $principal = $request->input("{$quimico}_principal");
-            if (!is_null($principal)) {
-                $ultimoPrincipal = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'principal')->latest()->value('nivel');
-                if (!is_null($ultimoPrincipal) && (float)$principal === (float)$ultimoPrincipal) {
-                    $errores["{$quimico}_principal"] = 'No se puede ingresar el mismo porcentaje actual.';
-                }
-            }
-
-            $auxiliar = $request->input("{$quimico}_auxiliar");
-            if (!is_null($auxiliar)) {
-                $ultimoAuxiliar = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'auxiliar')->latest()->value('nivel');
-                if (!is_null($ultimoAuxiliar) && (float)$auxiliar === (float)$ultimoAuxiliar) {
-                    $errores["{$quimico}_auxiliar"] = 'No se puede ingresar el mismo porcentaje actual.';
-                }
-            }
-        }
-
-        if (!empty($errores)) {
-            throw \Illuminate\Validation\ValidationException::withMessages($errores);
-        }
 
         $actualizado = false;
 
@@ -214,23 +191,49 @@ class OperadoresController extends Controller
                 $auxiliar = $request->input("{$quimico}_auxiliar");
 
                 if (!is_null($principal)) {
-                    NivelQuimico::create([
-                        'user_id' => Auth::id(),
-                        'quimico' => $quimico,
-                        'tipo_tanque' => 'principal',
-                        'nivel' => $principal,
-                    ]);
-                    $actualizado = true;
+                    $nivelPorcentaje = $principal;
+                    if ($quimico === 'cloro') {
+                        $nivelPorcentaje = ($principal / 3.25) * 100;
+                    } elseif ($quimico === 'sulfato') {
+                        $nivelPorcentaje = ($principal / 3.15) * 100;
+                    } elseif ($quimico === 'poliamina') {
+                        $nivelPorcentaje = ($principal / 1200) * 100;
+                    }
+                    $nivelPorcentaje = max(0, min(100, $nivelPorcentaje));
+
+                    $ultimoPrincipal = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'principal')->latest()->value('nivel');
+                    if (is_null($ultimoPrincipal) || abs($nivelPorcentaje - $ultimoPrincipal) > 0.01) {
+                        NivelQuimico::create([
+                            'user_id' => Auth::id(),
+                            'quimico' => $quimico,
+                            'tipo_tanque' => 'principal',
+                            'nivel' => $nivelPorcentaje,
+                        ]);
+                        $actualizado = true;
+                    }
                 }
 
                 if (!is_null($auxiliar)) {
-                    NivelQuimico::create([
-                        'user_id' => Auth::id(),
-                        'quimico' => $quimico,
-                        'tipo_tanque' => 'auxiliar',
-                        'nivel' => $auxiliar,
-                    ]);
-                    $actualizado = true;
+                    $nivelPorcentaje = $auxiliar;
+                    if ($quimico === 'cloro') {
+                        $nivelPorcentaje = ($auxiliar / 2.80) * 100;
+                    } elseif ($quimico === 'sulfato') {
+                        $nivelPorcentaje = ($auxiliar / 3.45) * 100;
+                    } elseif ($quimico === 'poliamina') {
+                        $nivelPorcentaje = ($auxiliar / 1200) * 100;
+                    }
+                    $nivelPorcentaje = max(0, min(100, $nivelPorcentaje));
+
+                    $ultimoAuxiliar = NivelQuimico::where('quimico', $quimico)->where('tipo_tanque', 'auxiliar')->latest()->value('nivel');
+                    if (is_null($ultimoAuxiliar) || abs($nivelPorcentaje - $ultimoAuxiliar) > 0.01) {
+                        NivelQuimico::create([
+                            'user_id' => Auth::id(),
+                            'quimico' => $quimico,
+                            'tipo_tanque' => 'auxiliar',
+                            'nivel' => $nivelPorcentaje,
+                        ]);
+                        $actualizado = true;
+                    }
                 }
             }
         });

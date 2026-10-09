@@ -479,14 +479,14 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_principal !== null ? number_format($ultimoCloro->tanque_principal, 2) . '% (' . number_format(($ultimoCloro->tanque_principal * 3.25) / 100, 2) . ' m)' : 'N/A' }}</span></p>
-                        <input type="number" name="cloro_principal" value="{{ old('cloro_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="00.0%">   
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_principal !== null ? number_format(($ultimoCloro->tanque_principal * 3.25) / 100, 2) . ' m (' . number_format($ultimoCloro->tanque_principal, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="cloro_principal" value="{{ old('cloro_principal') }}" max="3.25" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="0.00 m">   
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_auxiliar !== null ? number_format($ultimoCloro->tanque_auxiliar, 2) . '% (' . number_format(($ultimoCloro->tanque_auxiliar * 2.80) / 100, 2) . ' m)' : 'N/A' }}</span></p>
-                        <input type="number" name="cloro_auxiliar" value="{{ old('cloro_auxiliar') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="00.0%">
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_auxiliar !== null ? number_format(($ultimoCloro->tanque_auxiliar * 2.80) / 100, 2) . ' m (' . number_format($ultimoCloro->tanque_auxiliar, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="cloro_auxiliar" value="{{ old('cloro_auxiliar') }}" max="2.80" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="0.00 m">
                     </div>
                 </div>
 
@@ -496,14 +496,14 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_principal !== null ? number_format($ultimaPoliamina->tanque_principal, 2) . '% (' . number_format(($ultimaPoliamina->tanque_principal * 1200) / 100, 0) . ' L)' : 'N/A' }}</span></p>
-                        <input type="number" name="poliamina_principal" value="{{ old('poliamina_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_principal !== null ? number_format(($ultimaPoliamina->tanque_principal * 1200) / 100, 0) . ' L (' . number_format($ultimaPoliamina->tanque_principal, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="poliamina_principal" value="{{ old('poliamina_principal') }}" max="1200" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0 L">
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_auxiliar !== null ? number_format($ultimaPoliamina->tanque_auxiliar, 2) . '% (' . number_format(($ultimaPoliamina->tanque_auxiliar * 1200) / 100, 0) . ' L)' : 'N/A' }}</span></p>
-                        <input type="number" name="poliamina_auxiliar" value="{{ old('poliamina_auxiliar') }}" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_auxiliar !== null ? number_format(($ultimaPoliamina->tanque_auxiliar * 1200) / 100, 0) . ' L (' . number_format($ultimaPoliamina->tanque_auxiliar, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="poliamina_auxiliar" value="{{ old('poliamina_auxiliar') }}" max="1200" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0 L">
                     </div>
                 </div>
 
@@ -513,14 +513,14 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_principal !== null ? number_format($ultimoSulfato->tanque_principal, 2) . '% (' . number_format(($ultimoSulfato->tanque_principal * 3.15) / 100, 2) . ' m)' : 'N/A' }}</span></p>
-                        <input type="number" name="sulfato_principal" value="{{ old('sulfato_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_principal !== null ? number_format(($ultimoSulfato->tanque_principal * 3.15) / 100, 2) . ' m (' . number_format($ultimoSulfato->tanque_principal, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="sulfato_principal" value="{{ old('sulfato_principal') }}" max="3.15" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="0.00 m">
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_auxiliar !== null ? number_format($ultimoSulfato->tanque_auxiliar, 2) . '% (' . number_format(($ultimoSulfato->tanque_auxiliar * 3.45) / 100, 2) . ' m)' : 'N/A' }}</span></p>
-                        <input type="number" name="sulfato_auxiliar" value="{{ old('sulfato_auxiliar') }}" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_auxiliar !== null ? number_format(($ultimoSulfato->tanque_auxiliar * 3.45) / 100, 2) . ' m (' . number_format($ultimoSulfato->tanque_auxiliar, 2) . '%)' : 'N/A' }}</span></p>
+                        <input type="number" name="sulfato_auxiliar" value="{{ old('sulfato_auxiliar') }}" max="3.45" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="0.00 m">
                     </div>
                 </div>
             </div>
