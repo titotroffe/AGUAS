@@ -180,10 +180,7 @@
                     <!-- Usuarios Nuevos (Solo si hay) -->
                     @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
-                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                            <span class="text-orange-400 uppercase"><i class="fa-solid fa-user-plus mr-2"></i> Usuarios Pendientes</span>
-                            <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $usuariosPendientes->count() }}</span>
-                        </div>
+
                         <div class="p-6">
                             <div class="overflow-x-auto relative z-10">
                                 <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
@@ -230,9 +227,7 @@
                 <div class="flex flex-col gap-8 mb-12">
                     <!-- Tabla de Personal -->
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-indigo-400 uppercase">Gestión de Personal</span>
-                    </div>
+
             <div class="p-6">
                 <div class="overflow-x-auto relative z-10">
                     <table class="w-full text-center text-sm text-slate-300 border-collapse border border-slate-700/50">
@@ -352,9 +347,7 @@
             <div x-show="activeTab === 'tendencias'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-blue-400 uppercase flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Tendencia de Presiones y Cisterna</h2>
-                        </div>
+
                         <div class="p-4 md:p-8">
                             <div class="mb-6 pb-6 border-b border-slate-700/50">
                                 <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
@@ -395,9 +388,7 @@
             <div x-show="activeTab === 'calidad'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-emerald-400 uppercase flex items-center gap-2"><i class="fa-solid fa-microscope"></i> Calidad de Agua (Por Sector)</h2>
-                        </div>
+
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                             <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
                                 <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
@@ -456,9 +447,7 @@
             <div x-show="activeTab === 'quimicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-yellow-400 uppercase flex items-center gap-2"><i class="fa-solid fa-vial"></i> Niveles de Qu&iacute;micos</h2>
-                        </div>
+
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
                             <div class="lg:col-span-2 mb-2 pb-6 border-b border-slate-700/50">
                                 <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
@@ -509,9 +498,7 @@
             <div x-show="activeTab === 'filtros'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="flex flex-col gap-8 mb-12">
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/80 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-indigo-400 uppercase flex items-center gap-2"><i class="fa-solid fa-filter"></i> Lavados Frecuentes de Filtros</h2>
-                        </div>
+
                         <div class="p-4 md:p-8">
                             <div class="mb-6 pb-6 border-b border-slate-700/50">
                                 <form action="{{ route('jefatura.index') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
@@ -553,9 +540,7 @@
                 <div class="flex flex-col gap-8 mb-12">
                     <!-- Historial Calidad de Agua -->
                     <div class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/50 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-sky-300 uppercase flex items-center gap-2"><i class="fa-solid fa-microscope"></i> Historial: Calidad de Agua</h2>
-                        </div>
+
                         <div class="p-6">
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">
@@ -638,9 +623,7 @@
 
                     <!-- Historial Presiones -->
                     <div class="bg-slate-900/50 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-                        <div class="bg-slate-800/50 p-5 border-b border-slate-700">
-                            <h2 class="text-lg font-bold text-indigo-300 uppercase flex items-center gap-2"><i class="fa-solid fa-gauge"></i> Historial: Presiones y Cisterna</h2>
-                        </div>
+
                         <div class="p-6">
                             <form action="{{ route('jefatura.index') }}#historicos" method="GET" class="flex flex-col md:flex-row items-end gap-6 mb-6">
                                 <div class="w-full md:w-auto flex-1">

@@ -147,9 +147,6 @@
 
             <div x-show="activeTab === 'insumos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">1. ANÁLISIS DE INSUMOS</span>
-                    </div>
             <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeInsumo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -268,9 +265,6 @@
 
             <div x-show="activeTab === 'cruda'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">2. TRATAMIENTO (Agua Cruda)</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaCruda') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -391,9 +385,6 @@
 
             <div x-show="activeTab === 'producto'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">3. PRODUCTO TERMINADO (Agua Potable Planta)</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeProductoTerminado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -514,9 +505,6 @@
 
             <div x-show="activeTab === 'red'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">4. AGUA POTABLE DE RED</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeAguaRed') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -637,9 +625,6 @@
 
             <div x-show="activeTab === 'pozos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">5. POZOS DE EXTRACCIÓN</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storePozo') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -772,9 +757,6 @@
 
             <div x-show="activeTab === 'escriturado'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">6. CONTROL ESCRITURADO</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlEscriturado') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -895,9 +877,6 @@
 
             <div x-show="activeTab === 'escuelas'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">7. CONTROL DE TANQUES DE ESCUELAS E INSTITUCIONES</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeControlTanques') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -1018,9 +997,6 @@
 
             <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">8. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('laboratorio.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf

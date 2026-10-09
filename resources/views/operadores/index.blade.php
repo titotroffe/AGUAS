@@ -154,9 +154,6 @@
 
             <div x-show="activeTab === 'presiones'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">2. PRESIONES Y NIVELES DE CISTERNA</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 @if(session('success_presiones'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
@@ -296,9 +293,6 @@
 
             <div x-show="activeTab === 'lavados'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">3. LAVADO DE FILTROS</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 @if(session('success_lavados'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
@@ -456,9 +450,6 @@
 
             <div x-show="activeTab === 'quimicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">4. NIVELES DE TANQUES QUÍMICOS</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 @if(session('success_quimicos'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
@@ -546,9 +537,6 @@
 
             <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 @if(session('success_novedades'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">

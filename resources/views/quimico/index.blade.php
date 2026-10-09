@@ -154,9 +154,6 @@
 
             <div x-show="activeTab === 'calidad'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">2. MONITOREO DE CALIDAD</span>
-                    </div>
             <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeCalidad') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -364,9 +361,6 @@
 
             <div x-show="activeTab === 'bacteriologico'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">3. ENSAYOS BACTERIOLÓGICOS</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeBacteriologico') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -504,9 +498,6 @@
 
             <div x-show="activeTab === 'caudal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">4. CAUDALÍMETROS DE BOMBAS DOSIFICADORAS</span>
-                    </div>
                     <div class="p-6 md:p-8">
 
                 @if(session('success_caudal'))
@@ -641,9 +632,6 @@
                 </div>
             <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
-                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
-                        <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                    </div>
                     <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
