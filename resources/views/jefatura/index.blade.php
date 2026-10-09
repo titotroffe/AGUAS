@@ -120,7 +120,63 @@
             </div>
             <!-- Panel Últimos Registros -->
             <div x-show="activeTab === 'ultimos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <div class="flex flex-col gap-8 mb-12">
+            <div class="flex flex-col gap-8 mb-12">
+                    <!-- KPI Cards -->
+                    @if($ultimaPresion)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+                            <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Tanque</p>
+                            <p class="text-3xl font-black text-sky-400">{{ number_format($ultimaPresion->presion_tanque, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                            <p class="text-[9px] text-sky-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
+                            <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+                            <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Planta</p>
+                            <p class="text-3xl font-black text-indigo-400">{{ number_format($ultimaPresion->presion_planta, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                            <p class="text-[9px] text-indigo-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
+                            <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+                            <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Falcón</p>
+                            <p class="text-3xl font-black text-purple-400">{{ number_format($ultimaPresion->presion_falcon, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
+                            <p class="text-[9px] text-purple-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
+                            <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
+                        </div>
+                        <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
+                            <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Nivel Cisterna</p>
+                            <p class="text-3xl font-black text-emerald-400">{{ number_format($ultimaPresion->nivel_cisterna, 2) }}%</p>
+                            <p class="text-[9px] text-emerald-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
+                            <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- KPI Cards Ultima Calidad por Lugar -->
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-wide mb-4 drop-shadow flex items-center gap-3"><i class="fa-solid fa-map-location-dot text-emerald-400"></i> Últimos Registros por Lugar (Calidad de Agua)</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                            @foreach($ultimosPorLugar as $lugar)
+                            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
+                                <p class="text-slate-300 text-[11px] font-black tracking-widest uppercase mb-1 line-clamp-1" title="{{ $lugar->lugar }} {{ $lugar->filtro_numero }}">{{ $lugar->lugar }} {{ $lugar->filtro_numero }}</p>
+                                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mb-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($lugar->user)->name ?? 'SISTEMA' }} @if(optional($lugar->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</p>
+                                <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
+                                    <span class="text-slate-500 text-[10px] font-black uppercase">Turbiedad</span>
+                                    <span class="text-amber-400 font-bold">{{ $lugar->turbiedad !== null ? $lugar->turbiedad : '-' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
+                                    <span class="text-slate-500 text-[10px] font-black uppercase">pH</span>
+                                    <span class="text-emerald-400 font-bold">{{ $lugar->ph !== null ? $lugar->ph : '-' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm mb-2">
+                                    <span class="text-slate-500 text-[10px] font-black uppercase">Cloro</span>
+                                    <span class="text-rose-400 font-bold">{{ $lugar->cloro_residual !== null ? $lugar->cloro_residual : '-' }}</span>
+                                </div>
+                                <p class="text-[9px] text-slate-500 text-right mt-1 font-mono border-t border-slate-700/50 pt-1">{{ $lugar->created_at->format('d/m H:i') }}</p>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <!-- Usuarios Nuevos (Solo si hay) -->
                     @if(isset($usuariosPendientes) && $usuariosPendientes->count() > 0)
                     <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
@@ -163,15 +219,43 @@
                             </div>
                         </div>
                     </div>
-                    @else
-                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl p-8 text-center glass">
-                        <i class="fa-solid fa-check-circle text-6xl text-emerald-500 mb-4 opacity-50"></i>
-                        <h2 class="text-xl font-bold text-slate-300 mb-2">Todo al día</h2>
-                        <p class="text-slate-500">No hay usuarios pendientes de aprobación ni tareas pendientes.</p>
-                    </div>
                     @endif
 
+                    <!-- Últimos Registros (KPI Cards) -->
+                    <div class="bg-slate-900/40 rounded-xl border border-slate-700 shadow-2xl overflow-hidden glass">
+                        <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                            <span class="text-sky-400 uppercase"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Últimos Movimientos</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Última Calidad de Agua</h3>
+                            @if(isset($ultimosPorLugar) && $ultimosPorLugar->count() > 0)
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                    @foreach($ultimosPorLugar->take(4) as $reg)
+                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24" title="{{ $reg->lugar }}">{{ $reg->lugar }}</span>
+                                        <span class="text-xs font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">{{ $reg->created_at->format('d/m H:i') }}</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-slate-500 text-sm mb-6">No hay registros recientes.</p>
+                            @endif
 
+                            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-3">Últimos Registros Operadores</h3>
+                            @if(isset($presiones) && $presiones->count() > 0)
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    @foreach($presiones->take(4) as $pres)
+                                    <div class="bg-slate-800/50 p-3 rounded border border-slate-700/50 flex justify-between items-center">
+                                        <span class="text-xs font-bold text-slate-300 uppercase truncate w-24">Presiones</span>
+                                        <span class="text-xs font-mono text-blue-400 bg-blue-400/10 px-2 py-1 rounded">{{ $pres->created_at->format('d/m H:i') }}</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-slate-500 text-sm">No hay registros recientes.</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -294,60 +378,6 @@
                 </ul>
             </div>
         @endif
-
-        <!-- KPI Cards -->
-        @if($ultimaPresion)
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-sky-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
-                <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Tanque</p>
-                <p class="text-3xl font-black text-sky-400">{{ number_format($ultimaPresion->presion_tanque, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-sky-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
-                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
-            </div>
-            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-indigo-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
-                <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Planta</p>
-                <p class="text-3xl font-black text-indigo-400">{{ number_format($ultimaPresion->presion_planta, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-indigo-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
-                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
-            </div>
-            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-purple-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
-                <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Presión Falcón</p>
-                <p class="text-3xl font-black text-purple-400">{{ number_format($ultimaPresion->presion_falcon, 2) }} <span class="text-sm font-medium text-slate-500">MCA</span></p>
-                <p class="text-[9px] text-purple-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
-                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
-            </div>
-            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-5 shadow-lg border-l-4 border-l-emerald-400 flex flex-col justify-center items-center text-center transform transition duration-300 hover:scale-105 hover:bg-slate-800/80 cursor-default">
-                <p class="text-slate-400 text-[11px] font-black tracking-widest uppercase mb-1">Últ. Nivel Cisterna</p>
-                <p class="text-3xl font-black text-emerald-400">{{ number_format($ultimaPresion->nivel_cisterna, 2) }}%</p>
-                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mt-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($ultimaPresion->user)->name ?? 'SISTEMA' }} @if(optional($ultimaPresion->user)->trashed()) <span class="text-[9px] text-amber-500">(Baja)</span> @endif</p>
-                <p class="text-[9px] text-slate-500 font-mono mt-1">{{ $ultimaPresion->created_at->format('d/m H:i') }}</p>
-            </div>
-        </div>
-        @endif
-
-        <!-- KPI Cards Ultima Calidad por Lugar -->
-        <h2 class="text-xl font-bold text-white tracking-wide mb-4 drop-shadow flex items-center gap-3"><i class="fa-solid fa-map-location-dot text-emerald-400"></i> Últimos Registros por Lugar (Calidad de Agua)</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-8">
-            @foreach($ultimosPorLugar as $lugar)
-            <div class="bg-slate-900/50 border border-slate-700 rounded-xl p-4 shadow-lg border-l-4 border-l-emerald-400 hover:bg-slate-800/80 transition cursor-default">
-                <p class="text-slate-300 text-[11px] font-black tracking-widest uppercase mb-1 line-clamp-1" title="{{ $lugar->lugar }} {{ $lugar->filtro_numero }}">{{ $lugar->lugar }} {{ $lugar->filtro_numero }}</p>
-                <p class="text-[9px] text-emerald-300 font-bold tracking-widest mb-3 uppercase truncate"><i class="fa-solid fa-user mr-1"></i> {{ optional($lugar->user)->name ?? 'SISTEMA' }} @if(optional($lugar->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</p>
-                <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
-                    <span class="text-slate-500 text-[10px] font-black uppercase">Turbiedad</span>
-                    <span class="text-amber-400 font-bold">{{ $lugar->turbiedad !== null ? $lugar->turbiedad : '-' }}</span>
-                </div>
-                <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 mb-1">
-                    <span class="text-slate-500 text-[10px] font-black uppercase">pH</span>
-                    <span class="text-emerald-400 font-bold">{{ $lugar->ph !== null ? $lugar->ph : '-' }}</span>
-                </div>
-                <div class="flex justify-between items-center text-sm mb-2">
-                    <span class="text-slate-500 text-[10px] font-black uppercase">Cloro</span>
-                    <span class="text-rose-400 font-bold">{{ $lugar->cloro_residual !== null ? $lugar->cloro_residual : '-' }}</span>
-                </div>
-                <p class="text-[9px] text-slate-500 text-right mt-1 font-mono border-t border-slate-700/50 pt-1">{{ $lugar->created_at->format('d/m H:i') }}</p>
-            </div>
-            @endforeach
-        </div>
 
 
 
