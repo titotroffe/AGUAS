@@ -263,9 +263,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'cruda'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -387,9 +386,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'producto'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -511,11 +509,8 @@
                     @endif
                 </div>
             </div>
-        </details>
-
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'red'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -637,9 +632,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'pozos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -773,9 +767,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'escriturado'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -897,9 +890,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'escuelas'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -1021,9 +1013,8 @@
                     @endif
                 </div>
             </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 
             <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
