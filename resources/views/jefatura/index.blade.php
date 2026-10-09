@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -96,25 +96,25 @@
         <div x-data="{ activeTab: '{{ $defaultTab }}' }">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
-                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-bolt"></i> ÚLTIMOS REGISTROS
                 </button>
-                <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-users"></i> PERSONAL
                 </button>
-                <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-chart-line"></i> TENDENCIAS
                 </button>
-                <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-emerald-600/20 text-emerald-400 border-b-2 border-emerald-500 shadow-[0_-10px_20px_-10px_rgba(16,185,129,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-microscope"></i> CALIDAD
                 </button>
-                <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-yellow-600/20 text-yellow-400 border-b-2 border-yellow-500 shadow-[0_-10px_20px_-10px_rgba(234,179,8,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-vial"></i> QUÍMICOS
                 </button>
-                <button @click="activeTab = 'filtros'" :class="activeTab === 'filtros' ? 'bg-indigo-600/20 text-indigo-400 border-b-2 border-indigo-500 shadow-[0_-10px_20px_-10px_rgba(99,102,241,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'filtros'" :class="activeTab === 'filtros' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-filter"></i> FILTROS
                 </button>
-                <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-sky-600/20 text-sky-400 border-b-2 border-sky-500 shadow-[0_-10px_20px_-10px_rgba(14,165,233,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-clock-rotate-left"></i> HISTÓRICOS
                 </button>
             </div>

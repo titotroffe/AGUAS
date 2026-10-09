@@ -119,29 +119,29 @@
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap md:flex-nowrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
                 <button @click="activeTab = 'bombas'" 
-                   :class="activeTab === 'bombas' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   :class="activeTab === 'bombas' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-water"></i> 1. BOMBAS Y POZOS
+                    <i class="fa-solid fa-water"></i> BOMBAS Y POZOS
                 </button>
                 <button @click="activeTab = 'calidad'" 
-                   :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-vial"></i> 2. CALIDAD
+                    <i class="fa-solid fa-vial"></i> CALIDAD
                 </button>
                 <button @click="activeTab = 'bacteriologico'" 
-                   :class="activeTab === 'bacteriologico' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   :class="activeTab === 'bacteriologico' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-microscope"></i> 3. BACTERIOLÓGICO
+                    <i class="fa-solid fa-microscope"></i> BACTERIOLÓGICO
                 </button>
                 <button @click="activeTab = 'caudal'" 
-                   :class="activeTab === 'caudal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   :class="activeTab === 'caudal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-gauge-high"></i> 4. CAUDALÍMETROS
+                    <i class="fa-solid fa-gauge-high"></i> CAUDALÍMETROS
                 </button>
                 <button @click="activeTab = 'novedades'" 
-                   :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-bullhorn"></i> 5. NOVEDADES
+                    <i class="fa-solid fa-bullhorn"></i> NOVEDADES
                 </button>
             </div>
 
