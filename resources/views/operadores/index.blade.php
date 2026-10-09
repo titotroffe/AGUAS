@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     
     <style>
         /* Ocultar las flechas de los input type number para centrar bien los placeholders */
@@ -106,17 +106,58 @@
             $erroresLavados   = $errors->hasAny(['norte_1', 'norte_2', 'norte_3', 'sur_1', 'sur_2', 'sur_3', 'inicio_lavado', 'fin_lavado', 'filtros']) || session('success_lavados') || session('error_lavados');
             $erroresQuimicos  = $errors->hasAny(['cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar']) || session('success_quimicos') || session('error_quimicos');
             $erroresNovedades = $errors->hasAny(['mensaje']) || session('success_novedades') || session('error_novedades');
+            
+            $defaultTab = 'bombas';
+            if ($erroresPresiones) $defaultTab = 'presiones';
+            elseif ($erroresLavados) $defaultTab = 'lavados';
+            elseif ($erroresQuimicos) $defaultTab = 'quimicos';
+            elseif ($erroresNovedades) $defaultTab = 'novedades';
         @endphp 
 
-        {{-- ══ PANEL BOMBAS Y POZOS ══ --}}
+        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <!-- Menú Superior de Tabs -->
+            <div class="flex justify-center flex-wrap md:flex-nowrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
+                <button @click="activeTab = 'bombas'" 
+                   :class="activeTab === 'bombas' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-water"></i> 1. BOMBAS Y POZOS
+                </button>
+                <button @click="activeTab = 'presiones'" 
+                   :class="activeTab === 'presiones' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-gauge"></i> 2. PRESIONES
+                </button>
+                <button @click="activeTab = 'lavados'" 
+                   :class="activeTab === 'lavados' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-filter"></i> 3. LAVADOS
+                </button>
+                <button @click="activeTab = 'quimicos'" 
+                   :class="activeTab === 'quimicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-flask"></i> 4. QUÍMICOS
+                </button>
+                <button @click="activeTab = 'novedades'" 
+                   :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i> 5. NOVEDADES
+                </button>
+            </div>
+
+            <!-- CONTENIDO TABS -->
+            
+            <div x-show="activeTab === 'bombas'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                {{-- ══ PANEL BOMBAS Y POZOS ══ --}}
         <x-panel-bombas :readonly="false" :estados="$estadosBombas" />
 
-        <details id="details-presiones" @if($erroresPresiones) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">2. PRESIONES Y NIVELES DE CISTERNA</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            </div>
+
+            <div x-show="activeTab === 'presiones'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">2. PRESIONES Y NIVELES DE CISTERNA</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 @if(session('success_presiones'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_presiones') }}
@@ -249,15 +290,16 @@
             </div>
             @endif
         </div>
-        </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <details id="details-lavados" @if($erroresLavados) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">3. LAVADO DE FILTROS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'lavados'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">3. LAVADO DE FILTROS</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 @if(session('success_lavados'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_lavados') }}
@@ -408,26 +450,16 @@
                 </table>
             </div>
         </div>
-        </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Formulario oculto para eliminación de presiones (previene formularios anidados en HTML) -->
-        <form id="delete-pressure-form" action="" method="POST" class="hidden">
-            @csrf
-            @method('DELETE')
-        </form>
-
-        <form id="delete-filter-form" action="" method="POST" class="hidden">
-            @csrf
-            @method('DELETE')
-        </form>
-
-        <details id="details-quimicos" @if($erroresQuimicos) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">4. NIVELES DE TANQUES QUÍMICOS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'quimicos'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">4. NIVELES DE TANQUES QUÍMICOS</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 @if(session('success_quimicos'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_quimicos') }}
@@ -456,13 +488,13 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_principal !== null ? number_format($ultimoCloro->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_principal !== null ? number_format($ultimoCloro->tanque_principal, 2) . '% (' . number_format(($ultimoCloro->tanque_principal * 3.25) / 100, 2) . ' m)' : 'N/A' }}</span></p>
                         <input type="number" name="cloro_principal" value="{{ old('cloro_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="00.0%">   
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_auxiliar !== null ? number_format($ultimoCloro->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoCloro && $ultimoCloro->tanque_auxiliar !== null ? number_format($ultimoCloro->tanque_auxiliar, 2) . '% (' . number_format(($ultimoCloro->tanque_auxiliar * 2.80) / 100, 2) . ' m)' : 'N/A' }}</span></p>
                         <input type="number" name="cloro_auxiliar" value="{{ old('cloro_auxiliar') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 focus:border-yellow-500 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-yellow-500 mb-2 font-mono" placeholder="00.0%">
                     </div>
                 </div>
@@ -473,13 +505,13 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_principal !== null ? number_format($ultimaPoliamina->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_principal !== null ? number_format($ultimaPoliamina->tanque_principal, 2) . '% (' . number_format(($ultimaPoliamina->tanque_principal * 1200) / 100, 0) . ' L)' : 'N/A' }}</span></p>
                         <input type="number" name="poliamina_principal" value="{{ old('poliamina_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_auxiliar !== null ? number_format($ultimaPoliamina->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimaPoliamina && $ultimaPoliamina->tanque_auxiliar !== null ? number_format($ultimaPoliamina->tanque_auxiliar, 2) . '% (' . number_format(($ultimaPoliamina->tanque_auxiliar * 1200) / 100, 0) . ' L)' : 'N/A' }}</span></p>
                         <input type="number" name="poliamina_auxiliar" value="{{ old('poliamina_auxiliar') }}" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-emerald-500 mb-2 font-mono" placeholder="00.0%">
                     </div>
                 </div>
@@ -490,13 +522,13 @@
                     
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE PRINCIPAL</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_principal !== null ? number_format($ultimoSulfato->tanque_principal, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_principal !== null ? number_format($ultimoSulfato->tanque_principal, 2) . '% (' . number_format(($ultimoSulfato->tanque_principal * 3.15) / 100, 2) . ' m)' : 'N/A' }}</span></p>
                         <input type="number" name="sulfato_principal" value="{{ old('sulfato_principal') }}" max="100" min="0" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
                     </div>
 
                     <div class="w-full max-w-xs bg-slate-850 p-4 rounded border border-slate-700/50">
                         <p class="text-xs font-bold text-slate-300 mb-1">TANQUE AUXILIAR</p>
-                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_auxiliar !== null ? number_format($ultimoSulfato->tanque_auxiliar, 2) . '%' : 'N/A' }}</span></p>
+                        <p class="text-sm font-medium text-slate-400 mb-3">Nivel actual: <span class="text-white font-mono">{{ $ultimoSulfato && $ultimoSulfato->tanque_auxiliar !== null ? number_format($ultimoSulfato->tanque_auxiliar, 2) . '% (' . number_format(($ultimoSulfato->tanque_auxiliar * 3.45) / 100, 2) . ' m)' : 'N/A' }}</span></p>
                         <input type="number" name="sulfato_auxiliar" value="{{ old('sulfato_auxiliar') }}" step="0.01" class="w-full bg-slate-900 border-2 rounded p-2 text-center text-white focus:outline-none focus:ring-0 focus:border-red-500 mb-2 font-mono" placeholder="00.0%">
                     </div>
                 </div>
@@ -508,15 +540,16 @@
                 </button>
             </div>
         </form>
-        </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        <details id="novedades-details" @if($erroresNovedades) open @endif class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">5. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 @if(session('success_novedades'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
                         {{ session('success_novedades') }}
@@ -586,10 +619,11 @@
                     </div>
                 </div>
 
+                    </div>
+                </div>
             </div>
-        </details>
-
-    </div>
+            
+        </div> <!-- End of x-data tabs -->
 
     <!-- Formularios ocultos para eliminar -->
     <form id="delete-pressure-form" method="POST" style="display: none;">

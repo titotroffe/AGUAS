@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
     
     <style>
         input[type=number]::-webkit-inner-spin-button, 
@@ -102,14 +102,61 @@
             </div>
         @endif
 
-        {{-- ══ PANEL BOMBAS Y POZOS (solo lectura) ══ --}}
-        <x-panel-bombas :readonly="true" :estados="$estadosBombas" />
+        @php
+            $erroresCalidad = session('success') || session('error') || $errors->hasAny(['cisterna_turbiedad', 'cisterna_ph', 'cisterna_cloro', 'bajada_tanque_turbiedad', 'bajada_tanque_ph', 'bajada_tanque_cloro', 'decantador_norte_turbiedad', 'decantador_norte_ph', 'decantador_sur_turbiedad', 'decantador_sur_ph', 'filtro_norte_select', 'filtro_norte_turbiedad', 'filtro_norte_ph', 'filtro_sur_select', 'filtro_sur_turbiedad', 'filtro_sur_ph', 'rio_turbiedad', 'rio_ph']);
+            $erroresBacteriologico = session('success_bacteriologico') || session('error_bacteriologico') || $errors->hasAny(['cisterna_e_coli', 'cisterna_coliformes', 'bajada_tanque_e_coli', 'bajada_tanque_coliformes', 'decantador_select', 'decantador_e_coli', 'decantador_coliformes', 'rio_e_coli', 'rio_coliformes']);
+            $erroresCaudal = session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h']);
+            $erroresNovedades = session('success_novedades') || session('error_novedades') || $errors->hasAny(['mensaje']);
+            
+            $defaultTab = 'bombas';
+            if ($erroresCalidad) $defaultTab = 'calidad';
+            elseif ($erroresBacteriologico) $defaultTab = 'bacteriologico';
+            elseif ($erroresCaudal) $defaultTab = 'caudal';
+            elseif ($erroresNovedades) $defaultTab = 'novedades';
+        @endphp
 
-        <details id="details-calidad" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">2. MONITOREO DE CALIDAD</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
+        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <!-- Menú Superior de Tabs -->
+            <div class="flex justify-center flex-wrap md:flex-nowrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
+                <button @click="activeTab = 'bombas'" 
+                   :class="activeTab === 'bombas' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-water"></i> 1. BOMBAS Y POZOS
+                </button>
+                <button @click="activeTab = 'calidad'" 
+                   :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-vial"></i> 2. CALIDAD
+                </button>
+                <button @click="activeTab = 'bacteriologico'" 
+                   :class="activeTab === 'bacteriologico' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> 3. BACTERIOLÓGICO
+                </button>
+                <button @click="activeTab = 'caudal'" 
+                   :class="activeTab === 'caudal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-gauge-high"></i> 4. CAUDALÍMETROS
+                </button>
+                <button @click="activeTab = 'novedades'" 
+                   :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500 shadow-[0_-10px_20px_-10px_rgba(59,130,246,0.3)]' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i> 5. NOVEDADES
+                </button>
+            </div>
+
+            <!-- CONTENIDO TABS -->
+            
+            <div x-show="activeTab === 'bombas'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                {{-- ══ PANEL BOMBAS Y POZOS (solo lectura) ══ --}}
+                <x-panel-bombas :readonly="true" :estados="$estadosBombas" />
+            </div>
+
+            <div x-show="activeTab === 'calidad'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">2. MONITOREO DE CALIDAD</span>
+                    </div>
             <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeCalidad') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
@@ -122,13 +169,13 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">CISTERNA</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="cisterna_turbiedad" step="0.01" min="0" max="10" value="{{ old('cisterna_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="cisterna_ph" step="0.01" min="0" max="14" value="{{ old('cisterna_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="cisterna_cloro" step="0.01" min="0" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="cisterna_cloro" step="0.01" min="0" max="3" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
 
                         <!-- Bajada de Tanque -->
@@ -136,13 +183,13 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">BAJADA DE TANQUE</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="bajada_tanque_turbiedad" step="0.01" min="0" value="{{ old('bajada_tanque_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="bajada_tanque_turbiedad" step="0.01" min="0" max="10" value="{{ old('bajada_tanque_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="bajada_tanque_ph" step="0.01" min="0" max="14" value="{{ old('bajada_tanque_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" max="3" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                         </div>
 
                         <!-- Decantador Norte -->
@@ -150,7 +197,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADOR NORTE</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="decantador_norte_turbiedad" step="0.01" min="0" value="{{ old('decantador_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="decantador_norte_turbiedad" step="0.01" min="0" max="300" value="{{ old('decantador_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="decantador_norte_ph" step="0.01" min="0" max="14" value="{{ old('decantador_norte_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -161,7 +208,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">DECANTADOR SUR</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="decantador_sur_turbiedad" step="0.01" min="0" value="{{ old('decantador_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="decantador_sur_turbiedad" step="0.01" min="0" max="300" value="{{ old('decantador_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="decantador_sur_ph" step="0.01" min="0" max="14" value="{{ old('decantador_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -185,7 +232,7 @@
                             </select>
 
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="filtro_norte_turbiedad" step="0.01" min="0" value="{{ old('filtro_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="filtro_norte_turbiedad" step="0.01" min="0" max="50" value="{{ old('filtro_norte_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="filtro_norte_ph" step="0.01" min="0" max="14" value="{{ old('filtro_norte_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -204,7 +251,7 @@
                             </select>
 
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="filtro_sur_turbiedad" step="0.01" min="0" value="{{ old('filtro_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="filtro_sur_turbiedad" step="0.01" min="0" max="50" value="{{ old('filtro_sur_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="filtro_sur_ph" step="0.01" min="0" max="14" value="{{ old('filtro_sur_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -215,7 +262,7 @@
                             <label class="text-xs font-bold mb-4 tracking-wide text-slate-400 uppercase text-center w-full">RÍO</label>
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">TURBIEDAD (NTU)</label>
-                            <input type="number" name="rio_turbiedad" step="0.01" min="0" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <input type="number" name="rio_turbiedad" step="0.01" min="0" max="300" value="{{ old('rio_turbiedad') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">pH</label>
                             <input type="number" name="rio_ph" step="0.01" min="0" max="14" value="{{ old('rio_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
@@ -311,17 +358,16 @@
             </div>
             @endif
         </div>
-        </div>
-        </details>
+                    </div>
+                </div>
+            </div>
 
-        {{-- ══ ENSAYOS BACTERIOLÓGICOS ══ --}}
-        <details id="details-bacteriologico" @if(session('success_bacteriologico') || session('error_bacteriologico')) open @endif
-                 class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">3. ENSAYOS BACTERIOLÓGICOS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+            <div x-show="activeTab === 'bacteriologico'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">3. ENSAYOS BACTERIOLÓGICOS</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeBacteriologico') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <!-- Grid de Ensayos -->
@@ -452,18 +498,16 @@
                     </div>
                     @endif
                 </div>
+                    </div>
+                </div>
             </div>
-        </details>
 
-        {{-- ══ CAUDALÍMETROS ══ --}}
-        <details id="details-caudal" @if(session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h'])) open @endif
-                 class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-5 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">3. CAUDALÍMETROS DE BOMBAS DOSIFICADORAS</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-
-            <div class="p-6 md:p-8">
+            <div x-show="activeTab === 'caudal'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-8 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">4. CAUDALÍMETROS DE BOMBAS DOSIFICADORAS</span>
+                    </div>
+                    <div class="p-6 md:p-8">
 
                 @if(session('success_caudal'))
                     <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-xl mb-6 text-center text-sm font-semibold shadow-md">
@@ -595,13 +639,16 @@
             </div>
         </details>
 
-        <!-- Sección: Novedades del Turno -->
-        <details id="novedades-details" class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl group overflow-hidden">
-            <summary class="list-none cursor-pointer bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider hover:bg-slate-700/50 transition border-b border-slate-700">
-                <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
-                <span class="transform transition-transform group-open:rotate-180 text-slate-400">▼</span>
-            </summary>
-            <div class="p-4 md:p-8">
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="bg-slate-800/80 p-6 flex justify-between items-center text-xl font-bold text-white tracking-wider border-b border-slate-700">
+                        <span class="text-blue-400">4. NOVEDADES Y COMENTARIOS DEL TURNO</span>
+                    </div>
+                    <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
                     <label class="block text-sm font-bold text-slate-300 mb-3 tracking-wide">REGISTRAR NUEVA NOVEDAD (Máx. 1000 caracteres)</label>
@@ -651,10 +698,11 @@
                     @endforelse
                 </div>
             </div>
+                    </div>
+                </div>
             </div>
-        </details>
-
-    </div>
+            
+        </div> <!-- End of x-data tabs -->
 
     <!-- Formularios ocultos para eliminar -->
     <form id="delete-calidad-form" method="POST" style="display: none;">
