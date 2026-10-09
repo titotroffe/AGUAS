@@ -8,6 +8,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="{{ asset('js/chart.umd.js') }}"></script>
+    <!-- chartjs-plugin-zoom deps -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     <!-- SweetAlert2 -->
     <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
 
@@ -394,6 +397,10 @@
                                 </form>
                             </div>
                             <div class="chart-container">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-500 text-[10px] font-semibold tracking-wider"><i class="fa-solid fa-magnifying-glass mr-1"></i>Scroll para zoom &nbsp;&bull;&nbsp; Arrastrar para mover</span>
+                                    <button id="resetZoomPresiones" class="text-[10px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-2 py-1 rounded transition flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset Zoom</button>
+                                </div>
                                 <canvas id="chartPresiones"></canvas>
                             </div>
                         </div>
@@ -439,6 +446,10 @@
                                     <div class="bg-amber-500/20 p-2 rounded-lg text-amber-400"><i class="fa-solid fa-water text-lg"></i></div>
                                     <h3 class="text-xl font-bold text-white tracking-wide">Turbiedad</h3>
                                 </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-500 text-[10px] font-semibold tracking-wider"><i class="fa-solid fa-magnifying-glass mr-1"></i>Scroll para zoom &nbsp;&bull;&nbsp; Arrastrar para mover</span>
+                                    <button id="resetZoomTurbiedad" class="text-[10px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-2 py-1 rounded transition flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset Zoom</button>
+                                </div>
                                 <div class="chart-container" style="height: 350px;"><canvas id="chartTurbiedad"></canvas></div>
                             </div>
                             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl lg:col-span-2">
@@ -446,12 +457,20 @@
                                     <div class="bg-rose-500/20 p-2 rounded-lg text-rose-400"><i class="fa-solid fa-flask text-lg"></i></div>
                                     <h3 class="text-xl font-bold text-white tracking-wide">Cloro Residual</h3>
                                 </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-500 text-[10px] font-semibold tracking-wider"><i class="fa-solid fa-magnifying-glass mr-1"></i>Scroll para zoom &nbsp;&bull;&nbsp; Arrastrar para mover</span>
+                                    <button id="resetZoomCloro" class="text-[10px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-2 py-1 rounded transition flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset Zoom</button>
+                                </div>
                                 <div class="chart-container" style="height: 300px;"><canvas id="chartCloro"></canvas></div>
                             </div>
                             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-xl lg:col-span-2">
                                 <div class="flex items-center gap-3 mb-4 border-b border-slate-700/50 pb-3">
                                     <div class="bg-emerald-500/20 p-2 rounded-lg text-emerald-400"><i class="fa-solid fa-vial-circle-check text-lg"></i></div>
                                     <h3 class="text-xl font-bold text-white tracking-wide">pH</h3>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-500 text-[10px] font-semibold tracking-wider"><i class="fa-solid fa-magnifying-glass mr-1"></i>Scroll para zoom &nbsp;&bull;&nbsp; Arrastrar para mover</span>
+                                    <button id="resetZoomPh" class="text-[10px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-2 py-1 rounded transition flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset Zoom</button>
                                 </div>
                                 <div class="chart-container" style="height: 300px;"><canvas id="chartPh"></canvas></div>
                             </div>
@@ -496,6 +515,10 @@
                             <div class="bg-slate-900/50 border border-slate-700 rounded-2xl p-6 shadow-2xl">
                                 <div class="flex items-center gap-3 mb-6 border-b border-slate-700/50 pb-4">
                                     <h2 class="text-xl font-bold text-white tracking-wide">Historial de Niveles (%)</h2>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-500 text-[10px] font-semibold tracking-wider"><i class="fa-solid fa-magnifying-glass mr-1"></i>Scroll para zoom &nbsp;&bull;&nbsp; Arrastrar para mover</span>
+                                    <button id="resetZoomHistQuimicos" class="text-[10px] font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-2 py-1 rounded transition flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset Zoom</button>
                                 </div>
                                 <div class="chart-container"><canvas id="chartHistorialQuimicos"></canvas></div>
                             </div>
@@ -743,13 +766,27 @@
         Chart.defaults.font.family = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
         Chart.defaults.scale.grid.color = 'rgba(148, 163, 184, 0.1)';
 
+        // Zoom/Pan plugin config — shared across all line charts
+        const zoomOptions = {
+            pan: {
+                enabled: true,
+                mode: 'x',
+            },
+            zoom: {
+                wheel: { enabled: true },
+                pinch: { enabled: true },
+                mode: 'x',
+            },
+            limits: { x: { minRange: 2 } }
+        };
+
         // 1. Chart Presiones (Line)
         const labelsPresiones = presionesData.map(p => {
             const date = new Date(p.created_at);
             return date.toLocaleTimeString([], {day:'2-digit', month:'2-digit', hour: '2-digit', minute:'2-digit'});
         });
         const ctxPresiones = document.getElementById('chartPresiones').getContext('2d');
-        new Chart(ctxPresiones, {
+        const presionesChart = new Chart(ctxPresiones, {
             type: 'line',
             data: {
                 labels: labelsPresiones,
@@ -801,7 +838,8 @@
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                     legend: { position: 'top', labels: { usePointStyle: true, padding: 20 } },
-                    tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#fff', padding: 12 }
+                    tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', titleColor: '#fff', padding: 12 },
+                    zoom: zoomOptions
                 },
                 scales: {
                     y: { 
@@ -817,12 +855,13 @@
                         display: true,
                         position: 'right',
                         grid: {
-                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                            drawOnChartArea: false,
                         },
                     }
                 }
             }
         });
+        document.getElementById('resetZoomPresiones').addEventListener('click', () => presionesChart.resetZoom());
 
         // Calidad Agua Charts (Por Sector)
         let labelsCalidad = calidadData.map(c => new Date(c.created_at).toLocaleTimeString([], {day:'2-digit', month:'2-digit', hour: '2-digit', minute:'2-digit'}));
@@ -856,40 +895,52 @@
 
         // Turbiedad Chart
         const ctxTurbiedad = document.getElementById('chartTurbiedad').getContext('2d');
-        new Chart(ctxTurbiedad, {
+        const turbiedadChart = new Chart(ctxTurbiedad, {
             type: 'line',
             data: { labels: labelsCalidad, datasets: buildDatasets('turbiedad') },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } },
+                    zoom: zoomOptions
+                },
                 scales: { y: { beginAtZero: true } }
             }
         });
+        document.getElementById('resetZoomTurbiedad').addEventListener('click', () => turbiedadChart.resetZoom());
 
         // pH Chart
         const ctxPh = document.getElementById('chartPh').getContext('2d');
-        new Chart(ctxPh, {
+        const phChart = new Chart(ctxPh, {
             type: 'line',
             data: { labels: labelsCalidad, datasets: buildDatasets('ph') },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } },
+                    zoom: zoomOptions
+                },
                 scales: { y: { suggestedMin: 6, suggestedMax: 8 } }
             }
         });
+        document.getElementById('resetZoomPh').addEventListener('click', () => phChart.resetZoom());
 
         // Cloro Chart
         const ctxCloro = document.getElementById('chartCloro').getContext('2d');
         const cloroDatasets = buildDatasets('cloro_residual').filter(ds => ds.label === 'CISTERNA');
-        new Chart(ctxCloro, {
+        const cloroChart = new Chart(ctxCloro, {
             type: 'line',
             data: { labels: labelsCalidad, datasets: cloroDatasets },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } } },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 15, font: {size: 11} } },
+                    zoom: zoomOptions
+                },
                 scales: { y: { beginAtZero: true } }
             }
         });
+        document.getElementById('resetZoomCloro').addEventListener('click', () => cloroChart.resetZoom());
 
         // Historial Químicos Chart
         // Agrupamos Cloro, Poliamina, Sulfato (solo tanques principales para limpieza)
@@ -901,7 +952,7 @@
         histLabels = [...new Set(histLabels)];
         
         const ctxHistQuimicos = document.getElementById('chartHistorialQuimicos').getContext('2d');
-        new Chart(ctxHistQuimicos, {
+        const histQuimicosChart = new Chart(ctxHistQuimicos, {
             type: 'line',
             data: {
                 labels: histLabels,
@@ -913,10 +964,14 @@
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { usePointStyle: true } } },
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true } },
+                    zoom: zoomOptions
+                },
                 scales: { y: { beginAtZero: true, max: 100 } }
             }
         });
+        document.getElementById('resetZoomHistQuimicos').addEventListener('click', () => histQuimicosChart.resetZoom());
 
         // 3. Chart Quimicos (Bar)
         // Group by chemical type to show main and aux tank if we had that structure
