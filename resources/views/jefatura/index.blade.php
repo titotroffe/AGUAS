@@ -107,10 +107,10 @@
                     <i class="fa-solid fa-users"></i> PERSONAL
                 </button>
                 <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-chart-line"></i> TENDENCIAS
+                    <i class="fa-solid fa-chart-line"></i> PRESIONES
                 </button>
                 <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-microscope"></i> CALIDAD
+                    <i class="fa-solid fa-chart-line"></i> CALIDAD
                 </button>
                 <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-vial"></i> QUÍMICOS
