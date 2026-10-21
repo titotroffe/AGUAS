@@ -157,11 +157,11 @@
             <div class="p-4 md:p-8">
                 <form action="{{ route('quimico.storeCalidad') }}" method="POST" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'GUARDANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
                     @csrf
-<<<<<<< HEAD
-                <!-- Grid de Mediciones por Lugar -->
-=======
+
+
+
                                     <!-- Grid de Mediciones por Lugar -->
->>>>>>> 09837c08c5c274ab5f21ffcc2d1e1164bb806ce7
+
                     <!-- Fila 1: 4 Elementos -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-center items-start">
                     

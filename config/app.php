@@ -64,9 +64,7 @@ return [
     | is set to "UTC" by default as it is suitable for most use cases.
     |
     */
-
-    'timezone' => 'America/Argentina/Buenos_Aires',
-
+    'timezone' => env('APP_TIMEZONE', 'America/Argentina/Buenos_Aires'),
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
