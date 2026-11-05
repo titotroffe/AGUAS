@@ -127,7 +127,7 @@ class QuimicoController extends Controller
         if ($request->filled('filtro_sur_select') && ($request->filled('filtro_sur_turbiedad') || $request->filled('filtro_sur_ph'))) $hasData = true;
 
         if (!$hasData) {
-            return back()->with('error', 'Debe completar al menos una medición antes de confirmar.')->withInput();
+            return back()->with('error', 'Debe completar al menos una medición antes de confirmar.')->with('active_tab', 'calidad')->withInput();
         }
 
         $recordsCreated = 0;
@@ -215,7 +215,7 @@ class QuimicoController extends Controller
             }
         });
 
-        return back()->with('success', "Se registraron correctamente $recordsCreated mediciones de calidad de agua.");
+        return back()->with('success', "Se registraron correctamente $recordsCreated mediciones de calidad de agua.")->with('active_tab', 'calidad');
     }
 
     // Borrar un registro de calidad de agua
@@ -225,17 +225,17 @@ class QuimicoController extends Controller
 
         // Verificar que el registro pertenezca al usuario logueado
         if ($registro->user_id !== Auth::id()) {
-            return back()->with('error', 'No tienes permisos para borrar este registro.');
+            return back()->with('error', 'No tienes permisos para borrar este registro.')->with('active_tab', 'calidad');
         }
 
         // Verificar que haya sido cargado hace menos de 2 horas
         if ($registro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', 'calidad');
         }
 
         $registro->delete();
 
-        return back()->with('deleted', 'Registro de calidad eliminado correctamente.');
+        return back()->with('deleted', 'Registro de calidad eliminado correctamente.')->with('active_tab', 'calidad');
     }
 
     // Guardar una novedad
@@ -253,7 +253,7 @@ class QuimicoController extends Controller
             'mensaje' => $request->mensaje,
         ]);
 
-        return back()->with('success', 'Novedad registrada correctamente.');
+        return back()->with('success_novedades', 'Novedad registrada correctamente.')->with('active_tab', 'novedades');
     }
 
     // Borrar una novedad
@@ -262,16 +262,16 @@ class QuimicoController extends Controller
         $novedad = Novedad::findOrFail($id);
 
         if ($novedad->user_id !== Auth::id()) {
-            return back()->with('error', 'No tienes permisos para borrar esta novedad.');
+            return back()->with('error_novedades', 'No tienes permisos para borrar esta novedad.')->with('active_tab', 'novedades');
         }
 
         if ($novedad->created_at->lt(now()->subHours(2))) {
-            return back()->with('error', 'No se puede borrar una novedad con más de 2 horas de antigüedad.');
+            return back()->with('error_novedades', 'No se puede borrar una novedad con más de 2 horas de antigüedad.')->with('active_tab', 'novedades');
         }
 
         $novedad->delete();
 
-        return back()->with('deleted', 'Novedad eliminada correctamente.');
+        return back()->with('deleted', 'Novedad eliminada correctamente.')->with('active_tab', 'novedades');
     }
 
     // Marcar novedades como leídas
@@ -282,7 +282,7 @@ class QuimicoController extends Controller
         $user->novedades_leidas_hasta = now();
         $user->save();
 
-        return back()->with('success', 'Novedades marcadas como leídas.');
+        return back()->with('success_novedades', 'Novedades marcadas como leídas.')->with('active_tab', 'novedades');
     }
 
     // Guardar lectura de caudalímetro
@@ -306,7 +306,7 @@ class QuimicoController extends Controller
             'caudal_m3h' => $request->caudal_m3h,
         ]);
 
-        return back()->with('success_caudal', 'Lectura de caudalímetro registrada.');
+        return back()->with('success_caudal', 'Lectura de caudalímetro registrada.')->with('active_tab', 'caudal');
     }
 
     // Eliminar lectura de caudalímetro
@@ -315,16 +315,16 @@ class QuimicoController extends Controller
         $registro = Caudalimetro::findOrFail($id);
 
         if ($registro->user_id !== Auth::id()) {
-            return back()->with('error_caudal', 'No tienes permisos para borrar este registro.');
+            return back()->with('error_caudal', 'No tienes permisos para borrar este registro.')->with('active_tab', 'caudal');
         }
 
         if ($registro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error_caudal', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error_caudal', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', 'caudal');
         }
 
         $registro->delete();
 
-        return back()->with('success_caudal', 'Registro eliminado correctamente.');
+        return back()->with('success_caudal', 'Registro eliminado correctamente.')->with('active_tab', 'caudal');
     }
 
     // Guardar ensayo bacteriológico
@@ -355,7 +355,7 @@ class QuimicoController extends Controller
         if ($request->filled('decantador_select') && ($request->filled('decantador_e_coli') || $request->filled('decantador_coliformes'))) $hasData = true;
 
         if (!$hasData) {
-            return back()->with('error', 'Debe completar al menos un ensayo antes de confirmar.')->withInput();
+            return back()->with('error_bacteriologico', 'Debe completar al menos un ensayo antes de confirmar.')->with('active_tab', 'bacteriologico')->withInput();
         }
 
         $recordsCreated = 0;
@@ -402,7 +402,7 @@ class QuimicoController extends Controller
             }
         });
 
-        return back()->with('success', "Se registraron correctamente $recordsCreated ensayos bacteriológicos.");
+        return back()->with('success_bacteriologico', "Se registraron correctamente $recordsCreated ensayos bacteriológicos.")->with('active_tab', 'bacteriologico');
     }
 
     // Borrar un ensayo bacteriológico
@@ -411,15 +411,15 @@ class QuimicoController extends Controller
         $registro = EnsayoBacteriologico::findOrFail($id);
 
         if ($registro->user_id !== Auth::id()) {
-            return back()->with('error', 'No tienes permisos para borrar este registro.');
+            return back()->with('error_bacteriologico', 'No tienes permisos para borrar este registro.')->with('active_tab', 'bacteriologico');
         }
 
         if ($registro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error_bacteriologico', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', 'bacteriologico');
         }
 
         $registro->delete();
 
-        return back()->with('deleted', 'Ensayo bacteriológico eliminado correctamente.');
+        return back()->with('deleted', 'Ensayo bacteriológico eliminado correctamente.')->with('active_tab', 'bacteriologico');
     }
 }

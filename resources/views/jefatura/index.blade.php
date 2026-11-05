@@ -91,13 +91,35 @@
 
 
         @php
-            $defaultTab = 'ultimos';
-            if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio', 'tab'])) {
-                $defaultTab = request('tab', 'ultimos');
+            $serverTab = session('active_tab', request('tab', ''));
+            if (!$serverTab) {
+                if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio'])) {
+                    $serverTab = 'historicos';
+                } elseif (request()->hasAny(['presiones_grafico_inicio', 'presiones_grafico_fin'])) {
+                    $serverTab = 'tendencias';
+                } elseif (request()->hasAny(['calidad_grafico_inicio', 'calidad_grafico_fin'])) {
+                    $serverTab = 'calidad';
+                } elseif (request()->hasAny(['quimicos_grafico_inicio', 'quimicos_grafico_fin'])) {
+                    $serverTab = 'quimicos';
+                } elseif (request()->hasAny(['filtros_grafico_inicio', 'filtros_grafico_fin'])) {
+                    $serverTab = 'filtros';
+                }
             }
+            $defaultTab = $serverTab ?: 'ultimos';
         @endphp
 
-        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+        <div x-data="{
+            activeTab: '{{ $serverTab }}' || sessionStorage.getItem('activeTab_jefatura') || '{{ $defaultTab }}',
+            init() {
+                if ('{{ $serverTab }}') {
+                    sessionStorage.setItem('activeTab_jefatura', '{{ $serverTab }}');
+                }
+                this.$watch('activeTab', val => {
+                    sessionStorage.setItem('activeTab_jefatura', val);
+                    setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+                });
+            }
+        }">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
                 <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
@@ -383,7 +405,7 @@
                                         <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-6 rounded border border-blue-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', array_merge(request()->except(['presiones_grafico_inicio', 'presiones_grafico_fin']), ['tab' => 'tendencias'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
@@ -428,7 +450,7 @@
                                         <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-6 rounded border border-emerald-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', array_merge(request()->except(['calidad_grafico_inicio', 'calidad_grafico_fin']), ['tab' => 'calidad'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
@@ -499,7 +521,7 @@
                                         <button type="submit" class="bg-yellow-600 hover:bg-yellow-500 text-white py-2 px-6 rounded border border-yellow-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', array_merge(request()->except(['quimicos_grafico_inicio', 'quimicos_grafico_fin']), ['tab' => 'quimicos'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>
@@ -554,7 +576,7 @@
                                         <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-6 rounded border border-indigo-400 transition font-bold tracking-wide flex items-center justify-center gap-2 w-full md:w-auto">
                                             <i class="fa-solid fa-filter"></i> Filtrar
                                         </button>
-                                        <a href="{{ route('jefatura.index', request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin', 'tab'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
+                                        <a href="{{ route('jefatura.index', array_merge(request()->except(['filtros_grafico_inicio', 'filtros_grafico_fin']), ['tab' => 'filtros'])) }}" class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded border border-slate-500 transition font-bold tracking-wide flex items-center justify-center gap-2" title="Limpiar filtro">
                                             <i class="fa-solid fa-rotate-left"></i>
                                         </a>
                                     </div>

@@ -135,12 +135,12 @@ class JefaturaController extends Controller
         }
         
         $historialCalidad = $queryCalidad->orderBy('created_at', 'desc')
-            ->paginate(50, ['*'], 'calidad_page')->withQueryString();
+            ->paginate(50, ['*'], 'calidad_page')->appends(['tab' => 'historicos'])->withQueryString();
 
         $historialPresiones = RegistroPresion::with('user')
             ->whereBetween('created_at', [$presionesFechaInicio . ' 00:00:00', $presionesFechaFin . ' 23:59:59'])
             ->orderBy('created_at', 'desc')
-            ->paginate(50, ['*'], 'presiones_page')->withQueryString();
+            ->paginate(50, ['*'], 'presiones_page')->appends(['tab' => 'historicos'])->withQueryString();
 
         // 6. Usuarios pendientes de aprobación
         $usuariosPendientes = \App\Models\User::where('is_approved', false)->orderBy('created_at', 'desc')->get();
@@ -225,13 +225,13 @@ class JefaturaController extends Controller
         
         // Evitar que jefatura se quite sus propios permisos y pierda acceso
         if ($user->id === auth()->id() && $request->role !== 'jefatura') {
-             return redirect()->route('jefatura.index')->with('error', "No puedes quitarte los permisos de jefatura a ti mismo.");
+             return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('error', "No puedes quitarte los permisos de jefatura a ti mismo.")->with('active_tab', 'personal');
         }
 
         $user->role = $request->role;
         $user->save();
 
-        return redirect()->route('jefatura.index')->with('success', "Rol de {$user->name} actualizado a {$user->role}.");
+        return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('success', "Rol de {$user->name} actualizado a {$user->role}.")->with('active_tab', 'personal');
     }
 
     public function darDeBaja($id)
@@ -239,13 +239,13 @@ class JefaturaController extends Controller
         $user = \App\Models\User::findOrFail($id);
 
         if ($user->id === auth()->id()) {
-            return redirect()->route('jefatura.index')->with('error', "No puedes darte de baja a ti mismo.");
+            return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('error', "No puedes darte de baja a ti mismo.")->with('active_tab', 'personal');
         }
 
         $nombre = $user->name;
         $user->delete();
 
-        return redirect()->route('jefatura.index')->with('success', "El empleado {$nombre} ha sido dado de baja exitosamente.");
+        return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('success', "El empleado {$nombre} ha sido dado de baja exitosamente.")->with('active_tab', 'personal');
     }
 
     public function reactivarUsuario($id)
@@ -253,6 +253,6 @@ class JefaturaController extends Controller
         $user = \App\Models\User::onlyTrashed()->findOrFail($id);
         $user->restore();
 
-        return redirect()->route('jefatura.index')->with('success', "El empleado {$user->name} ha sido reactivado y dado de alta exitosamente.");
+        return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('success', "El empleado {$user->name} ha sido reactivado y dado de alta exitosamente.")->with('active_tab', 'personal');
     }
 }

@@ -73,7 +73,7 @@
         </div>
 
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
@@ -107,14 +107,25 @@
             $erroresQuimicos  = $errors->hasAny(['cloro_principal', 'cloro_auxiliar', 'poliamina_principal', 'poliamina_auxiliar', 'sulfato_principal', 'sulfato_auxiliar']) || session('success_quimicos') || session('error_quimicos');
             $erroresNovedades = $errors->hasAny(['mensaje']) || session('success_novedades') || session('error_novedades');
             
-            $defaultTab = 'bombas';
-            if ($erroresPresiones) $defaultTab = 'presiones';
-            elseif ($erroresLavados) $defaultTab = 'lavados';
-            elseif ($erroresQuimicos) $defaultTab = 'quimicos';
-            elseif ($erroresNovedades) $defaultTab = 'novedades';
+            $serverTab = session('active_tab', '');
+            if (!$serverTab) {
+                if ($erroresPresiones) $serverTab = 'presiones';
+                elseif ($erroresLavados) $serverTab = 'lavados';
+                elseif ($erroresQuimicos) $serverTab = 'quimicos';
+                elseif ($erroresNovedades) $serverTab = 'novedades';
+            }
+            $defaultTab = $serverTab ?: 'bombas';
         @endphp 
 
-        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+        <div x-data="{
+            activeTab: '{{ $serverTab }}' || sessionStorage.getItem('activeTab_operadores') || '{{ $defaultTab }}',
+            init() {
+                if ('{{ $serverTab }}') {
+                    sessionStorage.setItem('activeTab_operadores', '{{ $serverTab }}');
+                }
+                this.$watch('activeTab', val => sessionStorage.setItem('activeTab_operadores', val));
+            }
+        }" @cambiar-tab.window="activeTab = $event.detail">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap md:flex-nowrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
                 <button @click="activeTab = 'bombas'" 

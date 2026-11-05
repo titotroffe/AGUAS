@@ -92,7 +92,7 @@ class OperadoresController extends Controller
             'nivel_cisterna' => $request->nivel_cisterna,
         ]);
 
-        return back()->with('success_presiones', 'Presiones registradas correctamente');
+        return back()->with('success_presiones', 'Presiones registradas correctamente')->with('active_tab', 'presiones');
     }
 
     // Guardar los datos de lavado de filtros
@@ -161,7 +161,7 @@ class OperadoresController extends Controller
             'fin_lavado' => $request->fin_lavado,
         ]);
 
-        return back()->with('success_lavados', 'Lavado de filtros registrado correctamente');
+        return back()->with('success_lavados', 'Lavado de filtros registrado correctamente')->with('active_tab', 'lavados');
     }
 
     // Guardar los datos de niveles de químicos
@@ -239,10 +239,10 @@ class OperadoresController extends Controller
         });
 
         if (!$actualizado) {
-            return back()->with('error_quimicos', 'Debe ingresar al menos el nivel de un tanque para actualizar.');
+            return back()->with('error_quimicos', 'Debe ingresar al menos el nivel de un tanque para actualizar.')->with('active_tab', 'quimicos');
         }
 
-        return back()->with('success_quimicos', "Niveles químicos actualizados correctamente.");
+        return back()->with('success_quimicos', "Niveles químicos actualizados correctamente.")->with('active_tab', 'quimicos');
     }
 
     // Guardar una novedad
@@ -260,7 +260,7 @@ class OperadoresController extends Controller
             'mensaje' => $request->mensaje,
         ]);
 
-        return back()->with('success_novedades', 'Novedad registrada correctamente.');
+        return back()->with('success_novedades', 'Novedad registrada correctamente.')->with('active_tab', 'novedades');
     }
 
     // Borrar un registro de presión
@@ -270,17 +270,17 @@ class OperadoresController extends Controller
 
         // Verificar que el registro pertenezca al usuario logueado
         if ($registro->user_id !== Auth::id()) {
-            return back()->with('error_presiones', 'No tienes permisos para borrar este registro.');
+            return back()->with('error_presiones', 'No tienes permisos para borrar este registro.')->with('active_tab', 'presiones');
         }
 
         // Verificar que haya sido cargado hace menos de 2 horas
         if ($registro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error_presiones', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error_presiones', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', 'presiones');
         }
 
         $registro->delete();
 
-        return back()->with('success_presiones', 'Registro eliminado correctamente.');
+        return back()->with('success_presiones', 'Registro eliminado correctamente.')->with('active_tab', 'presiones');
     }
 
     // Borrar un registro de lavado de filtros
@@ -290,17 +290,17 @@ class OperadoresController extends Controller
 
         // Verificar que el registro pertenezca al usuario logueado
         if ($registro->user_id !== Auth::id()) {
-            return back()->with('error_lavados', 'No tienes permisos para borrar este registro.');
+            return back()->with('error_lavados', 'No tienes permisos para borrar este registro.')->with('active_tab', 'lavados');
         }
 
         // Verificar que haya sido cargado hace menos de 2 horas
         if ($registro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error_lavados', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error_lavados', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', 'lavados');
         }
 
         $registro->delete();
 
-        return back()->with('success_lavados', 'Lavado de filtro eliminado correctamente.');
+        return back()->with('success_lavados', 'Lavado de filtro eliminado correctamente.')->with('active_tab', 'lavados');
     }
 
     // Borrar una novedad
@@ -309,16 +309,16 @@ class OperadoresController extends Controller
         $novedad = Novedad::findOrFail($id);
 
         if ($novedad->user_id !== Auth::id()) {
-            return back()->with('error_novedades', 'No tienes permisos para borrar esta novedad.');
+            return back()->with('error_novedades', 'No tienes permisos para borrar esta novedad.')->with('active_tab', 'novedades');
         }
 
         if ($novedad->created_at->lt(now()->subHours(2))) {
-            return back()->with('error_novedades', 'No se puede borrar una novedad con más de 2 horas de antigüedad.');
+            return back()->with('error_novedades', 'No se puede borrar una novedad con más de 2 horas de antigüedad.')->with('active_tab', 'novedades');
         }
 
         $novedad->delete();
 
-        return back()->with('success_novedades', 'Novedad eliminada correctamente.');
+        return back()->with('success_novedades', 'Novedad eliminada correctamente.')->with('active_tab', 'novedades');
     }
 
     // Marcar novedades como leidas
@@ -329,6 +329,6 @@ class OperadoresController extends Controller
         $user->novedades_leidas_hasta = now();
         $user->save();
 
-        return back()->with('success_novedades', 'Novedades marcadas como leídas.');
+        return back()->with('success_novedades', 'Novedades marcadas como leídas.')->with('active_tab', 'novedades');
     }
 }

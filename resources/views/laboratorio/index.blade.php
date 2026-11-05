@@ -82,7 +82,7 @@
 
         <!-- Alertas Novedades -->
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
@@ -111,26 +111,44 @@
         @endif
 
         @php
-            $erroresInsumos = session('success') || session('error') || $errors->hasAny(['tipo_insumo', 'fecha', 'ph', 'concentracion', 'densidad', 'turbiedad', 'aluminio', 'residuo_insoluble', 'aspecto', 'cloro_activo', 'alcalinidad_total', 'ph_1_porciento', 'color']);
-            $erroresCruda = session('success_cruda') || session('error_cruda') || $errors->hasAny(['frecuencia_cruda', 'fecha', 'medicion_*']);
-            $erroresProducto = session('success_producto') || session('error_producto') || $errors->hasAny(['frecuencia_producto', 'fecha', 'medicion_*']);
-            $erroresRed = session('success_red') || session('error_red') || $errors->hasAny(['frecuencia_red', 'fecha', 'medicion_*', 'punto_red_id']);
-            $erroresPozos = session('success_pozos') || session('error_pozos') || $errors->hasAny(['frecuencia_pozos', 'fecha', 'medicion_*', 'pozo_id']);
-            $erroresEscriturado = session('success_escriturado') || session('error_escriturado') || $errors->hasAny(['frecuencia_escriturado', 'fecha', 'medicion_*', 'lugar_id']);
-            $erroresEscuelas = session('success_escuelas') || session('error_escuelas') || $errors->hasAny(['frecuencia_escuelas', 'fecha', 'medicion_*', 'escuela_id', 'resultado_cloro', 'resultado_bacteriologico', 'observaciones']);
-            $erroresNovedades = session('success_novedades') || session('error_novedades') || $errors->hasAny(['mensaje']);
+            $sectionToTab = [
+                'insumos'     => 'insumos',
+                'cruda'       => 'cruda',
+                'producto'    => 'producto',
+                'aguared'     => 'red',
+                'red'         => 'red',
+                'pozos'       => 'pozos',
+                'escriturado' => 'escriturado',
+                'tanques'     => 'escuelas',
+                'escuelas'    => 'escuelas',
+                'novedades'   => 'novedades',
+            ];
 
-            $defaultTab = 'insumos';
-            if ($erroresCruda) $defaultTab = 'cruda';
-            elseif ($erroresProducto) $defaultTab = 'producto';
-            elseif ($erroresRed) $defaultTab = 'red';
-            elseif ($erroresPozos) $defaultTab = 'pozos';
-            elseif ($erroresEscriturado) $defaultTab = 'escriturado';
-            elseif ($erroresEscuelas) $defaultTab = 'escuelas';
-            elseif ($erroresNovedades) $defaultTab = 'novedades';
+            $serverTab = session('active_tab', '');
+            if (!$serverTab && old('_section') && isset($sectionToTab[old('_section')])) {
+                $serverTab = $sectionToTab[old('_section')];
+            }
+            if (!$serverTab) {
+                if (session('success_cruda') || session('error_cruda')) $serverTab = 'cruda';
+                elseif (session('success_producto') || session('error_producto')) $serverTab = 'producto';
+                elseif (session('success_red') || session('error_red')) $serverTab = 'red';
+                elseif (session('success_pozos') || session('error_pozos')) $serverTab = 'pozos';
+                elseif (session('success_escriturado') || session('error_escriturado')) $serverTab = 'escriturado';
+                elseif (session('success_escuelas') || session('error_escuelas')) $serverTab = 'escuelas';
+                elseif (session('success_novedades') || session('error_novedades') || $errors->hasAny(['mensaje'])) $serverTab = 'novedades';
+            }
+            $defaultTab = $serverTab ?: 'insumos';
         @endphp
 
-        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+        <div x-data="{
+            activeTab: '{{ $serverTab }}' || sessionStorage.getItem('activeTab_laboratorio') || '{{ $defaultTab }}',
+            init() {
+                if ('{{ $serverTab }}') {
+                    sessionStorage.setItem('activeTab_laboratorio', '{{ $serverTab }}');
+                }
+                this.$watch('activeTab', val => sessionStorage.setItem('activeTab_laboratorio', val));
+            }
+        }" @cambiar-tab.window="activeTab = $event.detail">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
                 <button @click="activeTab = 'insumos'" :class="activeTab === 'insumos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">INSUMOS</button>
@@ -1194,8 +1212,8 @@
         window.onload = function() {
             const tipo = document.querySelector('select[name="tipo_insumo"]').value;
             if(tipo) toggleInsumoFields(tipo);
-            const pozo = document.querySelector('select[name="pozo_numero"]').value;
-            if(pozo) togglePozoFields(pozo);
+            const pozo = document.querySelector('select[name="pozo_numero"]')?.value;
+            if(pozo) togglePozoFrecuenciaFields();
             const cruda = document.querySelector('select[name="frecuencia_cruda"]').value;
             if(cruda) toggleAguaCrudaFields(cruda);
             const producto = document.querySelector('select[name="frecuencia_producto"]').value;

@@ -398,7 +398,7 @@ class LaboratorioController extends Controller
             }
         });
 
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Insumo guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Insumo guardado correctamente.')->with('active_tab', 'insumos');
     }
 
     public function storeAguaCruda(Request $request)
@@ -434,7 +434,7 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua Cruda guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua Cruda guardado correctamente.')->with('active_tab', 'cruda');
     }
 
     public function storeProductoTerminado(Request $request)
@@ -470,7 +470,7 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Producto Terminado guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Producto Terminado guardado correctamente.')->with('active_tab', 'producto');
     }
 
     public function storeAguaRed(Request $request)
@@ -506,7 +506,7 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua de Red guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Agua de Red guardado correctamente.')->with('active_tab', 'red');
     }
 
     public function storePozo(Request $request)
@@ -550,7 +550,7 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Pozo guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Pozo guardado correctamente.')->with('active_tab', 'pozos');
     }
 
     public function storeControlEscriturado(Request $request)
@@ -586,7 +586,7 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Control Escriturado guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Control Escriturado guardado correctamente.')->with('active_tab', 'escriturado');
     }
 
     public function storeControlTanques(Request $request)
@@ -622,17 +622,17 @@ class LaboratorioController extends Controller
                 }
             }
         });
-        return redirect()->route('laboratorio.index')->with('success', 'Registro de Control de Tanques guardado correctamente.');
+        return redirect()->route('laboratorio.index')->with('success', 'Registro de Control de Tanques guardado correctamente.')->with('active_tab', 'escuelas');
     }
     
     // ---------------------------------------------------------
     // DESTROY METHODS
     // ---------------------------------------------------------
 
-    private function validarYBorrarRegistrosLaboratorio($valores)
+    private function validarYBorrarRegistrosLaboratorio($valores, string $tab = 'insumos')
     {
         if ($valores->isEmpty()) {
-            return back()->with('error', 'No se encontraron registros para eliminar.');
+            return back()->with('error', 'No se encontraron registros para eliminar.')->with('active_tab', $tab);
         }
 
         $primerRegistro = $valores->first();
@@ -640,18 +640,18 @@ class LaboratorioController extends Controller
         // Verificar que el registro pertenezca al usuario logueado
         // Si user_id es nulo (registros históricos anteriores a la corrección), no permitimos borrar.
         if ($primerRegistro->user_id !== Auth::id()) {
-            return back()->with('error', 'No tienes permisos para borrar este registro.');
+            return back()->with('error', 'No tienes permisos para borrar este registro.')->with('active_tab', $tab);
         }
 
         // Verificar que haya sido cargado hace menos de 2 horas
         if ($primerRegistro->created_at->lt(now()->subHours(2))) {
-            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.');
+            return back()->with('error', 'No se puede borrar un registro con más de 2 horas de antigüedad.')->with('active_tab', $tab);
         }
 
         // Usamos el collection de IDs para borrar de forma segura
         LabValor::whereIn('id', $valores->pluck('id'))->delete();
 
-        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.');
+        return redirect()->route('laboratorio.index')->with('deleted', 'Registro eliminado correctamente.')->with('active_tab', $tab);
     }
 
     public function destroyInsumo($tipo, $id)
@@ -662,30 +662,30 @@ class LaboratorioController extends Controller
             $insumo_id = $parts[1];
             $medicionesIds = LabMedicion::where('modulo_id', 1)->where('insumo_id', $insumo_id)->pluck('id');
             $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->get();
-            return $this->validarYBorrarRegistrosLaboratorio($valores);
+            return $this->validarYBorrarRegistrosLaboratorio($valores, 'insumos');
         }
-        return back()->with('error', 'Formato de ID inválido.');
+        return back()->with('error', 'Formato de ID inválido.')->with('active_tab', 'insumos');
     }
     
     public function destroyAguaCruda($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 2)->pluck('id');
         $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
-        return $this->validarYBorrarRegistrosLaboratorio($valores);
+        return $this->validarYBorrarRegistrosLaboratorio($valores, 'cruda');
     }
     
     public function destroyProductoTerminado($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 3)->pluck('id');
         $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
-        return $this->validarYBorrarRegistrosLaboratorio($valores);
+        return $this->validarYBorrarRegistrosLaboratorio($valores, 'producto');
     }
     
     public function destroyAguaRed($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 5)->pluck('id');
         $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
-        return $this->validarYBorrarRegistrosLaboratorio($valores);
+        return $this->validarYBorrarRegistrosLaboratorio($valores, 'red');
     }
     
     public function destroyPozo($id)
@@ -696,39 +696,39 @@ class LaboratorioController extends Controller
             $pozo_id = $parts[1];
             $medicionesIds = LabMedicion::where('modulo_id', 4)->where('pozo_id', $pozo_id)->pluck('id');
             $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $fecha)->get();
-            return $this->validarYBorrarRegistrosLaboratorio($valores);
+            return $this->validarYBorrarRegistrosLaboratorio($valores, 'pozos');
         }
-        return back()->with('error', 'Formato de ID inválido.');
+        return back()->with('error', 'Formato de ID inválido.')->with('active_tab', 'pozos');
     }
 
     public function destroyControlEscriturado($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 6)->pluck('id');
         $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
-        return $this->validarYBorrarRegistrosLaboratorio($valores);
+        return $this->validarYBorrarRegistrosLaboratorio($valores, 'escriturado');
     }
 
     public function destroyControlTanques($id)
     {
         $medicionesIds = LabMedicion::where('modulo_id', 7)->pluck('id');
         $valores = LabValor::whereIn('medicion_id', $medicionesIds)->where('fecha', $id)->get();
-        return $this->validarYBorrarRegistrosLaboratorio($valores);
+        return $this->validarYBorrarRegistrosLaboratorio($valores, 'escuelas');
     }
 
     public function storeNovedad(Request $request)
     {
         $request->validate(['mensaje' => 'required|string|max:1000'], ['mensaje.required' => 'Debe escribir un mensaje para la novedad.', 'mensaje.max' => 'La novedad es demasiado larga (máximo 1000 caracteres).']);
         Novedad::create(['user_id' => Auth::id(), 'mensaje' => $request->mensaje]);
-        return back()->with('success', 'Novedad registrada correctamente.');
+        return back()->with('success', 'Novedad registrada correctamente.')->with('active_tab', 'novedades');
     }
 
     public function destroyNovedad($id)
     {
         $novedad = Novedad::findOrFail($id);
-        if ($novedad->user_id !== Auth::id()) { return back()->with('error', 'No tienes permisos para borrar esta novedad.'); }
-        if ($novedad->created_at->lt(now()->subHours(2))) { return back()->with('error', 'No se puede borrar una novedad con más de 2 horas de antigüedad.'); }
+        if ($novedad->user_id !== Auth::id()) { return back()->with('error', 'No tienes permisos para borrar esta novedad.')->with('active_tab', 'novedades'); }
+        if ($novedad->created_at->lt(now()->subHours(2))) { return back()->with('error', 'No se puede borrar una novedad con más de 2 horas de antigüedad.')->with('active_tab', 'novedades'); }
         $novedad->delete();
-        return back()->with('deleted', 'Novedad eliminada correctamente.');
+        return back()->with('deleted', 'Novedad eliminada correctamente.')->with('active_tab', 'novedades');
     }
 
     public function marcarLeidas()
@@ -737,6 +737,6 @@ class LaboratorioController extends Controller
         $user = Auth::user();
         $user->novedades_leidas_hasta = now();
         $user->save();
-        return back()->with('success', 'Novedades marcadas como leídas.');
+        return back()->with('success', 'Novedades marcadas como leídas.')->with('active_tab', 'novedades');
     }
 }

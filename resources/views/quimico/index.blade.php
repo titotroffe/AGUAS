@@ -74,7 +74,7 @@
 
         <!-- Alertas -->
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="document.getElementById('novedades-details').open = true; document.getElementById('novedades-details').scrollIntoView({behavior: 'smooth'})">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
@@ -108,14 +108,25 @@
             $erroresCaudal = session('success_caudal') || session('error_caudal') || $errors->hasAny(['bomba','caudal_m3h']);
             $erroresNovedades = session('success_novedades') || session('error_novedades') || $errors->hasAny(['mensaje']);
             
-            $defaultTab = 'bombas';
-            if ($erroresCalidad) $defaultTab = 'calidad';
-            elseif ($erroresBacteriologico) $defaultTab = 'bacteriologico';
-            elseif ($erroresCaudal) $defaultTab = 'caudal';
-            elseif ($erroresNovedades) $defaultTab = 'novedades';
+            $serverTab = session('active_tab', '');
+            if (!$serverTab) {
+                if ($erroresBacteriologico) $serverTab = 'bacteriologico';
+                elseif ($erroresCaudal) $serverTab = 'caudal';
+                elseif ($erroresNovedades) $serverTab = 'novedades';
+                elseif ($erroresCalidad) $serverTab = 'calidad';
+            }
+            $defaultTab = $serverTab ?: 'bombas';
         @endphp
 
-        <div x-data="{ activeTab: '{{ $defaultTab }}' }">
+        <div x-data="{
+            activeTab: '{{ $serverTab }}' || sessionStorage.getItem('activeTab_quimico') || '{{ $defaultTab }}',
+            init() {
+                if ('{{ $serverTab }}') {
+                    sessionStorage.setItem('activeTab_quimico', '{{ $serverTab }}');
+                }
+                this.$watch('activeTab', val => sessionStorage.setItem('activeTab_quimico', val));
+            }
+        }" @cambiar-tab.window="activeTab = $event.detail">
             <!-- Menú Superior de Tabs -->
             <div class="flex justify-center flex-wrap md:flex-nowrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide">
                 <button @click="activeTab = 'bombas'" 
@@ -794,9 +805,9 @@
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
-            @elseif(session('success_caudal') || session('success') || session('deleted'))
+            @elseif(session('success_caudal') || session('success_bacteriologico') || session('success_novedades') || session('success') || session('deleted'))
                 @php
-                    $successMsg = session('success_caudal') ?? session('success') ?? session('deleted');
+                    $successMsg = session('success_caudal') ?? session('success_bacteriologico') ?? session('success_novedades') ?? session('success') ?? session('deleted');
                     $isDeleted = session()->has('deleted') || str_contains(strtolower($successMsg), 'eliminad') || str_contains(strtolower($successMsg), 'borrad');
                 @endphp
                 SwalCustom.fire({
@@ -805,10 +816,10 @@
                     icon: 'success',
                     confirmButtonText: 'Aceptar'
                 });
-            @elseif(session('error_caudal') || session('error'))
+            @elseif(session('error_caudal') || session('error_bacteriologico') || session('error_novedades') || session('error'))
                 SwalCustom.fire({
                     title: '¡Error!',
-                    text: @json(session('error_caudal') ?? session('error')),
+                    text: @json(session('error_caudal') ?? session('error_bacteriologico') ?? session('error_novedades') ?? session('error')),
                     icon: 'error',
                     confirmButtonText: 'Aceptar'
                 });
