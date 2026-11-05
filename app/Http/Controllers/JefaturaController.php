@@ -150,6 +150,7 @@ class JefaturaController extends Controller
 
         // 8. Empleados dados de baja (SoftDeleted)
         $empleadosDadosDeBaja = \App\Models\User::onlyTrashed()->orderBy('name', 'asc')->get();
+        $ultimasNovedades = \App\Models\Novedad::with('user')->latest()->take(30)->get();
 
         $estadosBombas = \App\Http\Controllers\BombasController::cargarEstados();
         return view('jefatura.index', compact('estadosBombas', 
@@ -176,7 +177,8 @@ class JefaturaController extends Controller
             'quimicosGraficoInicio',
             'quimicosGraficoFin',
             'filtrosGraficoInicio',
-            'filtrosGraficoFin'
+            'filtrosGraficoFin',
+            'ultimasNovedades'
         ));
     }
 
@@ -254,5 +256,58 @@ class JefaturaController extends Controller
         $user->restore();
 
         return redirect()->route('jefatura.index', ['tab' => 'personal'])->with('success', "El empleado {$user->name} ha sido reactivado y dado de alta exitosamente.")->with('active_tab', 'personal');
+    }
+
+    public function storeNovedad(Request $request)
+    {
+        $request->validate([
+            'mensaje'   => 'required|string|max:1000',
+            'modulos'   => 'required|array|min:1',
+            'modulos.*' => 'required|string|in:operadores,quimico,laboratorio',
+        ], [
+            'mensaje.required' => 'Debe escribir un mensaje para la notificación.',
+            'mensaje.max'      => 'El mensaje es demasiado largo (máximo 1000 caracteres).',
+            'modulos.required' => 'Debe seleccionar al menos un módulo destinatario.',
+            'modulos.min'      => 'Debe seleccionar al menos un módulo destinatario.',
+        ]);
+
+        $modulos = array_unique($request->modulos);
+
+        foreach ($modulos as $modulo) {
+            \App\Models\Novedad::create([
+                'user_id' => auth()->id(),
+                'modulo'      => $modulo,
+                'es_jefatura' => true,
+                'mensaje'     => $request->mensaje,
+            ]);
+        }
+
+        $nombresModulos = collect($modulos)->map(fn($m) => match($m) {
+            'operadores'  => 'Operadores',
+            'quimico'     => 'Químico',
+            'laboratorio' => 'Laboratorio',
+            default       => ucfirst($m),
+        })->implode(', ');
+
+        return redirect()->route('jefatura.index', ['tab' => 'novedades'])
+            ->with('success', "Notificación enviada correctamente a: {$nombresModulos}.")
+            ->with('active_tab', 'novedades');
+    }
+
+    public function destroyNovedad($id)
+    {
+        $novedad = \App\Models\Novedad::findOrFail($id);
+
+        if ($novedad->user_id !== auth()->id()) {
+            return redirect()->route('jefatura.index', ['tab' => 'novedades'])
+                ->with('error', 'Solo puedes borrar notificaciones enviadas por ti.')
+                ->with('active_tab', 'novedades');
+        }
+
+        $novedad->delete();
+
+        return redirect()->route('jefatura.index', ['tab' => 'novedades'])
+            ->with('deleted', 'Notificación eliminada correctamente.')
+            ->with('active_tab', 'novedades');
     }
 }

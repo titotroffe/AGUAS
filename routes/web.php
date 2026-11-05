@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -67,6 +67,8 @@ Route::middleware(['auth', 'role:jefatura,admin'])->group(function () {
     Route::put('/jefatura/actualizar-rol/{id}',      [JefaturaController::class, 'actualizarRol'])->middleware('throttle:10,1')->name('jefatura.actualizarRol');
     Route::delete('/jefatura/dar-de-baja/{id}',      [JefaturaController::class, 'darDeBaja'])->middleware('throttle:10,1')->name('jefatura.darDeBaja');
     Route::post('/jefatura/reactivar-usuario/{id}',  [JefaturaController::class, 'reactivarUsuario'])->middleware('throttle:10,1')->name('jefatura.reactivarUsuario');
+    Route::post('/jefatura/novedad',                 [JefaturaController::class, 'storeNovedad'])->middleware('throttle:10,1')->name('jefatura.storeNovedad');
+    Route::delete('/jefatura/novedad/{id}',          [JefaturaController::class, 'destroyNovedad'])->middleware('throttle:10,1')->name('jefatura.destroyNovedad');
 
     // ABM Dinamico - QA-08: throttle mas permisivo para uso administrativo
     Route::get('/jefatura/abm',                           [\App\Http\Controllers\AbmController::class, 'index'])->name('jefatura.abm.index');

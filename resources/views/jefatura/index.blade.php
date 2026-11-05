@@ -93,7 +93,9 @@
         @php
             $serverTab = session('active_tab', request('tab', ''));
             if (!$serverTab) {
-                if (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio'])) {
+                if ($errors->hasAny(['mensaje', 'modulos', 'modulos.*'])) {
+                    $serverTab = 'novedades';
+                } elseif (request()->hasAny(['calidad_page', 'presiones_page', 'calidad_fecha_inicio', 'presiones_fecha_inicio'])) {
                     $serverTab = 'historicos';
                 } elseif (request()->hasAny(['presiones_grafico_inicio', 'presiones_grafico_fin'])) {
                     $serverTab = 'tendencias';
@@ -121,27 +123,30 @@
             }
         }">
             <!-- Menú Superior de Tabs -->
-            <div class="flex justify-center flex-wrap gap-2 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
-                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+            <div class="flex justify-center flex-wrap md:flex-nowrap gap-1.5 border-b border-slate-700/50 mb-8 overflow-x-auto scrollbar-hide p-2">
+                <button @click="activeTab = 'ultimos'" :class="activeTab === 'ultimos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-bolt"></i> ÚLTIMOS REGISTROS
                 </button>
-                <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'personal'" :class="activeTab === 'personal' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-users"></i> PERSONAL
                 </button>
-                <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'tendencias'" :class="activeTab === 'tendencias' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-chart-line"></i> PRESIONES
                 </button>
-                <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'calidad'" :class="activeTab === 'calidad' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-chart-line"></i> CALIDAD
                 </button>
-                <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'quimicos'" :class="activeTab === 'quimicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-vial"></i> QUÍMICOS
                 </button>
-                <button @click="activeTab = 'filtros'" :class="activeTab === 'filtros' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'filtros'" :class="activeTab === 'filtros' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-filter"></i> FILTROS
                 </button>
-                <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                <button @click="activeTab = 'historicos'" :class="activeTab === 'historicos' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-clock-rotate-left"></i> HISTÓRICOS
+                </button>
+                <button @click="activeTab = 'novedades'" :class="activeTab === 'novedades' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'" class="px-3.5 py-3.5 font-bold text-xs lg:text-sm tracking-wide whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-bullhorn"></i> NOVEDADES
                 </button>
             </div>
             <!-- Panel Últimos Registros -->
@@ -748,6 +753,109 @@
                                         <button disabled class="bg-slate-800 px-3 py-1 rounded border border-slate-600 transition opacity-50 cursor-not-allowed">&gt;</button>
                                     @endif
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel NOVEDADES -->
+            <div x-show="activeTab === 'novedades'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="p-4 md:p-8">
+                        @if($errors->hasAny(['mensaje', 'modulos', 'modulos.*']))
+                            <div class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-xl mb-6 text-sm font-semibold shadow-md">
+                                <ul class="list-disc list-inside text-left">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('jefatura.storeNovedad') }}" method="POST" class="mb-12" onsubmit="const btns = this.querySelectorAll('button[type=submit]'); btns.forEach(b => { b.disabled = true; b.innerHTML = 'ENVIANDO...'; b.classList.add('opacity-50', 'cursor-not-allowed'); });">
+                            @csrf
+                            <div class="mb-6">
+                                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                    <label class="block text-sm font-bold text-slate-300 tracking-wide">
+                                        SELECCIONAR MÓDULOS DESTINATARIOS
+                                    </label>
+                                    <button type="button" onclick="const chks = document.querySelectorAll('.chk-modulo-novedad'); const allChecked = Array.from(chks).every(c => c.checked); chks.forEach(c => c.checked = !allChecked);" class="text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 px-3 py-1 rounded transition">
+                                        Seleccionar / Desmarcar Todos
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <label class="flex items-center gap-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-600 rounded-xl p-4 cursor-pointer transition">
+                                        <input type="checkbox" name="modulos[]" value="operadores" class="chk-modulo-novedad w-5 h-5 accent-blue-600 rounded" {{ in_array('operadores', old('modulos', [])) ? 'checked' : '' }}>
+                                        <span class="font-bold text-white text-sm">OPERADORES</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-600 rounded-xl p-4 cursor-pointer transition">
+                                        <input type="checkbox" name="modulos[]" value="quimico" class="chk-modulo-novedad w-5 h-5 accent-emerald-600 rounded" {{ in_array('quimico', old('modulos', [])) ? 'checked' : '' }}>
+                                        <span class="font-bold text-white text-sm">QUÍMICOS</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-600 rounded-xl p-4 cursor-pointer transition">
+                                        <input type="checkbox" name="modulos[]" value="laboratorio" class="chk-modulo-novedad w-5 h-5 accent-purple-600 rounded" {{ in_array('laboratorio', old('modulos', [])) ? 'checked' : '' }}>
+                                        <span class="font-bold text-white text-sm">LABORATORIO</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <label class="block text-sm font-bold text-slate-300 mb-3 tracking-wide">MENSAJE / NOTIFICACIÓN DE JEFATURA (Máx. 1000 caracteres)</label>
+                            <textarea name="mensaje" rows="3" class="w-full bg-slate-900 border border-slate-600 rounded p-4 text-white focus:outline-none focus:border-blue-500 mb-4 resize-none" placeholder="Escribe aquí el mensaje o notificación para enviar al boletín de novedades de los módulos seleccionados..." required>{{ old('mensaje') }}</textarea>
+
+                            <div class="flex justify-center">
+                                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-10 rounded shadow-lg transition tracking-wide text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-bullhorn"></i> ENVIAR NOTIFICACIÓN
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Listado de Novedades por Módulo -->
+                        <div class="bg-slate-900/50 rounded border border-slate-700 p-6" x-data="{ filtroModulo: 'todos' }">
+                            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                                <h3 class="text-lg font-bold text-blue-400 tracking-widest">HISTORIAL DE NOVEDADES POR MÓDULO</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" @click="filtroModulo = 'todos'" :class="filtroModulo === 'todos' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-xs font-bold uppercase transition">Todos</button>
+                                    <button type="button" @click="filtroModulo = 'operadores'" :class="filtroModulo === 'operadores' ? 'bg-sky-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-xs font-bold uppercase transition">Operadores</button>
+                                    <button type="button" @click="filtroModulo = 'quimico'" :class="filtroModulo === 'quimico' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-xs font-bold uppercase transition">Químico</button>
+                                    <button type="button" @click="filtroModulo = 'laboratorio'" :class="filtroModulo === 'laboratorio' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'" class="px-3 py-1 rounded text-xs font-bold uppercase transition">Laboratorio</button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                                @forelse($ultimasNovedades ?? [] as $novedad)
+                                    @php
+                                        $esJefatura = (bool) $novedad->es_jefatura;
+                                        $mod = $novedad->modulo ?? 'operadores';
+                                    @endphp
+                                    <div x-show="filtroModulo === 'todos' || filtroModulo === '{{ $mod }}'" class="{{ $esJefatura ? 'bg-amber-950/30 border-amber-500/60' : 'bg-slate-800 border-slate-700' }} p-4 rounded-lg border">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span class="font-bold text-white">{{ $novedad->user->name ?? 'N/A' }}</span>
+                                                @if($esJefatura)
+                                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                                        <i class="fa-solid fa-bullhorn"></i> Notificación de Jefatura
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-xs text-slate-400 font-mono">{{ $novedad->created_at->format('d/m/Y H:i') }}</span>
+                                                @if(auth()->id() == $novedad->user_id)
+                                                    <form method="POST" action="{{ route('jefatura.destroyNovedad', $novedad->id) }}" onsubmit="return confirm('¿Seguro que deseas borrar esta notificación?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="bg-red-600/85 hover:bg-red-600 text-white py-1 px-3 rounded text-xs font-bold transition shadow-sm flex items-center gap-1">
+                                                            <i class="fa-solid fa-trash text-[10px]"></i> Borrar
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <p class="text-slate-300 text-sm whitespace-pre-wrap">{{ $novedad->mensaje }}</p>
+                                    </div>
+                                @empty
+                                    <p class="text-center text-slate-500 font-semibold py-4">No hay novedades registradas.</p>
+                                @endforelse
                             </div>
                         </div>
                     </div>

@@ -289,8 +289,9 @@ class LaboratorioController extends Controller
         // ---------------------------------------------------------
         // Novedades
         // ---------------------------------------------------------
-        $ultimasNovedades = Novedad::with('user')->latest()->take(10)->get();
-        $unreadQuery = Novedad::where('user_id', '!=', Auth::id())
+        $ultimasNovedades = Novedad::paraModulo('laboratorio')->with('user')->latest()->take(10)->get();
+        $unreadQuery = Novedad::paraModulo('laboratorio')
+            ->where('user_id', '!=', Auth::id())
             ->where('created_at', '>=', now()->subHours(16));
         if (Auth::user()->novedades_leidas_hasta) {
             $unreadQuery->where('created_at', '>', Auth::user()->novedades_leidas_hasta);
@@ -718,7 +719,7 @@ class LaboratorioController extends Controller
     public function storeNovedad(Request $request)
     {
         $request->validate(['mensaje' => 'required|string|max:1000'], ['mensaje.required' => 'Debe escribir un mensaje para la novedad.', 'mensaje.max' => 'La novedad es demasiado larga (máximo 1000 caracteres).']);
-        Novedad::create(['user_id' => Auth::id(), 'mensaje' => $request->mensaje]);
+        Novedad::create(['user_id' => Auth::id(), 'modulo' => 'laboratorio', 'mensaje' => $request->mensaje]);
         return back()->with('success', 'Novedad registrada correctamente.')->with('active_tab', 'novedades');
     }
 

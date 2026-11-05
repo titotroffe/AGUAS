@@ -596,9 +596,17 @@
                     
                     <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
                         @forelse($ultimasNovedades as $novedad)
-                            <div class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            @php $esJefatura = (bool) $novedad->es_jefatura; @endphp
+                            <div class="{{ $esJefatura ? 'bg-amber-950/30 border-amber-500/60' : 'bg-slate-800 border-slate-700' }} p-4 rounded-lg border">
                                 <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold text-white">{{ $novedad->user->name ?? 'N/A' }}</span>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-bold text-white">{{ $novedad->user->name ?? 'N/A' }}</span>
+                                        @if($esJefatura)
+                                            <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                                <i class="fa-solid fa-bullhorn"></i> Notificación de Jefatura
+                                            </span>
+                                        @endif
+                                    </div>
                                     <div class="flex items-center gap-3">
                                         <span class="text-xs text-slate-400 font-mono">{{ $novedad->created_at->format('d/m/Y H:i') }}</span>
                                         @if(auth()->id() == $novedad->user_id && $novedad->created_at->gt(now()->subHours(2)))

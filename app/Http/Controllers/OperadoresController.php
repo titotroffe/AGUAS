@@ -43,9 +43,10 @@ class OperadoresController extends Controller
             'tanque_auxiliar' => NivelQuimico::where('quimico', 'sulfato')->where('tipo_tanque', 'auxiliar')->latest()->value('nivel')
         ];
 
-        $ultimasNovedades = Novedad::with('user')->latest()->take(10)->get();
+        $ultimasNovedades = Novedad::paraModulo('operadores')->with('user')->latest()->take(10)->get();
 
-        $unreadQuery = Novedad::where('user_id', '!=', Auth::id())
+        $unreadQuery = Novedad::paraModulo('operadores')
+            ->where('user_id', '!=', Auth::id())
             ->where('created_at', '>=', now()->subHours(16));
             
         if (Auth::user()->novedades_leidas_hasta) {
@@ -257,6 +258,7 @@ class OperadoresController extends Controller
 
         Novedad::create([
             'user_id' => Auth::id(),
+            'modulo'  => 'operadores',
             'mensaje' => $request->mensaje,
         ]);
 

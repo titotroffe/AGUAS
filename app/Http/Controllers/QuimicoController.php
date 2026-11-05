@@ -26,9 +26,10 @@ class QuimicoController extends Controller
             ->take(24)
             ->get();
 
-        $ultimasNovedades = Novedad::with('user')->latest()->take(10)->get();
+        $ultimasNovedades = Novedad::paraModulo('quimico')->with('user')->latest()->take(10)->get();
 
-        $unreadQuery = Novedad::where('user_id', '!=', Auth::id())
+        $unreadQuery = Novedad::paraModulo('quimico')
+            ->where('user_id', '!=', Auth::id())
             ->where('created_at', '>=', now()->subHours(16));
             
         if (Auth::user()->novedades_leidas_hasta) {
@@ -250,6 +251,7 @@ class QuimicoController extends Controller
 
         Novedad::create([
             'user_id' => Auth::id(),
+            'modulo'  => 'quimico',
             'mensaje' => $request->mensaje,
         ]);
 
