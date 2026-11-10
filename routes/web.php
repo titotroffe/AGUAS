@@ -118,3 +118,9 @@ Route::middleware(['auth', 'role:laboratorio'])->group(function () {
     Route::post('/laboratorio/novedades/leidas',          [\App\Http\Controllers\LaboratorioController::class, 'marcarLeidas'])->middleware('throttle:10,1')->name('laboratorio.marcarLeidas');
     Route::delete('/laboratorio/novedad/{id}',            [\App\Http\Controllers\LaboratorioController::class, 'destroyNovedad'])->middleware('throttle:10,1')->name('laboratorio.destroyNovedad');
 });
+
+// Telemetría ESP32 - Dosificadoras (Recibe POST del ESP32 y entrega estado actual al frontend)
+Route::post('/api/dosificadoras', [\App\Http\Controllers\TelemetriaController::class, 'store'])->name('api.dosificadoras.store');
+Route::get('/api/dosificadoras', [\App\Http\Controllers\TelemetriaController::class, 'actual'])->name('api.dosificadoras.actual');
+
+

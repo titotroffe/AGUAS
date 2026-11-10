@@ -84,6 +84,9 @@
             </div>
         </div>
 
+        {{-- Alerta global en vivo si la dosificadora baja a 0 --}}
+        <x-alerta-dosificadora />
+
 
         @php
             $ultimaPresion = $ultimaPresionGlobal;
@@ -271,7 +274,7 @@
                                 </div>
                                 <div class="flex justify-between items-center text-sm mb-2">
                                     <span class="text-slate-500 text-[10px] font-black uppercase">Cloro</span>
-                                    <span class="text-rose-400 font-bold">{{ $lugar->cloro_residual !== null ? $lugar->cloro_residual : '-' }}</span>
+                                    <span class="text-rose-400 font-bold">{{ $lugar->cloro_formateado }}</span>
                                 </div>
                                 <p class="text-[9px] text-slate-500 text-right mt-1 font-mono border-t border-slate-700/50 pt-1">{{ $lugar->created_at->format('d/m H:i') }}</p>
                             </div>
@@ -661,7 +664,7 @@
                                             <td class="p-3 text-center text-slate-400">{{ $reg->filtro_numero ?? '-' }}</td>
                                             <td class="p-3 text-center text-amber-300">{{ $reg->turbiedad ?? '-' }}</td>
                                             <td class="p-3 text-center text-emerald-300">{{ $reg->ph ?? '-' }}</td>
-                                            <td class="p-3 text-center text-rose-300">{{ $reg->cloro_residual ?? '-' }}</td>
+                                            <td class="p-3 text-center text-rose-300">{{ $reg->cloro_formateado }}</td>
                                             <td class="p-3 text-right text-slate-500 text-xs"><i class="fa-solid fa-user mr-1"></i> {{ optional($reg->user)->name ?? 'Sistema' }} @if(optional($reg->user)->trashed()) <span class="text-[9px] text-amber-500 font-bold">(Baja)</span> @endif</td>
                                         </tr>
                                         @empty

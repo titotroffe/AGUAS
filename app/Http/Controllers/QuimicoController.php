@@ -62,9 +62,11 @@ class QuimicoController extends Controller
             'cisterna_turbiedad' => 'nullable|numeric|min:0|max:10',
             'cisterna_ph' => 'nullable|numeric|min:0|max:14',
             'cisterna_cloro' => 'nullable|numeric|min:0|max:3',
+            'cisterna_cloro_op' => 'nullable|string|in:=,<,>',
             'bajada_tanque_turbiedad' => 'nullable|numeric|min:0|max:10',
             'bajada_tanque_ph' => 'nullable|numeric|min:0|max:14',
             'bajada_tanque_cloro' => 'nullable|numeric|min:0|max:3',
+            'bajada_tanque_cloro_op' => 'nullable|string|in:=,<,>',
             'rio_turbiedad' => 'nullable|numeric|min:0|max:300',
             'rio_ph' => 'nullable|numeric|min:0|max:14',
             'filtro_norte_select' => 'nullable|string|in:Filtro 1,Filtro 2,Filtro 3',
@@ -164,6 +166,7 @@ class QuimicoController extends Controller
                     'turbiedad' => $request->cisterna_turbiedad,
                     'ph' => $request->cisterna_ph,
                     'cloro_residual' => $request->cisterna_cloro,
+                    'cloro_operador' => ($request->filled('cisterna_cloro') && in_array($request->cisterna_cloro_op, ['<', '>'])) ? $request->cisterna_cloro_op : null,
                 ]);
                 $recordsCreated++;
             }
@@ -176,6 +179,7 @@ class QuimicoController extends Controller
                     'turbiedad' => $request->bajada_tanque_turbiedad,
                     'ph' => $request->bajada_tanque_ph,
                     'cloro_residual' => $request->bajada_tanque_cloro,
+                    'cloro_operador' => ($request->filled('bajada_tanque_cloro') && in_array($request->bajada_tanque_cloro_op, ['<', '>'])) ? $request->bajada_tanque_cloro_op : null,
                 ]);
                 $recordsCreated++;
             }

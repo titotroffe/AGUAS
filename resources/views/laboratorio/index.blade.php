@@ -82,11 +82,14 @@
 
         <!-- Alertas Novedades -->
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' })); setTimeout(() => { document.getElementById('ultimas-novedades')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
         @endif
+
+        {{-- Alerta global en vivo si la dosificadora baja a 0 --}}
+        <x-alerta-dosificadora />
 
         @if(session('success'))
             <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
@@ -1030,7 +1033,7 @@
                 </form>
 
                 <!-- Listado y boletín -->
-                <div class="bg-slate-900/50 rounded border border-slate-700 p-6">
+                <div id="ultimas-novedades" class="bg-slate-900/50 rounded border border-slate-700 p-6 scroll-mt-6">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-bold text-blue-400 tracking-widest text-center flex-grow">ÚLTIMAS NOVEDADES</h3>
                         @if($novedadesRecientes > 0)

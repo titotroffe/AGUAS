@@ -73,11 +73,14 @@
         </div>
 
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' })); setTimeout(() => { document.getElementById('ultimas-novedades')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
         @endif
+
+        {{-- Alerta global en vivo si la dosificadora baja a 0 --}}
+        <x-alerta-dosificadora />
 
         @if(session('success') && !session('success_presiones') && !session('success_lavados') && !session('success_quimicos') && !session('success_novedades'))
             <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
@@ -133,6 +136,12 @@
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
                     <i class="fa-solid fa-water"></i> BOMBAS Y POZOS
                 </button>
+                <button @click="activeTab = 'dosificadora'" 
+                   :class="activeTab === 'dosificadora' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
+                   class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> DOSIFICADORA
+                    <span id="tab-badge-dosificadora" style="display: none;" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                </button>
                 <button @click="activeTab = 'presiones'" 
                    :class="activeTab === 'presiones' ? 'bg-blue-600/20 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-b-2 border-transparent'"
                    class="px-5 py-4 font-bold text-sm tracking-wider whitespace-nowrap transition-all duration-300 rounded-t-xl flex-grow md:flex-grow-0 flex items-center justify-center gap-2">
@@ -162,6 +171,156 @@
         <x-panel-bombas :readonly="false" :estados="$estadosBombas" />
 
             </div>
+
+            {{-- ══ PANEL MONITOREO DOSIFICADORA (ESP32) ══ --}}
+            <div x-show="activeTab === 'dosificadora'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
+                    <div class="p-6 md:p-8">
+                        <!-- Hora de última lectura -->
+                        <div class="flex items-center justify-end mb-6">
+                            <span id="dosif-ultima-hora" class="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                                Última lectura: —
+                            </span>
+                        </div>
+
+                        <!-- Medidores: Voltaje y Corriente -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- Voltaje -->
+                            <div id="card-dosif-voltaje" class="bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300">
+                                <div class="w-12 h-12 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mb-3">
+                                    <i class="fa-solid fa-plug-circle-bolt text-blue-400 text-xl"></i>
+                                </div>
+                                <span class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Voltaje</span>
+                                <div class="flex items-baseline gap-1">
+                                    <span id="dosif-val-voltaje" class="text-4xl font-mono font-extrabold text-blue-400">--.-</span>
+                                    <span class="text-lg font-mono font-bold text-slate-400">V</span>
+                                </div>
+                            </div>
+
+                            <!-- Corriente -->
+                            <div id="card-dosif-corriente" class="bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300">
+                                <div id="icon-wrap-corriente" class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mb-3">
+                                    <i id="icon-dosif-corriente" class="fa-solid fa-wave-square text-emerald-400 text-xl"></i>
+                                </div>
+                                <span class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Corriente</span>
+                                <div class="flex items-baseline gap-1">
+                                    <span id="dosif-val-corriente" class="text-4xl font-mono font-extrabold text-emerald-400">-.---</span>
+                                    <span class="text-lg font-mono font-bold text-slate-400">A</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Historial reciente en vivo -->
+                        <div class="bg-slate-900/60 rounded-xl border border-slate-700/80 p-5">
+                            <h3 class="text-xs font-bold tracking-widest text-slate-400 uppercase mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-blue-400"></i>
+                                Últimas lecturas
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs text-center border-collapse">
+                                    <thead>
+                                        <tr class="bg-slate-800 text-slate-300 uppercase tracking-wider">
+                                            <th class="py-2.5 px-4 border border-slate-700">Hora</th>
+                                            <th class="py-2.5 px-4 border border-slate-700">Voltaje (V)</th>
+                                            <th class="py-2.5 px-4 border border-slate-700">Corriente (A)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dosif-tabla-historial" class="divide-y divide-slate-700/60 font-mono">
+                                        <tr>
+                                            <td colspan="3" class="py-4 text-slate-500 font-sans">Esperando datos...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                window.addEventListener('telemetria-dosificadora', function (e) {
+                    const d = e.detail;
+                    if (!d) return;
+
+                    const valV = document.getElementById('dosif-val-voltaje');
+                    const valI = document.getElementById('dosif-val-corriente');
+                    const txtHora = document.getElementById('dosif-ultima-hora');
+                    const cardVoltaje = document.getElementById('card-dosif-voltaje');
+                    const cardCorriente = document.getElementById('card-dosif-corriente');
+                    const tabBadge = document.getElementById('tab-badge-dosificadora');
+                    const tbody = document.getElementById('dosif-tabla-historial');
+
+                    if (!d.conectado || d.voltaje === null || typeof d.voltaje === 'undefined') {
+                        if (valV) {
+                            valV.textContent = '--.-';
+                            valV.className = 'text-4xl font-mono font-extrabold text-slate-500';
+                        }
+                        if (valI) {
+                            valI.textContent = '-.---';
+                            valI.className = 'text-4xl font-mono font-extrabold text-slate-500';
+                        }
+                        if (txtHora) txtHora.textContent = 'Esperando POST del ESP32...';
+                        if (cardVoltaje) cardVoltaje.className = 'bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300';
+                        if (cardCorriente) cardCorriente.className = 'bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300';
+                        if (tabBadge) tabBadge.style.display = 'none';
+                        return;
+                    }
+
+                    const v = Number(d.voltaje || 0);
+                    const i = Number(d.corriente || 0);
+                    const vCero = v <= 1;
+                    const iCero = i <= 0.02;
+
+                    if (valV) valV.textContent = v.toFixed(1);
+                    if (valI) valI.textContent = i.toFixed(3);
+                    if (txtHora) txtHora.textContent = d.hora ? ('Última lectura: ' + d.hora) : 'Última lectura: —';
+
+                    // Estilo tarjeta Voltaje (rojo si baja a 0)
+                    if (vCero) {
+                        if (cardVoltaje) cardVoltaje.className = 'bg-red-900/60 border-2 border-red-500 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all duration-300';
+                        if (valV) valV.className = 'text-4xl font-mono font-extrabold text-red-200';
+                    } else {
+                        if (cardVoltaje) cardVoltaje.className = 'bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300';
+                        if (valV) valV.className = 'text-4xl font-mono font-extrabold text-blue-400';
+                    }
+
+                    // Estilo tarjeta Corriente (rojo si baja a 0)
+                    if (iCero) {
+                        if (cardCorriente) cardCorriente.className = 'bg-red-900/60 border-2 border-red-500 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-[0_0_20px_rgba(239,68,68,0.3)] transition-all duration-300';
+                        if (valI) valI.className = 'text-4xl font-mono font-extrabold text-red-200';
+                    } else {
+                        if (cardCorriente) cardCorriente.className = 'bg-slate-800/70 border border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-lg transition-all duration-300';
+                        if (valI) valI.className = 'text-4xl font-mono font-extrabold text-emerald-400';
+                    }
+
+                    if (tabBadge) {
+                        tabBadge.style.display = (vCero || iCero) ? 'inline-block' : 'none';
+                    }
+
+                    if (tbody && Array.isArray(d.historial) && d.historial.length > 0) {
+                        tbody.innerHTML = d.historial.map(item => {
+                            const itemV = Number(item.voltaje || 0);
+                            const itemI = Number(item.corriente || 0);
+                            const esVCero = itemV <= 1;
+                            const esICero = itemI <= 0.02;
+
+                            const claseCeldaV = esVCero
+                                ? 'bg-red-600 text-white font-extrabold'
+                                : 'text-blue-300 font-bold';
+
+                            const claseCeldaI = esICero
+                                ? 'bg-red-600 text-white font-extrabold'
+                                : 'text-emerald-400 font-bold';
+
+                            return `<tr class="hover:bg-slate-800/40 text-slate-200">
+                                <td class="py-2 px-4 border border-slate-700/60">${item.hora || '—'}</td>
+                                <td class="py-2 px-4 border border-slate-700/60 ${claseCeldaV}">${itemV.toFixed(1)} V</td>
+                                <td class="py-2 px-4 border border-slate-700/60 ${claseCeldaI}">${itemI.toFixed(3)} A</td>
+                            </tr>`;
+                        }).join('');
+                    }
+                });
+            </script>
 
             <div x-show="activeTab === 'presiones'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="bg-slate-900/40 rounded-xl border border-slate-700 mb-12 shadow-2xl overflow-hidden glass">
@@ -581,7 +740,7 @@
                     </div>
                 </form>
 
-                <div class="bg-slate-900/50 rounded border border-slate-700 p-6">
+                <div id="ultimas-novedades" class="bg-slate-900/50 rounded border border-slate-700 p-6 scroll-mt-6">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-bold text-blue-400 tracking-widest text-center flex-grow">ÚLTIMAS NOVEDADES</h3>
                         @if($novedadesRecientes > 0)

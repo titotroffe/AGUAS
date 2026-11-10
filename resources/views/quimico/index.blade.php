@@ -74,11 +74,14 @@
 
         <!-- Alertas -->
         @if($novedadesRecientes > 0)
-            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' }))">
+            <div class="bg-blue-900/50 border border-blue-500 text-blue-200 px-6 py-4 rounded-xl mb-8 text-center shadow-lg flex items-center justify-center gap-3 cursor-pointer hover:bg-blue-800/50 transition" onclick="window.dispatchEvent(new CustomEvent('cambiar-tab', { detail: 'novedades' })); setTimeout(() => { document.getElementById('ultimas-novedades')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 150);">
                 <i class="fa-solid fa-bell text-blue-400 text-xl animate-pulse"></i>
                 <span class="font-bold tracking-wide">¡Hay {{ $novedadesRecientes }} novedad(es) del turno anterior sin leer! Haz clic aquí para ir al Boletín.</span>
             </div>
         @endif
+
+        {{-- Alerta global en vivo si la dosificadora baja a 0 --}}
+        <x-alerta-dosificadora />
 
         @if(session('success'))
             <div class="bg-emerald-900/50 border border-emerald-500 text-emerald-200 px-4 py-3 rounded mb-6 text-center text-sm font-semibold shadow-md">
@@ -187,7 +190,14 @@
                             <input type="number" name="cisterna_ph" step="0.01" min="0" max="14" value="{{ old('cisterna_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="cisterna_cloro" step="0.01" min="0" max="3" value="{{ old('cisterna_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <div class="flex items-center justify-center gap-1 mb-4">
+                                <select name="cisterna_cloro_op" style="background-image: none; padding: 0.5rem 0.25rem;" class="w-10 bg-slate-900 border border-slate-600 rounded text-center text-white focus:outline-none focus:border-blue-500 font-mono font-bold text-sm" title="Signo (=, >, <)">
+                                    <option value="=" {{ old('cisterna_cloro_op', '=') === '=' ? 'selected' : '' }}>=</option>
+                                    <option value=">" {{ old('cisterna_cloro_op') === '>' ? 'selected' : '' }}>&gt;</option>
+                                    <option value="<" {{ old('cisterna_cloro_op') === '<' ? 'selected' : '' }}>&lt;</option>
+                                </select>
+                                <input type="number" name="cisterna_cloro" step="0.01" min="0" max="3" value="{{ old('cisterna_cloro') }}" class="w-20 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                            </div>
                         </div>
 
                         <!-- Bajada de Tanque -->
@@ -201,7 +211,14 @@
                             <input type="number" name="bajada_tanque_ph" step="0.01" min="0" max="14" value="{{ old('bajada_tanque_ph') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
                             
                             <label class="text-[10px] font-bold mb-2 tracking-wide text-slate-400">CLORO RESIDUAL</label>
-                            <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" max="3" value="{{ old('bajada_tanque_cloro') }}" class="w-24 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono mb-4" placeholder="0.00">
+                            <div class="flex items-center justify-center gap-1 mb-4">
+                                <select name="bajada_tanque_cloro_op" style="background-image: none; padding: 0.5rem 0.25rem;" class="w-10 bg-slate-900 border border-slate-600 rounded text-center text-white focus:outline-none focus:border-blue-500 font-mono font-bold text-sm" title="Signo (=, >, <)">
+                                    <option value="=" {{ old('bajada_tanque_cloro_op', '=') === '=' ? 'selected' : '' }}>=</option>
+                                    <option value=">" {{ old('bajada_tanque_cloro_op') === '>' ? 'selected' : '' }}>&gt;</option>
+                                    <option value="<" {{ old('bajada_tanque_cloro_op') === '<' ? 'selected' : '' }}>&lt;</option>
+                                </select>
+                                <input type="number" name="bajada_tanque_cloro" step="0.01" min="0" max="3" value="{{ old('bajada_tanque_cloro') }}" class="w-20 bg-slate-900 border border-slate-600 rounded p-2 text-center text-white focus:outline-none focus:border-blue-500 font-mono" placeholder="0.00">
+                            </div>
                         </div>
 
                         <!-- Decantador Norte -->
@@ -336,7 +353,7 @@
                                 </td>
                                 <!-- Cloro Residual -->
                                 <td class="py-4 px-4 text-center font-mono text-emerald-400 border border-slate-700 font-bold">
-                                    {{ $registro->cloro_residual !== null ? number_format($registro->cloro_residual, 2) : '-' }}
+                                    {{ $registro->cloro_formateado }}
                                 </td>
                                 <!-- Acciones -->
                                 <td class="py-4 px-4 text-center border border-slate-700">
@@ -661,7 +678,7 @@
                 </form>
 
                 <!-- Listado y boletín -->
-            <div class="bg-slate-900/50 rounded border border-slate-700 p-6">
+            <div id="ultimas-novedades" class="bg-slate-900/50 rounded border border-slate-700 p-6 scroll-mt-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold text-blue-400 tracking-widest text-center flex-grow">ÚLTIMAS NOVEDADES</h3>
                     @if($novedadesRecientes > 0)

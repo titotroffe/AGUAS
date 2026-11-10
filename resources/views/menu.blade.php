@@ -83,6 +83,10 @@
         </div>
     @endif
 
+    <div class="relative z-10 max-w-5xl mx-auto w-full px-4 mt-4">
+        <x-alerta-dosificadora />
+    </div>
+
     <div class="relative z-10 flex-1 flex items-center justify-center gap-16 px-4">
 
         <a href="/jefatura" class="flex flex-col items-center group transform transition duration-300 hover:scale-105">
